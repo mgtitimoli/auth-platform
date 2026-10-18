@@ -24,6 +24,7 @@ import * as withSession from "@mgtitimoli/auth-domain/session";
 - [invalid-credentials-error](./src/invalid-credentials-error.ts)
 - [opaque-token](./src/opaque-token.ts)
 - [same-user-deactivate-error](./src/same-user-deactivate-error.ts)
+- [same-user-delete-error](./src/same-user-delete-error.ts)
 - [session](./src/session.ts)
 - [user](./src/user.ts)
 - [user-status](./src/user-status.ts)

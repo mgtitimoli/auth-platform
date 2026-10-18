@@ -4,13 +4,14 @@ import {Hono} from "hono";
 import type {HonoEnv} from "@/hono-env";
 
 import * as createUserRoute from "./create-user-route";
+import * as deleteUserRoute from "./delete-user-route";
 import * as getCurrentUserRoute from "./get-current-user-route";
 import * as getUsersRoute from "./get-users-route";
 import * as updateUserRoute from "./update-user-route";
 
-// Routes are matched in order: /me before /:userId, so it isn't taken for an id
 const userRoutes = [
   createUserRoute,
+  deleteUserRoute,
   getCurrentUserRoute,
   getUsersRoute,
   updateUserRoute

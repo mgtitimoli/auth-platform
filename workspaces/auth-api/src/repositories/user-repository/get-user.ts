@@ -8,7 +8,6 @@ import {createUserFrom} from "./create-user-from";
 type Params = {
   database: Database;
   id: string;
-  // Locks the row until the transaction ends
   isForUpdate?: boolean;
 };
 

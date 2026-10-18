@@ -37,6 +37,7 @@ The API listens on `http://localhost:3001`:
 | `GET /users/me` | The signed-in user |
 | `POST /users` | Creates a user with the given password (it hasn't signed in yet) |
 | `PATCH /users/:userId` | Updates the given fields of a user (`email`, `firstName`, `lastName`, `status`). An inactive user's names can't be updated, users can't deactivate themselves, and deactivating a user terminates their sessions |
+| `DELETE /users/:userId` | Deletes a user, with their credential and sessions (users can't delete themselves) |
 | `GET /users?limit=&offset=` | A page of users, ordered by creation (`limit` defaults to 6, at most 100; `offset` defaults to 0), with the total |
 
 Every endpoint except health, OpenAPI, Swagger, sign-up and sign-in needs the
