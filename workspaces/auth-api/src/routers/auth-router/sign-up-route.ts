@@ -1,34 +1,20 @@
-import {
-  sessionSchema,
-  signUpInputSchema,
-  userSchema
-} from "@mgtitimoli/auth-domain/domain-schema";
+import {signUpInputSchema} from "@mgtitimoli/auth-domain/domain-schema";
 import {DuplicateEmailError} from "@mgtitimoli/auth-domain/duplicate-email-error";
-import {
-  createSucceededResponseSchema,
-  failedResponseSchema
-} from "@mgtitimoli/utils/hono/response";
+import {failedResponseSchema} from "@mgtitimoli/utils/hono/response";
 import type {TypeResponseFrom} from "@mgtitimoli/utils/hono/response-definition";
 import * as withRouteDefinition from "@mgtitimoli/utils/hono/route-definition";
 import type {AnyRouteDefinition} from "@mgtitimoli/utils/hono/route-definition";
 import {validate} from "@mgtitimoli/utils/hono/validate";
 import type {Hono} from "hono";
-import {z} from "zod";
 
 import type {HonoEnv} from "@/hono-env";
 import * as authService from "@/services/auth-service";
 import * as withSessionCookie from "@/utils/session-cookie/session-cookie";
 
-const signUpOutputSchema = z
-  .object({
-    session: sessionSchema,
-    user: userSchema
-  })
-  .meta({ref: "SignUpOutput"});
+type Response = TypeResponseFrom<(typeof routeDefinition)["responses"]>;
 
 const routeDefinition = {
-  description:
-    "Creates a user and signs them in: responds with the user and the new session, and sets the session cookie",
+  description: "Creates a user and signs them in, setting the session cookie",
   operationId: "signUp",
   requestBody: {
     content: {"application/json": {schema: signUpInputSchema}},
@@ -36,14 +22,8 @@ const routeDefinition = {
   },
   responses: {
     201: {
-      content: {
-        "application/json": {
-          schema: createSucceededResponseSchema(
-            signUpOutputSchema,
-            "SignUpSucceededResponse"
-          )
-        }
-      }
+      description:
+        "User created and signed in: the session id is in the session cookie"
     },
     400: {content: {"application/json": {schema: failedResponseSchema}}},
     409: {content: {"application/json": {schema: failedResponseSchema}}}
@@ -51,8 +31,6 @@ const routeDefinition = {
   summary: "Sign up",
   tags: ["Auth"]
 } satisfies AnyRouteDefinition;
-
-type Response = TypeResponseFrom<(typeof routeDefinition)["responses"]>;
 
 const attachTo = (router: Hono<HonoEnv>) =>
   router.post(
@@ -65,11 +43,11 @@ const attachTo = (router: Hono<HonoEnv>) =>
       const database = c.get("database");
 
       try {
-        const {session, user} = await authService.signUp({database, input});
+        const session = await authService.signUp({database, input});
 
         withSessionCookie.set(c, session.id);
 
-        return c.json({data: {session, user}}, 201);
+        return c.body(null, 201);
       } catch (error) {
         if (error instanceof DuplicateEmailError) {
           return c.json({error: error.message}, 409);

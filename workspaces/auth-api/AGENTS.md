@@ -83,9 +83,10 @@ The local server is started by the user (`yarn watch` at the root).
 **No trailing slashes.** Hono does not match routes with a trailing slash:
 `GET /health/` returns 404, `GET /health` works.
 
-**Unauthenticated endpoints:** `/health`, `/openapi`, `/swagger` and
-`/auth/sign-up`. Use
-`/health` to check if the server is running and `/openapi` to inspect schemas.
+**Unauthenticated endpoints:** `/health`, `/openapi`, `/swagger`,
+`/auth/sign-up` and `/auth/sign-in`. Use `/health` to check if the server is
+running and `/openapi` to inspect schemas. Locally, sign in with the seeded
+admin (see the README).
 
 ## Logs
 

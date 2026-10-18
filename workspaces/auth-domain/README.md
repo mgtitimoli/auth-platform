@@ -19,8 +19,11 @@ import * as withSession from "@mgtitimoli/auth-domain/session";
 
 - [domain-schema](./src/domain-schema.ts): every schema and its inferred type
 - [duplicate-email-error](./src/duplicate-email-error.ts)
+- [inactive-user-error](./src/inactive-user-error.ts)
+- [invalid-credentials-error](./src/invalid-credentials-error.ts)
 - [opaque-token](./src/opaque-token.ts)
 - [session](./src/session.ts)
+- [user](./src/user.ts)
 - [user-status](./src/user-status.ts)
 
 ## Scripts

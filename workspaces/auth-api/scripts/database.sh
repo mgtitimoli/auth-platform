@@ -4,9 +4,10 @@
 # @description
 #   Container commands (start, stop, status, logs, clear) act on the docker
 #   compose database of the given environment (local or test).
-#   Database commands (cli, migrate, migrate-all, rollback, list-migrations)
-#   act on the database of .env.<environment>, or of .env when no environment
-#   is given (an argument starting with "-" is passed through instead).
+#   Database commands (cli, migrate, migrate-all, rollback, list-migrations,
+#   seed) act on the database of .env.<environment>, or of .env when no
+#   environment is given (an argument starting with "-" is passed through
+#   instead). seed takes the seed name before the environment.
 set -euo pipefail
 
 readonly COMPOSE_FILE="docker-compose.yml"
@@ -117,14 +118,29 @@ run_kysely_migrate() {
 }
 
 # @description Runs a database command on the database of an environment.
-# @arg $1 string Command (cli, migrate, migrate-all, rollback or list-migrations).
-# @arg $2 string Optional environment (uses .env when missing).
+# @arg $1 string Command (cli, migrate, migrate-all, rollback, list-migrations or seed).
+# @arg $2 string Seed name (seed only).
+# @arg $3 string Optional environment (uses .env when missing).
 # @arg $@ string Extra arguments for psql or kysely-ctl.
+# @exitcode 1 If seed is given no seed name.
 run_database_command() {
   local command="$1"
   local environment=""
+  local seed_name=""
 
   shift
+
+  if [[ "$command" == "seed" ]]
+  then
+    seed_name="${1:-}"
+
+    if [[ -z "$seed_name" || "$seed_name" == -* ]]
+    then
+      fail "seed requires a seed name"
+    fi
+
+    shift
+  fi
 
   if (( $# > 0 )) && [[ "$1" != -* ]]
   then
@@ -151,6 +167,9 @@ run_database_command() {
     list-migrations)
       run_kysely_migrate list "$@"
       ;;
+    seed)
+      kysely seed run --specific "$seed_name" --config "$KYSELY_CONFIG" "$@"
+      ;;
   esac
 }
 
@@ -163,7 +182,7 @@ main() {
     start | stop | status | logs | clear)
       run_container_command "$@"
       ;;
-    cli | migrate | migrate-all | rollback | list-migrations)
+    cli | migrate | migrate-all | rollback | list-migrations | seed)
       run_database_command "$@"
       ;;
     *)

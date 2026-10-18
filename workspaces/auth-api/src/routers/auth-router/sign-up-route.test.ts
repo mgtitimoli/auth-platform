@@ -1,10 +1,10 @@
-import {sessionSchema, userSchema} from "@mgtitimoli/auth-domain/domain-schema";
 import {failedResponseSchema} from "@mgtitimoli/utils/hono/response";
 import {isMatchingHash} from "@mgtitimoli/utils/password";
 import {describe, expect, it} from "vitest";
-import {z} from "zod";
 
 import {database} from "@/database/database";
+import {allSessionColumnNames} from "@/database/session-column-name";
+import {allUserColumnNames} from "@/database/user-column-name";
 import {router} from "@/router";
 
 const signUpInput = {
@@ -14,16 +14,29 @@ const signUpInput = {
   password: "analytical1!"
 };
 
-const signUpSucceededResponseSchema = z.object({
-  data: z.object({session: sessionSchema, user: userSchema})
-});
-
 const signUp = (body: unknown) =>
   router.request("/auth/sign-up", {
     body: JSON.stringify(body),
     headers: {"Content-Type": "application/json"},
     method: "POST"
   });
+
+// The session id is only sent in the session cookie
+const getSessionFrom = async (response: Response) => {
+  const sessionId = /session=([^;]+)/.exec(
+    response.headers.get("Set-Cookie") ?? ""
+  )?.[1];
+
+  if (!sessionId) {
+    throw new Error("The response has no session cookie");
+  }
+
+  return database
+    .selectFrom("sessions")
+    .select(allSessionColumnNames)
+    .where("id", "=", sessionId)
+    .executeTakeFirstOrThrow();
+};
 
 const getUserCount = async () => {
   const {count} = await database
@@ -38,12 +51,18 @@ describe("POST /auth/sign-up", () => {
   it("creates an active user signed in once, with a session", async () => {
     const response = await signUp(signUpInput);
 
-    const {data} = signUpSucceededResponseSchema.parse(await response.json());
+    const session = await getSessionFrom(response);
 
     expect(response.status).toBe(201);
+    expect(await response.text()).toBe("");
 
-    // The schema has already checked the generated fields (ids and dates)
-    expect(data.user).toMatchObject({
+    const user = await database
+      .selectFrom("users")
+      .select(allUserColumnNames)
+      .where("id", "=", session.userId)
+      .executeTakeFirstOrThrow();
+
+    expect(user).toMatchObject({
       email: signUpInput.email,
       firstName: signUpInput.firstName,
       lastName: signUpInput.lastName,
@@ -51,18 +70,15 @@ describe("POST /auth/sign-up", () => {
       status: "active"
     });
 
-    expect(data.session.userId).toBe(data.user.id);
-    expect(data.session.terminationTime).toBeUndefined();
+    expect(session.terminationTime).toBeNull();
   });
 
   it("sets the session cookie", async () => {
     const response = await signUp(signUpInput);
 
-    const {data} = signUpSucceededResponseSchema.parse(await response.json());
-
     const setCookie = response.headers.get("Set-Cookie");
 
-    expect(setCookie).toContain(`session=${data.session.id}`);
+    expect(setCookie).toMatch(/^session=[\w-]{32};/);
     expect(setCookie).toContain("HttpOnly");
     expect(setCookie).toContain("SameSite=Lax");
     expect(setCookie).toContain("Path=/");
@@ -71,26 +87,16 @@ describe("POST /auth/sign-up", () => {
   it("stores a hash of the password, never the password", async () => {
     const response = await signUp(signUpInput);
 
-    const {data} = signUpSucceededResponseSchema.parse(await response.json());
+    const session = await getSessionFrom(response);
 
     const {passwordHash} = await database
       .selectFrom("userCredentials")
       .select("passwordHash")
-      .where("userId", "=", data.user.id)
+      .where("userId", "=", session.userId)
       .executeTakeFirstOrThrow();
 
     expect(passwordHash).not.toContain(signUpInput.password);
     expect(await isMatchingHash(signUpInput.password, passwordHash)).toBe(true);
-  });
-
-  it("never responds with the password or its hash", async () => {
-    const response = await signUp(signUpInput);
-
-    const responseText = await response.text();
-
-    expect(responseText).not.toContain(signUpInput.password);
-    expect(responseText).not.toContain("passwordHash");
-    expect(responseText).not.toContain("scrypt");
   });
 
   it("rejects an email that is already registered", async () => {

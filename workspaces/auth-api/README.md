@@ -14,8 +14,15 @@ REST API for users and sessions, built with [Hono](https://hono.dev) and
 yarn auth-api:run env:use local
 yarn auth-api:run database:start local
 yarn auth-api:run database:migrate-all
+yarn auth-api:run database:seed 00001-seed-admin-users
 yarn watch
 ```
+
+Sign in with the seeded admin:
+
+| Email | Password |
+|---|---|
+| `admin@example.com` | `Admin123!` |
 
 The API listens on `http://localhost:3001`:
 
@@ -25,6 +32,7 @@ The API listens on `http://localhost:3001`:
 | `GET /openapi` | OpenAPI document |
 | `GET /swagger` | Swagger UI |
 | `POST /auth/sign-up` | Creates a user and signs them in (sets the session cookie) |
+| `POST /auth/sign-in` | Signs a user in (sets the session cookie) |
 
 Logs are also written to `logs/auth-api.log` when running locally.
 
@@ -55,6 +63,16 @@ yarn auth-api:run database:cli test -c "select count(*) from users"
   Hashes use scrypt with a random salt.
 - Session ids are random 192-bit tokens, stored as they are: anyone who can read
   the `sessions` table could use active sessions until they're terminated.
+- Sign-up and sign-in send the session id only in an `HttpOnly` cookie, never in
+  the body, so the page's JavaScript can't read it. Every other request must
+  include that cookie (browsers do it automatically).
+
+### Seeds
+
+Seeds live in [src/database/seeds](./src/database/seeds) and are run by name
+(`database:seed <seed> [environment]`). `00001-seed-admin-users` creates the
+admins listed above, skipping the ones that already exist. Their passwords are
+public, so never run it against a shared environment.
 
 ### Migrations
 
@@ -125,6 +143,7 @@ docker run -p 3001:3001 \
 | `database:migrate-all [environment]` | Applies every pending migration |
 | `database:rollback [environment]` | Reverts the last applied migration |
 | `database:list-migrations [environment]` | Lists the migrations and whether they're applied |
+| `database:seed <seed> [environment]` | Runs the given seed |
 | `env:list` | Lists the available `.env.*` files |
 | `env:use` | Points `.env` to the given `.env.*` file |
 | `env:which` | Shows which `.env.*` file `.env` points to |

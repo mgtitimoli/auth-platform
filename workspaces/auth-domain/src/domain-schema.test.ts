@@ -1,6 +1,10 @@
 import {describe, expect, it} from "vitest";
 
-import {passwordSchema, signUpInputSchema} from "./domain-schema";
+import {
+  passwordSchema,
+  signInInputSchema,
+  signUpInputSchema
+} from "./domain-schema";
 
 const getIssueMessages = (password: string) =>
   passwordSchema.safeParse(password).error?.issues.map(issue => issue.message);
@@ -76,6 +80,22 @@ describe("signUpInputSchema", () => {
   it("rejects blank names", () => {
     expect(
       signUpInputSchema.safeParse({...signUpInput, lastName: "   "}).success
+    ).toBe(false);
+  });
+});
+
+describe("signInInputSchema", () => {
+  it("accepts any non-empty password, without checking the policy", () => {
+    expect(
+      signInInputSchema.safeParse({email: "ada@example.com", password: "a"})
+        .success
+    ).toBe(true);
+  });
+
+  it("rejects an empty password", () => {
+    expect(
+      signInInputSchema.safeParse({email: "ada@example.com", password: ""})
+        .success
     ).toBe(false);
   });
 });

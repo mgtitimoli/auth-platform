@@ -11,8 +11,9 @@
 - `database-schema.ts`: the source of truth for the table types
 - `*-column-name.ts`: one module per table listing its columns
   (`userColumnNames`, `allUserColumnNames`)
-- `kysely.config.ts`: the `kysely-ctl` configuration (migrations)
+- `kysely.config.ts`: the `kysely-ctl` configuration (migrations and seeds)
 - `migrations/`: the migrations
+- `seeds/`: the seeds
 
 ## Schema Conventions (`database-schema.ts`)
 
@@ -73,3 +74,13 @@ Repositories select and return columns explicitly, never with `selectAll()` /
 - Verify a new migration on `local` by applying it, rolling it back and
   applying it again, so both `up` and `down` run.
 - The tests migrate the test database themselves.
+
+## Seeds (`seeds/`)
+
+- Naming: `00XXX-seed-description.ts`, exporting `seed`, which takes the
+  `Database`.
+- Seeds create data through services and repositories, like the API does
+  (e.g. `userService.createUser`, so users get their credential).
+- Seeds are idempotent: they skip what already exists, so they can run more
+  than once.
+- Run one with `yarn auth-api:run database:seed <seed> [environment]`.

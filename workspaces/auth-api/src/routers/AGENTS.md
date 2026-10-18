@@ -23,10 +23,7 @@ Every route file has these sections, in order:
 
 ```ts
 import {signUpInputSchema} from "@mgtitimoli/auth-domain/domain-schema";
-import {
-  createSucceededResponseSchema,
-  failedResponseSchema
-} from "@mgtitimoli/utils/hono/response";
+import {failedResponseSchema} from "@mgtitimoli/utils/hono/response";
 import type {TypeResponseFrom} from "@mgtitimoli/utils/hono/response-definition";
 import * as withRouteDefinition from "@mgtitimoli/utils/hono/route-definition";
 import type {AnyRouteDefinition} from "@mgtitimoli/utils/hono/route-definition";
@@ -35,15 +32,26 @@ import type {Hono} from "hono";
 
 import type {HonoEnv} from "@/hono-env";
 import * as authService from "@/services/auth-service";
+import * as withSessionCookie from "@/utils/session-cookie/session-cookie";
 ```
 
-### 2. Schemas
+### 2. Response Type
+
+```ts
+type Response = TypeResponseFrom<(typeof routeDefinition)["responses"]>;
+```
+
+Types come right after the imports (the conventions' imports → types →
+implementation → exports); a type alias can reference `typeof routeDefinition`
+declared below it.
+
+### 3. Schemas
 
 Request and response schemas live in `@mgtitimoli/auth-domain/domain-schema`.
 Route-specific ones (path parameters, a response shape used only here) are
 declared in the route file, with `.meta({ref})` when they appear in OpenAPI.
 
-### 3. Route Definition (OpenAPI)
+### 4. Route Definition (OpenAPI)
 
 ```ts
 const routeDefinition = {
@@ -54,7 +62,7 @@ const routeDefinition = {
     required: true
   },
   responses: {
-    201: {content: {"application/json": {schema: createSucceededResponseSchema(…, "SignUpSucceededResponse")}}},
+    201: {description: "User created and signed in: the session id is in the session cookie"},
     400: {content: {"application/json": {schema: failedResponseSchema}}},
     409: {content: {"application/json": {schema: failedResponseSchema}}}
   },
@@ -63,13 +71,8 @@ const routeDefinition = {
 } satisfies AnyRouteDefinition;
 ```
 
-Keep response keys in ascending numeric order.
-
-### 4. Response Type
-
-```ts
-type Response = TypeResponseFrom<(typeof routeDefinition)["responses"]>;
-```
+Keep response keys in ascending numeric order. A response without a body has
+only a `description` (and the handler returns `c.body(null, status)`).
 
 ### 5. Handler
 
@@ -85,9 +88,11 @@ const attachTo = (router: Hono<HonoEnv>) =>
       const database = c.get("database");
 
       try {
-        const result = await authService.signUp({database, input});
+        const session = await authService.signUp({database, input});
 
-        return c.json({data: result}, 201);
+        withSessionCookie.set(c, session.id);
+
+        return c.body(null, 201);
       } catch (error) {
         if (error instanceof DuplicateEmailError) {
           return c.json({error: error.message}, 409);
@@ -128,8 +133,8 @@ export {authRouter};
 - **"Not found" is not an error**: services return `undefined`, and the route
   responds 404.
 - **Updates use `PATCH`** with partial inputs.
-- **Never put session ids in logs**, and only return them from sign-up and
-  sign-in.
+- **Session ids only travel in the `HttpOnly` session cookie**
+  (`withSessionCookie.set`), never in a response body, and never in logs.
 
 ## Validation
 

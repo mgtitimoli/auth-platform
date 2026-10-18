@@ -43,8 +43,12 @@ yarn install
 yarn auth-api:run env:use local
 yarn auth-api:run database:start local
 yarn auth-api:run database:migrate-all
+yarn auth-api:run database:seed 00001-seed-admin-users
 yarn watch
 ```
+
+Then sign in as `admin@example.com` / `Admin123!` (see
+[auth-api](./workspaces/auth-api)).
 
 `yarn watch` rebuilds the packages and runs the API, restarting it on every
 change (see [auth-api](./workspaces/auth-api) for its configuration).
@@ -65,6 +69,15 @@ Type checking (`yarn run-all check-types:all`) and tests (`yarn run-all test`)
 need the packages built first (`yarn build-packages`), because workspaces
 consume each other's `dist`. auth-api's tests start their own database (see
 [auth-api](./workspaces/auth-api)).
+
+## Future improvements
+
+- **Constant-time sign-in for unknown emails:** an unknown email is rejected
+  before any password hashing, so the response time reveals whether an email is
+  registered (sign-up's "already exists" response reveals it anyway).
+- **Token authentication for non-browser clients:** sessions are only read
+  from the `HttpOnly` cookie. Mobile apps or CLIs would need the session id in
+  an `Authorization: Bearer` header instead.
 
 ## Contributing
 

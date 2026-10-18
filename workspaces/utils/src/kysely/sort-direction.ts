@@ -1,8 +1,8 @@
 import {z} from "zod";
 
-const sortDirectionSchema = z.enum(["asc", "desc"]);
-
 type SortDirection = z.infer<typeof sortDirectionSchema>;
+
+const sortDirectionSchema = z.enum(["asc", "desc"]);
 
 export {sortDirectionSchema};
 export type {SortDirection};

@@ -2,6 +2,18 @@ import {z} from "zod";
 
 import {userStatusSchema} from "./user-status";
 
+type OpaqueToken = z.infer<typeof opaqueTokenSchema>;
+
+type Session = z.infer<typeof sessionSchema>;
+
+type SignInInput = z.infer<typeof signInInputSchema>;
+
+type SignUpInput = z.infer<typeof signUpInputSchema>;
+
+type User = z.infer<typeof userSchema>;
+
+type UserCredential = z.infer<typeof userCredentialSchema>;
+
 const passwordMinLength = 8;
 
 const passwordMaxLength = 128;
@@ -65,22 +77,28 @@ const signUpInputSchema = z
   })
   .meta({ref: "SignUpInput"});
 
-type OpaqueToken = z.infer<typeof opaqueTokenSchema>;
-
-type Session = z.infer<typeof sessionSchema>;
-
-type SignUpInput = z.infer<typeof signUpInputSchema>;
-
-type User = z.infer<typeof userSchema>;
-
-type UserCredential = z.infer<typeof userCredentialSchema>;
+// The password policy is only checked on sign-up, so sign-in doesn't reveal it
+const signInInputSchema = z
+  .object({
+    email: emailSchema,
+    password: z.string().min(1)
+  })
+  .meta({ref: "SignInInput"});
 
 export {
   opaqueTokenSchema,
   passwordSchema,
   sessionSchema,
+  signInInputSchema,
   signUpInputSchema,
   userCredentialSchema,
   userSchema
 };
-export type {OpaqueToken, Session, SignUpInput, User, UserCredential};
+export type {
+  OpaqueToken,
+  Session,
+  SignInInput,
+  SignUpInput,
+  User,
+  UserCredential
+};

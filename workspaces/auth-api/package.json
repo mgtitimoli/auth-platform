@@ -17,6 +17,7 @@
     "database:migrate": "scripts/database.sh migrate",
     "database:migrate-all": "scripts/database.sh migrate-all",
     "database:rollback": "scripts/database.sh rollback",
+    "database:seed": "scripts/database.sh seed",
     "database:start": "scripts/database.sh start",
     "database:status": "scripts/database.sh status",
     "database:stop": "scripts/database.sh stop",

@@ -18,12 +18,12 @@ const createSession = ({database, userId}: Params) =>
       input: {id: withSession.createId(), userId}
     });
 
-    const user = await userRepository.incrementLoginsCounter({
+    await userRepository.incrementLoginsCounter({
       database: transaction,
       userId
     });
 
-    return {session, user};
+    return session;
   });
 
 export {createSession};
