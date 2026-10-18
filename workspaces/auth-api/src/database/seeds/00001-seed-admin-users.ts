@@ -1,11 +1,17 @@
-import type {SignUpInput} from "@mgtitimoli/auth-domain/domain-schema";
+import {startTransactionIfNeeded} from "@mgtitimoli/utils/kysely";
+import * as withPassword from "@mgtitimoli/utils/password";
 
 import type {Database} from "@/database/database";
-import * as userRepository from "@/repositories/user-repository";
-import * as userService from "@/services/user-service";
+
+type AdminUserSeed = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+};
 
 // Public credentials (listed in the README) for signing in to a local database
-const adminInputs: SignUpInput[] = [
+const adminUserSeeds: AdminUserSeed[] = [
   {
     email: "admin@example.com",
     firstName: "Admin",
@@ -14,20 +20,43 @@ const adminInputs: SignUpInput[] = [
   }
 ];
 
-const seedAdminUser = async (database: Database, adminInput: SignUpInput) => {
-  const user = await userRepository.getUserByEmail({
-    database,
-    email: adminInput.email
-  });
+const isExistingUser = async (database: Database, email: string) => {
+  const user = await database
+    .selectFrom("users")
+    .select("id")
+    .where("email", "=", email)
+    .executeTakeFirst();
 
-  if (!user) {
-    await userService.createUser({database, input: adminInput});
+  return user !== undefined;
+};
+
+const seedAdminUser = async (
+  database: Database,
+  {password, ...userValues}: AdminUserSeed
+) => {
+  if (await isExistingUser(database, userValues.email)) {
+    return;
   }
+
+  const passwordHash = await withPassword.getHash(password);
+
+  await startTransactionIfNeeded(database, async transaction => {
+    const {id: userId} = await transaction
+      .insertInto("users")
+      .values(userValues)
+      .returning("id")
+      .executeTakeFirstOrThrow();
+
+    await transaction
+      .insertInto("userCredentials")
+      .values({passwordHash, userId})
+      .execute();
+  });
 };
 
 const seed = async (database: Database) => {
   await Promise.all(
-    adminInputs.map(adminInput => seedAdminUser(database, adminInput))
+    adminUserSeeds.map(adminUserSeed => seedAdminUser(database, adminUserSeed))
   );
 };
 

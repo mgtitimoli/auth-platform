@@ -5,12 +5,20 @@
 - Kysely (type-safe SQL builder) with the Postgres dialect (`pg`)
 - `CamelCasePlugin` maps the database's snake_case to TypeScript's camelCase
 
+## Dependencies
+
+`src/database` imports only from itself, Kysely and `@mgtitimoli/utils`: never
+from the domain (`@mgtitimoli/auth-domain`) or the layers above it
+(repositories, services, routers).
+
 ## Files
 
 - `database.ts`: the Kysely instance and the Postgres pool and dialect
 - `database-schema.ts`: the source of truth for the table types
 - `*-column-name.ts`: one module per table listing its columns
   (`userColumnNames`, `allUserColumnNames`)
+- enum modules (`user-status.ts`): the values of each database enum type
+  (`userStatuses`, `UserStatus`), used by `database-schema.ts`
 - `kysely.config.ts`: the `kysely-ctl` configuration (migrations and seeds)
 - `migrations/`: the migrations
 - `seeds/`: the seeds
@@ -79,8 +87,10 @@ Repositories select and return columns explicitly, never with `selectAll()` /
 
 - Naming: `00XXX-seed-description.ts`, exporting `seed`, which takes the
   `Database`.
-- Seeds create data through services and repositories, like the API does
-  (e.g. `userService.createUser`, so users get their credential).
+- Seeds insert with Kysely directly, declaring their own seed types
+  (`AdminUserSeed`), never through repositories or services. A seed that needs
+  what a service does (e.g. a user and its credential in one transaction) does
+  it itself, with `@mgtitimoli/utils` (e.g. `withPassword.getHash`).
 - Seeds are idempotent: they skip what already exists, so they can run more
   than once.
 - Run one with `yarn auth-api:run database:seed <seed> [environment]`.

@@ -2,6 +2,8 @@ import {z} from "zod";
 
 import {userStatusSchema} from "./user-status";
 
+type CreateUserInput = z.infer<typeof createUserInputSchema>;
+
 type OpaqueToken = z.infer<typeof opaqueTokenSchema>;
 
 type Session = z.infer<typeof sessionSchema>;
@@ -68,6 +70,15 @@ const sessionSchema = z
   })
   .meta({ref: "Session"});
 
+const createUserInputSchema = z
+  .object({
+    email: emailSchema,
+    firstName: nameSchema,
+    lastName: nameSchema,
+    password: passwordSchema
+  })
+  .meta({ref: "CreateUserInput"});
+
 const signUpInputSchema = z
   .object({
     email: emailSchema,
@@ -86,6 +97,7 @@ const signInInputSchema = z
   .meta({ref: "SignInInput"});
 
 export {
+  createUserInputSchema,
   opaqueTokenSchema,
   passwordSchema,
   sessionSchema,
@@ -95,6 +107,7 @@ export {
   userSchema
 };
 export type {
+  CreateUserInput,
   OpaqueToken,
   Session,
   SignInInput,

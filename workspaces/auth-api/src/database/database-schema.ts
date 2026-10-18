@@ -1,4 +1,3 @@
-import type {UserStatus} from "@mgtitimoli/auth-domain/user-status";
 import type {
   ColumnType,
   GeneratedAlways,
@@ -6,6 +5,8 @@ import type {
   Selectable,
   Updateable
 } from "kysely";
+
+import type {UserStatus} from "./user-status";
 
 type DatabaseDefinition = {
   sessions: SessionTable;

@@ -1,6 +1,7 @@
 import {describe, expect, it} from "vitest";
 
 import {
+  createUserInputSchema,
   passwordSchema,
   signInInputSchema,
   signUpInputSchema
@@ -96,6 +97,19 @@ describe("signInInputSchema", () => {
     expect(
       signInInputSchema.safeParse({email: "ada@example.com", password: ""})
         .success
+    ).toBe(false);
+  });
+});
+
+describe("createUserInputSchema", () => {
+  it("rejects a password that doesn't meet the policy", () => {
+    expect(
+      createUserInputSchema.safeParse({
+        email: "grace@example.com",
+        firstName: "Grace",
+        lastName: "Hopper",
+        password: "short"
+      }).success
     ).toBe(false);
   });
 });

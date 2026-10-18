@@ -1,4 +1,4 @@
-import type {SignUpInput} from "@mgtitimoli/auth-domain/domain-schema";
+import type {CreateUserInput} from "@mgtitimoli/auth-domain/domain-schema";
 import {startTransactionIfNeeded} from "@mgtitimoli/utils/kysely";
 import * as withPassword from "@mgtitimoli/utils/password";
 
@@ -9,7 +9,7 @@ import {environmentVariables} from "@/utils/environment/environment-variables";
 
 type Params = {
   database: Database;
-  input: SignUpInput;
+  input: CreateUserInput;
 };
 
 const createUser = async ({database, input}: Params) => {
