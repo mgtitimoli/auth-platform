@@ -33,6 +33,20 @@ The API listens on `http://localhost:3001`:
 | `GET /swagger` | Swagger UI |
 | `POST /auth/sign-up` | Creates a user and signs them in (sets the session cookie) |
 | `POST /auth/sign-in` | Signs a user in (sets the session cookie) |
+| `POST /auth/sign-out` | Terminates the session and removes the cookie |
+| `GET /users/me` | The signed-in user |
+
+Every endpoint except health, OpenAPI, Swagger, sign-up and sign-in needs the
+session cookie (401 otherwise). In Swagger, sign in with "Try it out": the
+browser keeps the cookie and sends it with the next requests. With curl, use a
+cookie jar:
+
+```sh
+curl -c cookies.txt -H 'Content-Type: application/json' \
+  -d '{"email":"admin@example.com","password":"Admin123!"}' \
+  http://localhost:3001/auth/sign-in
+curl -b cookies.txt http://localhost:3001/users/me
+```
 
 Logs are also written to `logs/auth-api.log` when running locally.
 
@@ -99,6 +113,7 @@ migrate it and delete every row before each test. They never mock the database.
 | Variable | Description |
 |---|---|
 | `AUTH_API_PORT` | Port the API listens on |
+| `AUTH_BACKOFFICE_URL` | The backoffice's origin, the only one allowed to call the API from a browser (CORS) |
 | `AUTH_DATABASE_URL` | PostgreSQL connection URL |
 | `ENVIRONMENT_NAME` | `local`, `test`, `development` or `production` (`local` enables readable logs and the log file) |
 | `LOG_LEVEL` | Log level (default `info`) |

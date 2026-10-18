@@ -1,10 +1,10 @@
 import type {Context} from "hono";
-import {setCookie} from "hono/cookie";
+import {deleteCookie, setCookie} from "hono/cookie";
 import type {CookieOptions} from "hono/utils/cookie";
 
 import {environmentVariables} from "@/utils/environment/environment-variables";
 
-const name = "session";
+const sessionCookieName = "session";
 
 const options: CookieOptions = {
   httpOnly: true,
@@ -16,7 +16,25 @@ const options: CookieOptions = {
   })
 };
 
-const set = (c: Context, sessionId: string) =>
-  setCookie(c, name, sessionId, options);
+const securitySchemeName = "sessionCookie";
 
-export {name, set};
+const sessionCookieSecuritySchemes = {
+  [securitySchemeName]: {in: "cookie", name: sessionCookieName, type: "apiKey"}
+} as const;
+
+// The OpenAPI security requirement of the routes that need the session
+const sessionCookieSecurity = [{[securitySchemeName]: []}];
+
+const set = (c: Context, sessionId: string) =>
+  setCookie(c, sessionCookieName, sessionId, options);
+
+// Browsers only remove a cookie set with the same path and domain
+const remove = (c: Context) => deleteCookie(c, sessionCookieName, options);
+
+export {
+  remove,
+  sessionCookieName,
+  sessionCookieSecurity,
+  sessionCookieSecuritySchemes,
+  set
+};

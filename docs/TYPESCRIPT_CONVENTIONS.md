@@ -23,7 +23,7 @@ const result = {
 
 12. Use `export *` in barrel files (`index.ts`) instead of named re-exports
 13. Use path aliases (e.g., `@/utils/number`) instead of relative paths (e.g., `../../utils/number`) for imports within the same workspace
-14. Only use template literals when interpolations are in the middle of a single-line string. Use concatenation when interpolations are at the beginning or end, or when the expression spans multiple lines
+14. Only use template literals when interpolations are in the middle of a single-line string. Use concatenation when interpolations are at the beginning or end, or when the expression spans multiple lines. Never call functions or constructors inside an interpolation: assign the result to a variable first
 15. Prefer to specify the most important context at the end of error messages
 16. Defer variable declarations and computations until after early returns that don't depend on them
 17. Name functions with verbs that describe their action. Use `get` for value computations and `is`/`are`/`has` for boolean predicates
@@ -87,7 +87,21 @@ const processCalculation = (calculation: Calculation) => {
 };
 ```
 
-6. When a module grows large, split it into a folder with the same name. This is transparent to consumers since imports resolve identically whether the target is a file or a folder with an `index.ts`:
+6. Values (nouns, e.g. constants) a module exports are qualified with the type's name (`calculationPrecision`, not `precision`), since they are used unqualified once imported. Import them by name only when no function is imported from the same module; otherwise import the module with `import * as with<Type>` and destructure them from it:
+
+```ts
+// Only values: import them by name
+import {calculationPrecision} from "./calculation";
+
+// Values and functions: namespace import, then destructure the values
+import * as withCalculation from "./calculation";
+
+const {calculationPrecision} = withCalculation;
+
+const formatted = withCalculation.format(calculation, calculationPrecision);
+```
+
+7. When a module grows large, split it into a folder with the same name. This is transparent to consumers since imports resolve identically whether the target is a file or a folder with an `index.ts`:
   - One file per function
   - A `types.ts` file for all type definitions (only types, no values)
   - An `index.ts` that re-exports everything

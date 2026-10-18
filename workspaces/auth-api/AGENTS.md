@@ -84,9 +84,15 @@ The local server is started by the user (`yarn watch` at the root).
 `GET /health/` returns 404, `GET /health` works.
 
 **Unauthenticated endpoints:** `/health`, `/openapi`, `/swagger`,
-`/auth/sign-up` and `/auth/sign-in`. Use `/health` to check if the server is
-running and `/openapi` to inspect schemas. Locally, sign in with the seeded
-admin (see the README).
+`/auth/sign-up` and `/auth/sign-in` (`unauthenticatedRoutePaths` in
+`router.ts`). Use `/health` to check if the server is running and `/openapi` to
+inspect schemas.
+
+**Every other endpoint needs the session cookie.** Sign in with the seeded admin
+(see the README) using a curl cookie jar (`-c cookies.txt`, then
+`-b cookies.txt`). Never print the cookie's value. In tests, sign up or sign in
+through the router and send the `session=<id>` pair from `Set-Cookie` as the
+`Cookie` header.
 
 ## Logs
 

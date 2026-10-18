@@ -8,6 +8,8 @@ type EnvironmentVariables = z.infer<typeof environmentVariablesSchema>;
 
 const environmentVariablesSchema = z.object({
   AUTH_API_PORT: z.number().int().positive(),
+  // The only origin allowed to call the API from a browser (CORS)
+  AUTH_BACKOFFICE_URL: z.url(),
   AUTH_DATABASE_URL: z.url({protocol: /^postgres(ql)?$/}),
   ENVIRONMENT_NAME: environmentNameSchema,
   LOG_LEVEL: logLevelSchema.default("info"),
@@ -22,6 +24,7 @@ const environmentVariablesSchema = z.object({
 
 const environmentVariables = environmentVariablesSchema.parse({
   AUTH_API_PORT: mapIfDefined(process.env["AUTH_API_PORT"], Number),
+  AUTH_BACKOFFICE_URL: process.env["AUTH_BACKOFFICE_URL"],
   AUTH_DATABASE_URL: process.env["AUTH_DATABASE_URL"],
   ENVIRONMENT_NAME: process.env["ENVIRONMENT_NAME"],
   LOG_LEVEL: process.env["LOG_LEVEL"],

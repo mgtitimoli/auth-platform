@@ -8,6 +8,10 @@
       "types": "./dist/error/index.d.ts",
       "import": "./dist/error/index.js"
     },
+    "./fetch/response": {
+      "types": "./dist/fetch/response/index.d.ts",
+      "import": "./dist/fetch/response/index.js"
+    },
     "./hono": {
       "types": "./dist/hono/index.d.ts",
       "import": "./dist/hono/index.js"

@@ -30,6 +30,20 @@ import type {LoggerMiddlewareEnv} from "@mgtitimoli/utils/hono/middlewares";
 type HonoEnv = LoggerMiddlewareEnv & {Variables: {requestId: string}};
 ```
 
+### SessionMiddlewareEnv
+
+#### Description
+
+Type that represents the Hono environment set by [sessionMiddleware](#sessionmiddleware) (the `session` variable).
+
+#### Example
+
+```ts
+import type {SessionMiddlewareEnv} from "@mgtitimoli/utils/hono/middlewares";
+
+type HonoEnv = SessionMiddlewareEnv<Session>;
+```
+
 ## Functions
 
 ### createDebugHonoLogger
@@ -77,6 +91,25 @@ Function that creates a middleware that sets the given logger in the context and
 import {loggerMiddleware} from "@mgtitimoli/utils/hono/middlewares";
 
 router.use(loggerMiddleware({isJsonLogger: false, logger}));
+```
+
+### sessionMiddleware
+
+#### Description
+
+Function that creates a middleware that reads the session id from the given cookie, loads the session with the given `getSession`, and sets it in the context (`c.get("session")`). It responds 401 when there's no cookie or `getSession` returns nothing.
+
+#### Example
+
+```ts
+import {sessionMiddleware} from "@mgtitimoli/utils/hono/middlewares";
+
+router.use(
+  sessionMiddleware({
+    cookieName: "session",
+    getSession: sessionId => sessionRepository.getActiveSession(sessionId)
+  })
+);
 ```
 
 ### validate

@@ -6,6 +6,7 @@ self-contained, so it can later be published as a standalone package.
 ## Utilities
 
 - [error](./src/error)
+- [fetch](./src/fetch)
 - [hono](./src/hono)
 - [http](./src/http)
 - [kysely](./src/kysely)

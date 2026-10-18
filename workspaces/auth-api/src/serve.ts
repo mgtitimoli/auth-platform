@@ -18,10 +18,10 @@ withServer.closeOnSignals({
   onClosed: () => logger.info("Server closed successfully"),
 
   onClosing: signal =>
-    logger.info(`${signal} received, closing server gracefully`),
+    logger.info(signal + " received, closing server gracefully"),
 
   onError: (signal, error) =>
-    logger.error({error}, `Error closing server on ${signal}`),
+    logger.error({error}, "Error closing server on " + signal),
 
   server
 });

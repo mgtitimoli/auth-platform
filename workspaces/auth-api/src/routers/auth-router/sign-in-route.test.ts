@@ -1,9 +1,12 @@
+import * as withResponse from "@mgtitimoli/utils/fetch/response";
 import {failedResponseSchema} from "@mgtitimoli/utils/hono/response";
+import {ensureIsDefined} from "@mgtitimoli/utils/validation";
 import {beforeEach, describe, expect, it} from "vitest";
 
 import {database} from "@/database/database";
 import {allSessionColumnNames} from "@/database/session-column-name";
 import {router} from "@/router";
+import {sessionCookieName} from "@/utils/session-cookie/session-cookie";
 
 const signUpInput = {
   email: "ada@example.com",
@@ -27,21 +30,19 @@ const post = (path: string, body: unknown) =>
 const signIn = (body: unknown) => post("/auth/sign-in", body);
 
 // The session id is only sent in the session cookie
-const getSessionFrom = async (response: Response) => {
-  const sessionId = /session=([^;]+)/.exec(
-    response.headers.get("Set-Cookie") ?? ""
-  )?.[1];
-
-  if (!sessionId) {
-    throw new Error("The response has no session cookie");
-  }
-
-  return database
+const getSessionFrom = (response: Response) =>
+  database
     .selectFrom("sessions")
     .select(allSessionColumnNames)
-    .where("id", "=", sessionId)
+    .where(
+      "id",
+      "=",
+      ensureIsDefined(
+        withResponse.getCookie(response, sessionCookieName),
+        "The response has no session cookie"
+      )
+    )
     .executeTakeFirstOrThrow();
-};
 
 const getLoginsCounter = async (userId: string) => {
   const {loginsCounter} = await database
