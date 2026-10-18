@@ -8,6 +8,8 @@ web application to sign up, sign in and manage users.
 - [Node.js](https://nodejs.org) 22.22.1 or later (the repository pins 24.22.0 in
   `.tool-versions` for [asdf](https://asdf-vm.com) users; asdf is optional)
 - [Yarn](https://yarnpkg.com): any installed version works
+- [Docker](https://www.docker.com) with Compose, for the local database (see each
+  workspace's README for its own requirements)
 
 ## Installation
 
@@ -38,6 +40,7 @@ yarn install
 
 ```sh
 yarn auth-api:run env:use local
+yarn auth-api:run database:start
 yarn watch
 ```
 

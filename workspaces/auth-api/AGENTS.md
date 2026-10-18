@@ -26,6 +26,32 @@ Layered architecture: Routers → Services → Repositories → Database
 - Return types are inferred, except for route handlers (`Promise<Response>`
   derived from the route definition) and `create…From` mappers.
 
+## Database
+
+### Safety
+
+**Before running any database command**, check where the `.env` symlink points:
+
+```bash
+yarn auth-api:run env:which
+```
+
+`local` is the docker-compose database: safe to proceed. For any other
+environment, ask the user before any destructive action.
+
+### Running queries
+
+Use the `database:cli` script to open a `psql` session connected to the
+database defined in `.env`:
+
+```bash
+yarn auth-api:run database:cli
+```
+
+When running non-interactive queries, pass `-X` to ignore `.psqlrc` and get
+consistent output regardless of local display settings (for example,
+`yarn auth-api:run database:cli -X -Atc "select 1"`).
+
 ## Testing the API
 
 The local server is started by the user (`yarn watch` at the root).
