@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .tool-versions
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Check types
+        run: yarn run-all-parallel check-types:all
+
+      - name: Lint
+        run: yarn run-all-parallel lint

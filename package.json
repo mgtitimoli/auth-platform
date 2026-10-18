@@ -1,0 +1,23 @@
+{
+  "name": "auth-platform",
+  "private": true,
+  "type": "module",
+  "packageManager": "yarn@3.8.2",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "workspaces": [
+    "workspaces/*"
+  ],
+  "scripts": {
+    "run-all": "yarn workspaces foreach --verbose run",
+    "run-all-parallel": "yarn workspaces foreach --parallel --verbose run",
+    "setup": "yarn setup:husky",
+    "setup:husky": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "husky": "^9.1.7"
+  }
+}
