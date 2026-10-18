@@ -1,0 +1,90 @@
+{
+  "name": "@mgtitimoli/utils",
+  "private": true,
+  "type": "module",
+  "description": "Generic utilities (each folder is a future standalone package)",
+  "exports": {
+    "./hono": {
+      "types": "./dist/hono/index.d.ts",
+      "import": "./dist/hono/index.js"
+    },
+    "./hono/middlewares": {
+      "types": "./dist/hono/middlewares/index.d.ts",
+      "import": "./dist/hono/middlewares/index.js"
+    },
+    "./object": {
+      "types": "./dist/object/index.d.ts",
+      "import": "./dist/object/index.js"
+    },
+    "./validation": {
+      "types": "./dist/validation/index.d.ts",
+      "import": "./dist/validation/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js"
+    }
+  },
+  "scripts": {
+    "build": "yarn clean && concurrently --names swc,tsc 'yarn build:swc' 'yarn build:tsc'",
+    "build:swc": "swc src -d dist --strip-leading-paths",
+    "build:tsc": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "check-types:all": "tsc --noEmit",
+    "check-types:files": "tsc-files --noEmit",
+    "clean": "rm -rf dist",
+    "lint": "eslint",
+    "watch": "yarn clean && concurrently --names swc,tsc,tsc-alias 'yarn watch:swc' 'yarn watch:tsc' 'yarn watch:tsc-alias'",
+    "watch:swc": "swc src -d dist --strip-leading-paths --watch",
+    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput --watch",
+    "watch:tsc-alias": "tsc-alias -p tsconfig.build.json --watch"
+  },
+  "dependencies": {
+    "@swc/helpers": "^0.5.23"
+  },
+  "peerDependencies": {
+    "@hono/node-server": "^2.1.5",
+    "hono": "^4.13.13",
+    "hono-openapi": "^1.5.0",
+    "hono-pino": "^0.10.3",
+    "pino": "^10.4.0",
+    "zod": "^4.6.7"
+  },
+  "peerDependenciesMeta": {
+    "@hono/node-server": {
+      "optional": true
+    },
+    "hono": {
+      "optional": true
+    },
+    "hono-openapi": {
+      "optional": true
+    },
+    "hono-pino": {
+      "optional": true
+    },
+    "pino": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@hono/node-server": "^2.1.5",
+    "@mgtitimoli/eslint-config": "workspace:^",
+    "@swc/cli": "^0.8.1",
+    "@swc/core": "^1.16.18",
+    "@tsconfig/strictest": "^2.0.8",
+    "@types/node": "^24.19.2",
+    "concurrently": "^10.0.6",
+    "eslint": "^9.39.5",
+    "hono": "^4.13.13",
+    "hono-openapi": "^1.5.0",
+    "hono-pino": "^0.10.3",
+    "pino": "^10.4.0",
+    "tsc-alias": "^1.9.8",
+    "tsc-files": "^1.1.4",
+    "typescript": "~6.0.3",
+    "zod": "^4.6.7"
+  }
+}

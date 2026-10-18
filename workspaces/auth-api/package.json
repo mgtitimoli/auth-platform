@@ -1,0 +1,42 @@
+{
+  "name": "@mgtitimoli/auth-api",
+  "private": true,
+  "type": "module",
+  "description": "REST API for users and sessions",
+  "engines": {
+    "node": ">=22.22.1"
+  },
+  "scripts": {
+    "build": "rm -rf dist && swc src -d dist --strip-leading-paths",
+    "check-types:all": "tsc --noEmit",
+    "check-types:files": "tsc-files --noEmit",
+    "env:list": "ls .env.* | sed 's/.env.//'",
+    "env:use": "bash -c '[ -f .env.\"$1\" ] && ln -sfv .env.\"$1\" .env || { echo \"Error: .env.$1 does not exist\" >&2; exit 1; }' --",
+    "env:which": "readlink .env | sed 's/.env.//'",
+    "lint": "eslint",
+    "start": "node --enable-source-maps --env-file=.env dist/serve.js",
+    "watch": "tsx --env-file=.env --inspect --watch src/serve.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.5",
+    "@hono/swagger-ui": "^0.6.1",
+    "@mgtitimoli/utils": "workspace:^",
+    "@swc/helpers": "^0.5.23",
+    "hono": "^4.13.13",
+    "hono-openapi": "^1.5.0",
+    "hono-pino": "^0.10.3",
+    "pino": "^10.4.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@mgtitimoli/eslint-config": "workspace:^",
+    "@swc/cli": "^0.8.1",
+    "@swc/core": "^1.16.18",
+    "@tsconfig/strictest": "^2.0.8",
+    "@types/node": "^24.19.2",
+    "eslint": "^9.39.5",
+    "tsc-files": "^1.1.4",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3"
+  }
+}

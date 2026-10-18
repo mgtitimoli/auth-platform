@@ -1,0 +1,64 @@
+FROM node:24-slim AS base
+
+FROM base AS builder
+
+WORKDIR /app
+
+COPY .yarnrc.yml ./
+COPY .yarn/plugins ./.yarn/plugins
+COPY .yarn/releases ./.yarn/releases
+COPY package.json yarn.lock ./
+
+# Only its manifest is needed: utils and auth-api depend on it (for
+# linting), so yarn needs it to resolve the workspace graph
+COPY workspaces/eslint-config/package.json ./workspaces/eslint-config/
+
+COPY workspaces/utils/.swcrc ./workspaces/utils/
+COPY workspaces/utils/tsconfig*.json ./workspaces/utils/
+COPY workspaces/utils/package.json ./workspaces/utils/
+COPY workspaces/utils/src ./workspaces/utils/src
+
+COPY workspaces/auth-api/.swcrc ./workspaces/auth-api/
+COPY workspaces/auth-api/tsconfig.json ./workspaces/auth-api/
+COPY workspaces/auth-api/package.json ./workspaces/auth-api/
+COPY workspaces/auth-api/src ./workspaces/auth-api/src
+
+RUN node .yarn/releases/yarn-3.8.2.cjs workspaces focus @mgtitimoli/auth-api @mgtitimoli/utils
+
+RUN node .yarn/releases/yarn-3.8.2.cjs workspace @mgtitimoli/utils build
+RUN node .yarn/releases/yarn-3.8.2.cjs workspace @mgtitimoli/auth-api build
+
+FROM base AS production
+
+RUN apt-get update \
+  && apt-get install --yes --no-install-recommends dumb-init \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY .yarnrc.yml ./
+COPY package.json yarn.lock ./
+
+# We are doing this to use the cache of the installation performed in the
+# builder stage
+COPY --from=builder /app/.yarn ./.yarn
+
+COPY workspaces/eslint-config/package.json ./workspaces/eslint-config/
+
+COPY workspaces/utils/package.json ./workspaces/utils/
+COPY --from=builder /app/workspaces/utils/dist ./workspaces/utils/dist
+
+COPY workspaces/auth-api/package.json ./workspaces/auth-api/
+COPY --from=builder /app/workspaces/auth-api/dist ./workspaces/auth-api/dist
+
+ENV TZ=UTC
+
+RUN node .yarn/releases/yarn-3.8.2.cjs workspaces focus @mgtitimoli/auth-api @mgtitimoli/utils --production
+
+WORKDIR /app/workspaces/auth-api
+
+EXPOSE 3001
+
+USER node
+
+ENTRYPOINT ["dumb-init", "--", "node", "--enable-source-maps", "dist/serve.js"]

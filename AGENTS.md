@@ -1,40 +1,45 @@
 # Agent instructions
 
+This is a monorepo with the following workspaces:
+
+- `auth-api`: REST API for users and sessions (see
+  [its AGENTS.md](./workspaces/auth-api/AGENTS.md))
+- `eslint-config`: ESLint and Prettier configuration
+- `utils`: generic utilities (see [its AGENTS.md](./workspaces/utils/AGENTS.md))
+
+Generic utilities live in `utils`; workspace-specific utilities live in each
+workspace's `src/utils`.
+
 ## Conventions
 
-You must follow [docs/TYPESCRIPT_CONVENTIONS.md](docs/TYPESCRIPT_CONVENTIONS.md),
+You must follow [docs/TYPESCRIPT_CONVENTIONS.md](./docs/TYPESCRIPT_CONVENTIONS.md),
 with these project rules on top:
 
 - Error classes extending `CustomError` are the only classes allowed.
-- Hono middleware factories are named with nouns (`sessionMiddleware(options)`),
-  like Hono's own (`cors()`, `logger()`).
-- Return types are inferred, except for route handlers (`Promise<Response>`
-  derived from the route definition), `create…From` mappers, exported functions
-  of `auth-utils`, and recursive functions.
-- Database tables are named in the plural.
-- Repository and service functions take a single params object that includes
-  `database`.
-- Routes only call services; services without logic re-export the repository
-  function.
-- No SQL joins: each repository function queries a single table.
-- Repositories never return database rows: each table has a domain type and a
-  `create…From` mapper.
-- Never use `selectAll()` / `returningAll()`: select the columns explicitly
-  using the column-name modules.
+- Return types are inferred, except for recursive functions (workspaces add
+  their own exceptions).
+- Re-exports (barrels and services without logic) use `export *` /
+  `export type *`, never `export {symbol} from`.
 
-## Repository layout
+## Linting
 
-- `workspaces/*`: one workspace per package.
-- Generic utilities live in `auth-utils` (each folder is a future standalone
-  package); app-specific utilities live in each app's `src/utils`.
-- API layers: routers → services → repositories → database.
+To lint a workspace and fix all auto-fixable issues, run
+`yarn <workspace>:run lint --fix` (for example, `yarn auth-api:run lint --fix`).
 
-## Commands
+To lint all workspaces, run `yarn run-all lint --fix`.
 
-- Lint: `yarn run-all lint`
-- Type checking: `yarn run-all check-types:all`
+## Type checking
 
-Both succeed silently: check the exit code.
+To check the types of a workspace, run `yarn <workspace>:run check-types:all`
+(for example, `yarn auth-api:run check-types:all`).
+
+To check the types of all workspaces, run `yarn run-all check-types:all`.
+
+Workspaces consume each other's `dist`, so build the packages first
+(`yarn build-packages`) if they changed.
+
+**Note:** these commands produce **no output on success**: check the exit code
+(`echo $?`) to confirm success.
 
 ## Commits
 

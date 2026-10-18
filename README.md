@@ -30,20 +30,34 @@ yarn install
 
 ## Workspaces
 
-| Workspace | Description |
-|---|---|
-| [`eslint-config`](workspaces/eslint-config) | ESLint and Prettier configuration shared by the other workspaces |
+- [auth-api](./workspaces/auth-api): REST API for users and sessions
+- [eslint-config](./workspaces/eslint-config): ESLint and Prettier configuration
+- [utils](./workspaces/utils): generic utilities
 
-## Linting
-
-Lint every workspace (Prettier runs through ESLint):
+## Development
 
 ```sh
-yarn run-all lint
+yarn auth-api:run env:use local
+yarn watch
 ```
 
-To lint a single workspace, use its `<workspace>:run` script, for example
-`yarn eslint-config:run lint`.
+`yarn watch` rebuilds the packages and runs the API, restarting it on every
+change (see [auth-api](./workspaces/auth-api) for its configuration).
+
+## Scripts
+
+| Script | Description |
+|---|---|
+| `watch` | Runs every workspace in watch mode |
+| `build-all` | Builds every workspace |
+| `build-packages` | Builds the packages other workspaces depend on |
+| `run-all` | Runs the given script in every workspace (for example `yarn run-all lint`) |
+| `run-all-parallel` | Same as `run-all`, in parallel |
+| `<workspace>:run` | Runs the given script in a workspace (for example `yarn auth-api:run build`) |
+| `setup` | Installs the git hooks |
+
+Type checking (`yarn run-all check-types:all`) needs the packages built first
+(`yarn build-packages`), because workspaces consume each other's `dist`.
 
 ## Contributing
 
@@ -59,11 +73,5 @@ with a sentence-case subject (for example, `feat: Add sign-in page`). The
 `pre-commit` hook lints the staged files with
 [lint-staged](https://github.com/lint-staged/lint-staged).
 
-The code follows the [TypeScript conventions](docs/TYPESCRIPT_CONVENTIONS.md);
-[AGENTS.md](AGENTS.md) lists the project-specific rules.
-
-## Continuous integration
-
-GitHub Actions (`.github/workflows/ci.yml`) validates every pull request and
-every push to `main`: it installs the dependencies, then type-checks and lints
-every workspace.
+The code follows the [TypeScript conventions](./docs/TYPESCRIPT_CONVENTIONS.md);
+[AGENTS.md](./AGENTS.md) lists the project-specific rules.

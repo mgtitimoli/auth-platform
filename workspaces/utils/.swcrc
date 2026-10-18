@@ -1,0 +1,22 @@
+{
+  "$schema": "https://swc.rs/schema.json",
+  "jsc": {
+    "baseUrl": ".",
+    "experimental": {
+      "keepImportAttributes": true
+    },
+    "externalHelpers": true,
+    "parser": {
+      "syntax": "typescript"
+    },
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "target": "es2024"
+  },
+  "module": {
+    "resolveFully": true,
+    "type": "es6"
+  },
+  "sourceMaps": true
+}

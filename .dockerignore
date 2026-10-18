@@ -1,0 +1,20 @@
+# The Dockerfiles copy exactly what they need, so nothing has to be ignored for
+# correctness; this only shrinks the build context to speed up builds.
+
+.git
+.github
+.husky
+.yarn/cache
+.yarn/install-state.gz
+commitlint.config.cjs
+docs
+lint-staged.config.js
+
+**/*.md
+**/*.test.ts
+**/dist
+**/eslint.config.js
+**/logs
+**/node_modules
+
+workspaces/*/.env*
