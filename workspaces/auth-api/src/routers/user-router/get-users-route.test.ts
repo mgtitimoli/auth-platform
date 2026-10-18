@@ -1,19 +1,10 @@
-import {userSchema} from "@mgtitimoli/auth-domain/domain-schema";
 import {ensureIsDefined} from "@mgtitimoli/utils/validation";
 import {describe, expect, it} from "vitest";
-import {z} from "zod";
 
 import {router} from "@/router";
 import {createSignUpInput, signUp} from "@/utils/testing";
 
-const getUsersSucceededResponseSchema = z.object({
-  data: z.array(userSchema),
-  pagination: z.object({
-    limit: z.number(),
-    offset: z.number(),
-    total: z.number()
-  })
-});
+import {getUsersSucceededResponseSchema} from "./get-users-route";
 
 const userCount = 8;
 

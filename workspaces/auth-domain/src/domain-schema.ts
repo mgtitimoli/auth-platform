@@ -1,3 +1,4 @@
+import {hasEntries} from "@mgtitimoli/utils/object";
 import {z} from "zod";
 
 import {userStatusSchema} from "./user-status";
@@ -11,6 +12,8 @@ type Session = z.infer<typeof sessionSchema>;
 type SignInInput = z.infer<typeof signInInputSchema>;
 
 type SignUpInput = z.infer<typeof signUpInputSchema>;
+
+type UpdateUserInput = z.infer<typeof updateUserInputSchema>;
 
 type User = z.infer<typeof userSchema>;
 
@@ -79,6 +82,16 @@ const createUserInputSchema = z
   })
   .meta({ref: "CreateUserInput"});
 
+const updateUserInputSchema = z
+  .strictObject({
+    email: emailSchema.optional(),
+    firstName: nameSchema.optional(),
+    lastName: nameSchema.optional(),
+    status: userStatusSchema.optional()
+  })
+  .refine(hasEntries, {message: "At least one field must be given"})
+  .meta({ref: "UpdateUserInput"});
+
 const signUpInputSchema = z
   .object({
     email: emailSchema,
@@ -103,6 +116,7 @@ export {
   sessionSchema,
   signInInputSchema,
   signUpInputSchema,
+  updateUserInputSchema,
   userCredentialSchema,
   userSchema
 };
@@ -112,6 +126,7 @@ export type {
   Session,
   SignInInput,
   SignUpInput,
+  UpdateUserInput,
   User,
   UserCredential
 };

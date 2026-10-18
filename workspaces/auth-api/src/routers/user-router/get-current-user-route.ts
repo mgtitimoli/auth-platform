@@ -14,6 +14,11 @@ import {sessionCookieSecurity} from "@/utils/session-cookie/session-cookie";
 
 type Response = TypeResponseFrom<(typeof routeDefinition)["responses"]>;
 
+const getCurrentUserSucceededResponseSchema = createSucceededResponseSchema(
+  userSchema,
+  "GetCurrentUserSucceededResponse"
+);
+
 const routeDefinition = {
   description: "Gets the user of the current session",
   operationId: "getCurrentUser",
@@ -21,10 +26,7 @@ const routeDefinition = {
     200: {
       content: {
         "application/json": {
-          schema: createSucceededResponseSchema(
-            userSchema,
-            "GetCurrentUserSucceededResponse"
-          )
+          schema: getCurrentUserSucceededResponseSchema
         }
       }
     },
@@ -55,4 +57,4 @@ const attachTo = (router: Hono<HonoEnv>) =>
     }
   );
 
-export {attachTo};
+export {attachTo, getCurrentUserSucceededResponseSchema};

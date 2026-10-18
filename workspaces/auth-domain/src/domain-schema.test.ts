@@ -4,7 +4,8 @@ import {
   createUserInputSchema,
   passwordSchema,
   signInInputSchema,
-  signUpInputSchema
+  signUpInputSchema,
+  updateUserInputSchema
 } from "./domain-schema";
 
 const getIssueMessages = (password: string) =>
@@ -110,6 +111,28 @@ describe("createUserInputSchema", () => {
         lastName: "Hopper",
         password: "short"
       }).success
+    ).toBe(false);
+  });
+});
+
+describe("updateUserInputSchema", () => {
+  it("accepts any subset of the updatable fields", () => {
+    expect(updateUserInputSchema.parse({status: "inactive"})).toEqual({
+      status: "inactive"
+    });
+  });
+
+  it("rejects an empty input", () => {
+    expect(
+      updateUserInputSchema
+        .safeParse({})
+        .error?.issues.map(issue => issue.message)
+    ).toEqual(["At least one field must be given"]);
+  });
+
+  it("rejects fields that can't be updated", () => {
+    expect(
+      updateUserInputSchema.safeParse({firstName: "Ada", password: "x"}).success
     ).toBe(false);
   });
 });

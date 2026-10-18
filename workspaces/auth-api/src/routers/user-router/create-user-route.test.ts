@@ -1,10 +1,10 @@
-import {userSchema} from "@mgtitimoli/auth-domain/domain-schema";
-import {failedResponseSchema} from "@mgtitimoli/utils/hono/response";
+import {getErrorFrom} from "@mgtitimoli/utils/hono/response";
 import {describe, expect, it} from "vitest";
-import {z} from "zod";
 
 import {router} from "@/router";
 import {createSignUpInput, postJson, signUp} from "@/utils/testing";
+
+import {createUserSucceededResponseSchema} from "./create-user-route";
 
 const createUserInput = {
   email: "grace@example.com",
@@ -12,8 +12,6 @@ const createUserInput = {
   lastName: "Hopper",
   password: "compiler1!"
 };
-
-const createUserSucceededResponseSchema = z.object({data: userSchema});
 
 const createUser = (body: unknown, cookie: string) =>
   postJson("/users", body, cookie);
@@ -66,9 +64,9 @@ describe("POST /users", () => {
     );
 
     expect(response.status).toBe(409);
-    expect(failedResponseSchema.parse(await response.json())).toEqual({
-      error: "A user with this email already exists"
-    });
+    expect(await getErrorFrom(response)).toBe(
+      "A user with this email already exists"
+    );
   });
 
   it("rejects a password that doesn't meet the policy", async () => {

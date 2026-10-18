@@ -23,6 +23,11 @@ const defaultLimit = 6;
 
 const querySchema = createPaginationQuerySchema(maxLimit, defaultLimit);
 
+const getUsersSucceededResponseSchema = createPaginatedResponseSchema(
+  z.array(userSchema),
+  "GetUsersSucceededResponse"
+);
+
 const routeDefinition = {
   description: "Gets a page of users, ordered by creation",
   operationId: "getUsers",
@@ -30,10 +35,7 @@ const routeDefinition = {
     200: {
       content: {
         "application/json": {
-          schema: createPaginatedResponseSchema(
-            z.array(userSchema),
-            "GetUsersSucceededResponse"
-          )
+          schema: getUsersSucceededResponseSchema
         }
       }
     },
@@ -64,4 +66,4 @@ const attachTo = (router: Hono<HonoEnv>) =>
     }
   );
 
-export {attachTo};
+export {attachTo, getUsersSucceededResponseSchema};

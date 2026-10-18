@@ -47,6 +47,9 @@ const createPaginatedResponseSchema = <TZodType extends ZodType>(
       ref
     });
 
+const getErrorFrom = async (response: Response): Promise<string | undefined> =>
+  failedResponseSchema.safeParse(await response.json()).data?.error;
+
 const createFailedResponseFrom = (
   httpStatusCode: HttpStatusCode
 ): FailedResponse => ({
@@ -57,5 +60,6 @@ export {
   createFailedResponseFrom,
   createPaginatedResponseSchema,
   createSucceededResponseSchema,
-  failedResponseSchema
+  failedResponseSchema,
+  getErrorFrom
 };

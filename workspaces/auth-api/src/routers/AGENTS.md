@@ -51,6 +51,11 @@ Request and response schemas live in `@mgtitimoli/auth-domain/domain-schema`.
 Route-specific ones (path parameters, a response shape used only here) are
 declared in the route file, with `.meta({ref})` when they appear in OpenAPI.
 
+The success response schema is a const (`getUsersSucceededResponseSchema`),
+used by `routeDefinition` and exported next to `attachTo`, so the route's tests
+parse responses with the exact schema the route documents. Tests read error
+bodies with `getErrorFrom` from `@mgtitimoli/utils/hono/response`.
+
 ### 4. Route Definition (OpenAPI)
 
 ```ts
@@ -105,6 +110,9 @@ const attachTo = (router: Hono<HonoEnv>) =>
 
 export {attachTo};
 ```
+
+Routes with a response body export their success schema too
+(`export {attachTo, createUserSucceededResponseSchema};`).
 
 ## Router Composition
 

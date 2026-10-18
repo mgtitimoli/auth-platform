@@ -1,4 +1,4 @@
-import {failedResponseSchema} from "@mgtitimoli/utils/hono/response";
+import {getErrorFrom} from "@mgtitimoli/utils/hono/response";
 import {beforeEach, describe, expect, it} from "vitest";
 
 import {database} from "@/database/database";
@@ -38,9 +38,7 @@ const getLoginsCounter = async (userId: string) => {
 
 const expectInvalidCredentials = async (response: Response) => {
   expect(response.status).toBe(401);
-  expect(failedResponseSchema.parse(await response.json())).toEqual({
-    error: "Invalid email or password"
-  });
+  expect(await getErrorFrom(response)).toBe("Invalid email or password");
   expect(response.headers.get("Set-Cookie")).toBeNull();
 };
 
@@ -90,9 +88,7 @@ describe("POST /auth/sign-in", () => {
     const response = await signIn(signInInput);
 
     expect(response.status).toBe(403);
-    expect(failedResponseSchema.parse(await response.json())).toEqual({
-      error: "The user is inactive"
-    });
+    expect(await getErrorFrom(response)).toBe("The user is inactive");
   });
 
   it("doesn't reveal that a user is inactive without the right password", async () => {

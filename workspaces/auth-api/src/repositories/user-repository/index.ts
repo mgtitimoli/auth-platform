@@ -5,3 +5,4 @@ export * from "./get-user";
 export * from "./get-user-by-email";
 export * from "./get-users";
 export * from "./increment-logins-counter";
+export * from "./update-user";

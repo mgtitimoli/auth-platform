@@ -1,6 +1,7 @@
 export * from "./are-equal";
 export * from "./compare-using";
 export * from "./get-entries";
+export * from "./has-entries";
 export * from "./has-property";
 export * from "./is-nullish-entry";
 export * from "./map-values";

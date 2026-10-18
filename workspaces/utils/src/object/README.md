@@ -198,6 +198,21 @@ if (firstEntry[0] === "age") {
 }
 ```
 
+### hasEntries
+
+#### Description
+
+Function that returns a boolean indicating if the given object has at least one entry.
+
+#### Example
+
+```ts
+import {hasEntries} from "@mgtitimoli/utils/object";
+
+console.log(hasEntries({k0: 0})); // true
+console.log(hasEntries({})); // false
+```
+
 ### hasProperty
 
 #### Description

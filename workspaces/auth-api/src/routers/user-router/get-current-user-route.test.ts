@@ -1,14 +1,12 @@
-import {userSchema} from "@mgtitimoli/auth-domain/domain-schema";
-import {failedResponseSchema} from "@mgtitimoli/utils/hono/response";
+import {getErrorFrom} from "@mgtitimoli/utils/hono/response";
 import {describe, expect, it} from "vitest";
-import {z} from "zod";
 
 import {router} from "@/router";
 import {createSignUpInput, signUp} from "@/utils/testing";
 
-const signUpInput = createSignUpInput();
+import {getCurrentUserSucceededResponseSchema} from "./get-current-user-route";
 
-const getCurrentUserSucceededResponseSchema = z.object({data: userSchema});
+const signUpInput = createSignUpInput();
 
 const getCurrentUser = (cookie?: string) =>
   router.request("/users/me", {
@@ -35,9 +33,7 @@ describe("GET /users/me", () => {
     const response = await getCurrentUser();
 
     expect(response.status).toBe(401);
-    expect(failedResponseSchema.parse(await response.json())).toEqual({
-      error: "Unauthorized"
-    });
+    expect(await getErrorFrom(response)).toBe("Unauthorized");
   });
 
   it("rejects an unknown session", async () => {

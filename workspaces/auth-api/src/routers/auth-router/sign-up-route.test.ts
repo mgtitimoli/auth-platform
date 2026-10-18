@@ -1,4 +1,4 @@
-import {failedResponseSchema} from "@mgtitimoli/utils/hono/response";
+import {getErrorFrom} from "@mgtitimoli/utils/hono/response";
 import * as withPassword from "@mgtitimoli/utils/password";
 import {describe, expect, it} from "vitest";
 
@@ -87,16 +87,16 @@ describe("POST /auth/sign-up", () => {
     const response = await signUp({...signUpInput, firstName: "Augusta"});
 
     expect(response.status).toBe(409);
-    expect(await response.json()).toEqual({
-      error: "A user with this email already exists"
-    });
+    expect(await getErrorFrom(response)).toBe(
+      "A user with this email already exists"
+    );
     expect(await getUserCount()).toBe(1);
   });
 
   it("rejects a password that doesn't meet the policy, listing every rule", async () => {
     const response = await signUp({...signUpInput, password: "short"});
 
-    const {error} = failedResponseSchema.parse(await response.json());
+    const error = await getErrorFrom(response);
 
     expect(response.status).toBe(400);
     expect(error).toContain("Password must be at least 8 characters long");
