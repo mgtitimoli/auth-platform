@@ -79,12 +79,36 @@ import {loggerMiddleware} from "@mgtitimoli/utils/hono/middlewares";
 router.use(loggerMiddleware({isJsonLogger: false, logger}));
 ```
 
+### validate
+
+#### Description
+
+Function that creates a middleware that validates the given request target
+(`json`, `query`, `param`, …) with the given schema, responding 400 with every
+issue in the message when validation fails. It also documents the schema in
+the OpenAPI spec.
+
+#### Example
+
+```ts
+import {validate} from "@mgtitimoli/utils/hono/validate";
+
+router.post("/", validate("json", signUpInputSchema), async c => {
+  const input = c.req.valid("json");
+
+  // ...
+});
+```
+
 ## Modules
 
 - [context](./context.ts)
+- [cursor](./cursor)
 - [health-route](./health-route.ts)
+- [query](./query.ts)
 - [request-body-definition](./request-body-definition.ts)
 - [response](./response.ts)
 - [response-definition](./response-definition.ts)
+- [route](./route.ts)
 - [route-definition](./route-definition.ts)
 - [server](./server.ts)

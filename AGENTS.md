@@ -4,6 +4,8 @@ This is a monorepo with the following workspaces:
 
 - `auth-api`: REST API for users and sessions (see
   [its AGENTS.md](./workspaces/auth-api/AGENTS.md))
+- `auth-domain`: domain schemas, types and errors shared by `auth-api` and the
+  backoffice (see [its AGENTS.md](./workspaces/auth-domain/AGENTS.md))
 - `eslint-config`: ESLint and Prettier configuration
 - `utils`: generic utilities (see [its AGENTS.md](./workspaces/utils/AGENTS.md))
 
@@ -40,6 +42,12 @@ Workspaces consume each other's `dist`, so build the packages first
 
 **Note:** these commands produce **no output on success**: check the exit code
 (`echo $?`) to confirm success.
+
+## Testing
+
+To run the tests of a workspace, run `yarn <workspace>:run test`; for all
+workspaces, `yarn run-all test`. auth-api's tests need Docker (they start their
+own database).
 
 ## Commits
 

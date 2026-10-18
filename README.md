@@ -33,6 +33,7 @@ yarn install
 ## Workspaces
 
 - [auth-api](./workspaces/auth-api): REST API for users and sessions
+- [auth-domain](./workspaces/auth-domain): domain schemas, types and errors
 - [eslint-config](./workspaces/eslint-config): ESLint and Prettier configuration
 - [utils](./workspaces/utils): generic utilities
 
@@ -40,7 +41,8 @@ yarn install
 
 ```sh
 yarn auth-api:run env:use local
-yarn auth-api:run database:start
+yarn auth-api:run database:start local
+yarn auth-api:run database:migrate-all
 yarn watch
 ```
 
@@ -59,8 +61,10 @@ change (see [auth-api](./workspaces/auth-api) for its configuration).
 | `<workspace>:run` | Runs the given script in a workspace (for example `yarn auth-api:run build`) |
 | `setup` | Installs the git hooks |
 
-Type checking (`yarn run-all check-types:all`) needs the packages built first
-(`yarn build-packages`), because workspaces consume each other's `dist`.
+Type checking (`yarn run-all check-types:all`) and tests (`yarn run-all test`)
+need the packages built first (`yarn build-packages`), because workspaces
+consume each other's `dist`. auth-api's tests start their own database (see
+[auth-api](./workspaces/auth-api)).
 
 ## Contributing
 

@@ -18,14 +18,20 @@ COPY workspaces/utils/tsconfig*.json ./workspaces/utils/
 COPY workspaces/utils/package.json ./workspaces/utils/
 COPY workspaces/utils/src ./workspaces/utils/src
 
+COPY workspaces/auth-domain/.swcrc ./workspaces/auth-domain/
+COPY workspaces/auth-domain/tsconfig*.json ./workspaces/auth-domain/
+COPY workspaces/auth-domain/package.json ./workspaces/auth-domain/
+COPY workspaces/auth-domain/src ./workspaces/auth-domain/src
+
 COPY workspaces/auth-api/.swcrc ./workspaces/auth-api/
 COPY workspaces/auth-api/tsconfig.json ./workspaces/auth-api/
 COPY workspaces/auth-api/package.json ./workspaces/auth-api/
 COPY workspaces/auth-api/src ./workspaces/auth-api/src
 
-RUN node .yarn/releases/yarn-3.8.2.cjs workspaces focus @mgtitimoli/auth-api @mgtitimoli/utils
+RUN node .yarn/releases/yarn-3.8.2.cjs workspaces focus @mgtitimoli/auth-api @mgtitimoli/auth-domain @mgtitimoli/utils
 
 RUN node .yarn/releases/yarn-3.8.2.cjs workspace @mgtitimoli/utils build
+RUN node .yarn/releases/yarn-3.8.2.cjs workspace @mgtitimoli/auth-domain build
 RUN node .yarn/releases/yarn-3.8.2.cjs workspace @mgtitimoli/auth-api build
 
 FROM base AS production
@@ -48,12 +54,15 @@ COPY workspaces/eslint-config/package.json ./workspaces/eslint-config/
 COPY workspaces/utils/package.json ./workspaces/utils/
 COPY --from=builder /app/workspaces/utils/dist ./workspaces/utils/dist
 
+COPY workspaces/auth-domain/package.json ./workspaces/auth-domain/
+COPY --from=builder /app/workspaces/auth-domain/dist ./workspaces/auth-domain/dist
+
 COPY workspaces/auth-api/package.json ./workspaces/auth-api/
 COPY --from=builder /app/workspaces/auth-api/dist ./workspaces/auth-api/dist
 
 ENV TZ=UTC
 
-RUN node .yarn/releases/yarn-3.8.2.cjs workspaces focus @mgtitimoli/auth-api @mgtitimoli/utils --production
+RUN node .yarn/releases/yarn-3.8.2.cjs workspaces focus @mgtitimoli/auth-api @mgtitimoli/auth-domain @mgtitimoli/utils --production
 
 WORKDIR /app/workspaces/auth-api
 

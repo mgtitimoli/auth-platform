@@ -5,11 +5,15 @@ self-contained, so it can later be published as a standalone package.
 
 ## Utilities
 
+- [error](./src/error)
 - [hono](./src/hono)
 - [http](./src/http)
+- [kysely](./src/kysely)
 - [logging](./src/logging)
 - [object](./src/object)
+- [password](./src/password)
 - [validation](./src/validation)
+- [zod](./src/zod)
 
 ## Usage
 
@@ -20,7 +24,7 @@ import {getEntries} from "@mgtitimoli/utils/object";
 import * as withServer from "@mgtitimoli/utils/hono/server";
 ```
 
-Framework libraries (Hono, pino, zod) are optional peer dependencies: install the
+Framework libraries (Hono, Kysely, pino, zod) are optional peer dependencies: install the
 ones used by the utilities you import.
 
 ## Scripts
@@ -30,6 +34,7 @@ ones used by the utilities you import.
 | `build` | Builds the workspace into `dist` |
 | `watch` | Rebuilds the workspace on every change |
 | `clean` | Removes `dist` |
+| `test` | Runs the tests |
 | `lint` | Lints the workspace |
 | `check-types:all` | Type-checks the workspace |
 | `check-types:files` | Type-checks the given files |

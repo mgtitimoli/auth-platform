@@ -3,6 +3,7 @@ import type {Context} from "hono";
 import {matchedRoutes} from "hono/route";
 
 import type {ErrorHttpStatusCode} from "@/http/http-status-code";
+import {isObject} from "@/validation/is-object";
 
 import {createFailedResponseFrom} from "./response";
 import type {RouteDescriptor} from "./types";
@@ -26,7 +27,12 @@ const matchAny = (c: Context, routeDescriptors: RouteDescriptor[]) => {
   );
 };
 
-const getRemoteAddress = (c: Context) => getConnInfo(c).remote.address;
+// The request only has a Node.js connection when served by @hono/node-server
+// (not in requests made with app.request, as tests do)
+const getRemoteAddress = (c: Context) =>
+  isObject(c.env) && "incoming" in c.env
+    ? getConnInfo(c).remote.address
+    : undefined;
 
 const getForwardedFor = (c: Context) =>
   c.req.header("x-forwarded-for")?.split(",")[0];

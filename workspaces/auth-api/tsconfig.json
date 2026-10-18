@@ -19,5 +19,5 @@
   },
   "exclude": ["node_modules"],
   "extends": "../../node_modules/@tsconfig/strictest/tsconfig.json",
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "vitest.*.ts"]
 }

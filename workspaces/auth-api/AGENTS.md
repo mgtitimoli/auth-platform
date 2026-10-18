@@ -7,7 +7,9 @@ REST API for users and sessions.
 - **Framework**: Hono with @hono/node-server
 - **Validation**: Zod schemas
 - **Documentation**: OpenAPI via hono-openapi
+- **Database**: Kysely with PostgreSQL (`pg`)
 - **Logging**: pino via hono-pino
+- **Testing**: Vitest against a real PostgreSQL (no mocks)
 
 ## Architecture
 
@@ -30,36 +32,59 @@ Layered architecture: Routers → Services → Repositories → Database
 
 ### Safety
 
-**Before running any database command**, check where the `.env` symlink points:
+Database scripts that talk to a database take an optional environment
+(`yarn auth-api:run database:migrate-all test`) and use `.env.<environment>`;
+without one they use `.env`. **Before running any of them without an
+environment**, check where the `.env` symlink points:
 
 ```bash
 yarn auth-api:run env:which
 ```
 
-`local` is the docker-compose database: safe to proceed. For any other
-environment, ask the user before any destructive action.
+`local` and `test` are the docker-compose databases: safe to proceed. For any
+other environment, ask the user before any destructive action (rollbacks,
+deletes).
 
 ### Running queries
 
 Use the `database:cli` script to open a `psql` session connected to the
-database defined in `.env`:
+database of the given environment (or of `.env`):
 
 ```bash
-yarn auth-api:run database:cli
+yarn auth-api:run database:cli local
 ```
 
 When running non-interactive queries, pass `-X` to ignore `.psqlrc` and get
 consistent output regardless of local display settings (for example,
-`yarn auth-api:run database:cli -X -Atc "select 1"`).
+`yarn auth-api:run database:cli local -X -Atc "select 1"`).
 
-## Testing the API
+See [src/database/AGENTS.md](./src/database/AGENTS.md) for schema and
+migration conventions.
+
+## Testing
+
+`yarn auth-api:run test` starts the test database (`database:start test`, port
+5433), migrates it once (`vitest.global-setup.ts`) and deletes every row before
+each test (`vitest.setup.ts`). Test files run one at a time, since they share
+the database.
+
+- Tests never mock the database: route tests call the router in-process with
+  `router.request(...)` and check the database through Kysely.
+- Parse response bodies with the domain schemas (`userSchema`,
+  `failedResponseSchema`, …), so tests also check the documented shape.
+- Run a single test with `yarn auth-api:run vitest run -t "<name>"`. Logs are
+  silent in tests (`LOG_LEVEL=silent` in `.env.test`): set it to `error` to see
+  the cause of a 500.
+
+## Testing the API by hand
 
 The local server is started by the user (`yarn watch` at the root).
 
 **No trailing slashes.** Hono does not match routes with a trailing slash:
 `GET /health/` returns 404, `GET /health` works.
 
-**Unauthenticated endpoints:** `/health`, `/openapi` and `/swagger`. Use
+**Unauthenticated endpoints:** `/health`, `/openapi`, `/swagger` and
+`/auth/sign-up`. Use
 `/health` to check if the server is running and `/openapi` to inspect schemas.
 
 ## Logs
@@ -83,6 +108,26 @@ tail -f workspaces/auth-api/logs/auth-api.log
 
 ## Directory Structure
 
+### `src/database/`
+
+Kysely setup, schema types, column-name modules and migrations. See
+[src/database/AGENTS.md](./src/database/AGENTS.md).
+
+### `src/repositories/`
+
+Data access: one folder per table, one file per function, and an `export *`
+barrel.
+
+### `src/services/`
+
+Business logic: one folder per service, one file per function, and an
+`export *` barrel. Services compose repositories, and other services, in
+transactions with `startTransactionIfNeeded`.
+
+### `src/routers/`
+
+HTTP routes. See [src/routers/AGENTS.md](./src/routers/AGENTS.md).
+
 ### `src/utils/`
 
-API-specific utilities: environment name and variables.
+API-specific utilities: environment name and variables, and the session cookie.

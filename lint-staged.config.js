@@ -10,6 +10,7 @@ const getPackageConfigs = packageName => ({
 
 const lintStagedConfig = {
   ...getPackageConfigs("auth-api"),
+  ...getPackageConfigs("auth-domain"),
   ...getPackageConfigs("utils"),
   ...getPackageConfigs("eslint-config")
 };

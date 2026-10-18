@@ -30,3 +30,7 @@ jobs:
 
       - name: Lint
         run: yarn run-all-parallel lint
+
+      # auth-api's tests start their own database with docker compose
+      - name: Test
+        run: yarn run-all test

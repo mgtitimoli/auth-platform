@@ -8,9 +8,13 @@ type EnvironmentVariables = z.infer<typeof environmentVariablesSchema>;
 
 const environmentVariablesSchema = z.object({
   AUTH_API_PORT: z.number().int().positive(),
+  AUTH_DATABASE_URL: z.url({protocol: /^postgres(ql)?$/}),
   ENVIRONMENT_NAME: environmentNameSchema,
   LOG_LEVEL: logLevelSchema.default("info"),
   LOGS_RETAINED: z.boolean(),
+  // Unset locally: the cookie is then sent only to the API's own host
+  SESSION_COOKIE_DOMAIN: z.string().min(1).optional(),
+  SESSION_COOKIE_SECURE: z.boolean(),
   // Timestamps without a time zone are read back against the process zone, so
   // anything but UTC shifts them silently.
   TZ: z.literal("UTC")
@@ -18,9 +22,12 @@ const environmentVariablesSchema = z.object({
 
 const environmentVariables = environmentVariablesSchema.parse({
   AUTH_API_PORT: mapIfDefined(process.env["AUTH_API_PORT"], Number),
+  AUTH_DATABASE_URL: process.env["AUTH_DATABASE_URL"],
   ENVIRONMENT_NAME: process.env["ENVIRONMENT_NAME"],
   LOG_LEVEL: process.env["LOG_LEVEL"],
   LOGS_RETAINED: process.env["LOGS_RETAINED"] === "true",
+  SESSION_COOKIE_DOMAIN: process.env["SESSION_COOKIE_DOMAIN"],
+  SESSION_COOKIE_SECURE: process.env["SESSION_COOKIE_SECURE"] === "true",
   TZ: process.env["TZ"]
 });
 

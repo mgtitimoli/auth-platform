@@ -25,12 +25,19 @@ Each `src/<name>` folder is a future standalone published package:
 
 Every folder has a `README.md`:
 
-- top-level types and functions go under `## Types` and `## Functions`, each as
-  `### name` → `#### Description` → `#### Example`;
+- top-level types, classes (errors) and functions go under `## Types`,
+  `## Classes` and `## Functions`, each as `### name` → `#### Description` →
+  `#### Example`;
 - noun modules (data-oriented modules imported as `withX`) are listed under
   `## Modules` as links to their files only (`- [http-method](./http-method.ts)`).
 
 The workspace `README.md` links to every folder.
+
+## Testing
+
+Tests live next to the code they test (`get-hash.ts` → `get-hash.test.ts`),
+import from `"vitest"` explicitly, and run with `yarn utils:run test`. They are
+excluded from `dist` (`.swcrc` and `tsconfig.build.json`).
 
 ## Building
 

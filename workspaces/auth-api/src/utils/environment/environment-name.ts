@@ -5,7 +5,8 @@ type EnvironmentName = (typeof environmentNames)[keyof typeof environmentNames];
 const environmentNames = {
   development: "development",
   local: "local",
-  production: "production"
+  production: "production",
+  test: "test"
 } as const;
 
 const environmentNameSchema = z.enum(Object.values(environmentNames));

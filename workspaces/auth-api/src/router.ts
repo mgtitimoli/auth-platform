@@ -8,8 +8,10 @@ import {Hono} from "hono";
 import {requestId} from "hono/request-id";
 import {openAPIRouteHandler} from "hono-openapi";
 
+import {database} from "./database/database";
 import type {HonoEnv} from "./hono-env";
 import {logger} from "./logger";
+import {authRouter} from "./routers/auth-router";
 import {environmentNames} from "./utils/environment/environment-name";
 import {environmentVariables} from "./utils/environment/environment-variables";
 
@@ -46,7 +48,15 @@ router.onError(
   })
 );
 
+router.use(async (c, next) => {
+  c.set("database", database);
+
+  await next();
+});
+
 healthRoute.attachTo(router);
+
+router.route("/auth", authRouter);
 
 router.get(
   openApiRoutePath,

@@ -4,21 +4,41 @@
   "type": "module",
   "description": "Generic utilities (each folder is a future standalone package)",
   "exports": {
+    "./error": {
+      "types": "./dist/error/index.d.ts",
+      "import": "./dist/error/index.js"
+    },
     "./hono": {
       "types": "./dist/hono/index.d.ts",
       "import": "./dist/hono/index.js"
+    },
+    "./hono/cursor": {
+      "types": "./dist/hono/cursor/index.d.ts",
+      "import": "./dist/hono/cursor/index.js"
     },
     "./hono/middlewares": {
       "types": "./dist/hono/middlewares/index.d.ts",
       "import": "./dist/hono/middlewares/index.js"
     },
+    "./kysely": {
+      "types": "./dist/kysely/index.d.ts",
+      "import": "./dist/kysely/index.js"
+    },
     "./object": {
       "types": "./dist/object/index.d.ts",
       "import": "./dist/object/index.js"
     },
+    "./password": {
+      "types": "./dist/password/index.d.ts",
+      "import": "./dist/password/index.js"
+    },
     "./validation": {
       "types": "./dist/validation/index.d.ts",
       "import": "./dist/validation/index.js"
+    },
+    "./zod": {
+      "types": "./dist/zod/index.d.ts",
+      "import": "./dist/zod/index.js"
     },
     "./*": {
       "types": "./dist/*.d.ts",
@@ -33,6 +53,7 @@
     "check-types:files": "tsc-files --noEmit",
     "clean": "rm -rf dist",
     "lint": "eslint",
+    "test": "vitest run",
     "watch": "yarn clean && concurrently --names swc,tsc,tsc-alias 'yarn watch:swc' 'yarn watch:tsc' 'yarn watch:tsc-alias'",
     "watch:swc": "swc src -d dist --strip-leading-paths --watch",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput --watch",
@@ -43,14 +64,19 @@
   },
   "peerDependencies": {
     "@hono/node-server": "^2.1.5",
+    "@standard-schema/spec": "^1.1.0",
     "hono": "^4.13.13",
     "hono-openapi": "^1.5.0",
     "hono-pino": "^0.10.3",
+    "kysely": "^0.29.7",
     "pino": "^10.4.0",
     "zod": "^4.6.7"
   },
   "peerDependenciesMeta": {
     "@hono/node-server": {
+      "optional": true
+    },
+    "@standard-schema/spec": {
       "optional": true
     },
     "hono": {
@@ -60,6 +86,9 @@
       "optional": true
     },
     "hono-pino": {
+      "optional": true
+    },
+    "kysely": {
       "optional": true
     },
     "pino": {
@@ -72,6 +101,7 @@
   "devDependencies": {
     "@hono/node-server": "^2.1.5",
     "@mgtitimoli/eslint-config": "workspace:^",
+    "@standard-schema/spec": "^1.1.0",
     "@swc/cli": "^0.8.1",
     "@swc/core": "^1.16.18",
     "@tsconfig/strictest": "^2.0.8",
@@ -81,10 +111,13 @@
     "hono": "^4.13.13",
     "hono-openapi": "^1.5.0",
     "hono-pino": "^0.10.3",
+    "kysely": "^0.29.7",
     "pino": "^10.4.0",
     "tsc-alias": "^1.9.8",
     "tsc-files": "^1.1.4",
     "typescript": "~6.0.3",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5",
     "zod": "^4.6.7"
   }
 }

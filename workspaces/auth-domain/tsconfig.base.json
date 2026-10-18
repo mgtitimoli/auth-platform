@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
+    "isolatedModules": true,
+    "lib": ["DOM", "ES2024"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "resolveJsonModule": true,
+    "target": "ES2024",
+    "types": [],
+    "verbatimModuleSyntax": true
+  },
+  "exclude": ["dist", "node_modules"],
+  "extends": "../../node_modules/@tsconfig/strictest/tsconfig.json"
+}
