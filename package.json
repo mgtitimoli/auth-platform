@@ -4,12 +4,13 @@
   "type": "module",
   "packageManager": "yarn@3.8.2",
   "engines": {
-    "node": ">=22.12"
+    "node": ">=22.22.1"
   },
   "workspaces": [
     "workspaces/*"
   ],
   "scripts": {
+    "eslint-config:run": "yarn workspace @mgtitimoli/eslint-config run",
     "run-all": "yarn workspaces foreach --verbose run",
     "run-all-parallel": "yarn workspaces foreach --parallel --verbose run",
     "setup": "yarn setup:husky",
@@ -18,6 +19,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0"
   }
 }

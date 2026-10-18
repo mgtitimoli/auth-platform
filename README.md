@@ -5,7 +5,7 @@ web application to sign up, sign in and manage users.
 
 ## Requirements
 
-- [Node.js](https://nodejs.org) 22.12 or later (the repository pins 24.22.0 in
+- [Node.js](https://nodejs.org) 22.22.1 or later (the repository pins 24.22.0 in
   `.tool-versions` for [asdf](https://asdf-vm.com) users; asdf is optional)
 - [Yarn](https://yarnpkg.com): any installed version works
 
@@ -28,6 +28,23 @@ Then install the dependencies:
 yarn install
 ```
 
+## Workspaces
+
+| Workspace | Description |
+|---|---|
+| [`eslint-config`](workspaces/eslint-config) | ESLint and Prettier configuration shared by the other workspaces |
+
+## Linting
+
+Lint every workspace (Prettier runs through ESLint):
+
+```sh
+yarn run-all lint
+```
+
+To lint a single workspace, use its `<workspace>:run` script, for example
+`yarn eslint-config:run lint`.
+
 ## Contributing
 
 Install the git hooks once after cloning:
@@ -38,7 +55,9 @@ yarn setup
 
 Commit messages follow [Conventional Commits](https://www.conventionalcommits.org)
 with a sentence-case subject (for example, `feat: Add sign-in page`). The
-`commit-msg` hook checks them with [commitlint](https://commitlint.js.org).
+`commit-msg` hook checks them with [commitlint](https://commitlint.js.org), and the
+`pre-commit` hook lints the staged files with
+[lint-staged](https://github.com/lint-staged/lint-staged).
 
 The code follows the [TypeScript conventions](docs/TYPESCRIPT_CONVENTIONS.md);
 [AGENTS.md](AGENTS.md) lists the project-specific rules.
