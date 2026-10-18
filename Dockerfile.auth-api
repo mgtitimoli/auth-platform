@@ -28,11 +28,11 @@ COPY workspaces/auth-api/tsconfig.json ./workspaces/auth-api/
 COPY workspaces/auth-api/package.json ./workspaces/auth-api/
 COPY workspaces/auth-api/src ./workspaces/auth-api/src
 
-RUN node .yarn/releases/yarn-3.8.2.cjs workspaces focus @mgtitimoli/auth-api @mgtitimoli/auth-domain @mgtitimoli/utils
+RUN yarn workspaces focus @mgtitimoli/auth-api @mgtitimoli/auth-domain @mgtitimoli/utils
 
-RUN node .yarn/releases/yarn-3.8.2.cjs workspace @mgtitimoli/utils build
-RUN node .yarn/releases/yarn-3.8.2.cjs workspace @mgtitimoli/auth-domain build
-RUN node .yarn/releases/yarn-3.8.2.cjs workspace @mgtitimoli/auth-api build
+RUN yarn workspace @mgtitimoli/utils build
+RUN yarn workspace @mgtitimoli/auth-domain build
+RUN yarn workspace @mgtitimoli/auth-api build
 
 FROM base AS production
 
@@ -62,7 +62,7 @@ COPY --from=builder /app/workspaces/auth-api/dist ./workspaces/auth-api/dist
 
 ENV TZ=UTC
 
-RUN node .yarn/releases/yarn-3.8.2.cjs workspaces focus @mgtitimoli/auth-api @mgtitimoli/auth-domain @mgtitimoli/utils --production
+RUN yarn workspaces focus @mgtitimoli/auth-api @mgtitimoli/auth-domain @mgtitimoli/utils --production
 
 WORKDIR /app/workspaces/auth-api
 

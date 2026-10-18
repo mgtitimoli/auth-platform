@@ -1,0 +1,51 @@
+FROM node:24-slim AS base
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+FROM base AS builder
+
+WORKDIR /app
+
+COPY .yarnrc.yml ./
+COPY .yarn/plugins ./.yarn/plugins
+COPY .yarn/releases ./.yarn/releases
+COPY package.json yarn.lock ./
+
+# Only its manifest is needed: auth-backoffice depends on it (for linting), so
+# yarn needs it to resolve the workspace graph
+COPY workspaces/eslint-config/package.json ./workspaces/eslint-config/
+
+COPY workspaces/auth-backoffice/next.config.ts ./workspaces/auth-backoffice/
+COPY workspaces/auth-backoffice/tsconfig.json ./workspaces/auth-backoffice/
+COPY workspaces/auth-backoffice/package.json ./workspaces/auth-backoffice/
+COPY workspaces/auth-backoffice/src ./workspaces/auth-backoffice/src
+
+RUN yarn workspaces focus @mgtitimoli/auth-backoffice
+
+RUN yarn workspace @mgtitimoli/auth-backoffice build
+
+FROM base AS production
+
+RUN apt-get update \
+  && apt-get install --yes --no-install-recommends dumb-init \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# The standalone output already contains the server and the node_modules it
+# needs; the static assets are copied next to it, so the server serves them
+COPY --from=builder /app/workspaces/auth-backoffice/.next/standalone ./
+COPY --from=builder /app/workspaces/auth-backoffice/.next/static ./workspaces/auth-backoffice/.next/static
+
+ENV HOSTNAME=0.0.0.0
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV TZ=UTC
+
+WORKDIR /app/workspaces/auth-backoffice
+
+EXPOSE 3000
+
+USER node
+
+ENTRYPOINT ["dumb-init", "--", "node", "server.js"]

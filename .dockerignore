@@ -12,9 +12,11 @@ lint-staged.config.js
 
 **/*.md
 **/*.test.ts
+**/.next
 **/dist
 **/eslint.config.js
 **/logs
+**/next-env.d.ts
 **/node_modules
 
 workspaces/*/.env*

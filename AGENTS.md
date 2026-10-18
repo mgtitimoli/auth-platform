@@ -4,13 +4,15 @@ This is a monorepo with the following workspaces:
 
 - `auth-api`: REST API for users and sessions (see
   [its AGENTS.md](./workspaces/auth-api/AGENTS.md))
+- `auth-backoffice`: back office to sign up, sign in and manage users (see
+  [its AGENTS.md](./workspaces/auth-backoffice/AGENTS.md))
 - `auth-domain`: domain schemas, types and errors shared by `auth-api` and the
   backoffice (see [its AGENTS.md](./workspaces/auth-domain/AGENTS.md))
 - `eslint-config`: ESLint and Prettier configuration
 - `utils`: generic utilities (see [its AGENTS.md](./workspaces/utils/AGENTS.md))
 
 Generic utilities live in `utils`; workspace-specific utilities live in each
-workspace's `src/utils`.
+workspace's `src/utils` (`src/client/utils` in `auth-backoffice`).
 
 ## Conventions
 

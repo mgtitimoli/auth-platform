@@ -1,0 +1,32 @@
+{
+  "name": "@mgtitimoli/auth-backoffice",
+  "private": true,
+  "type": "module",
+  "description": "Back office to sign up, sign in and manage users",
+  "engines": {
+    "node": ">=22.22.1"
+  },
+  "scripts": {
+    "build": "next build",
+    "check-types:all": "next typegen && tsc --noEmit",
+    "check-types:files": "next typegen && tsc-files --noEmit",
+    "dev": "next dev --port 3000",
+    "lint": "eslint",
+    "start": "next start --port 3000"
+  },
+  "dependencies": {
+    "next": "^16.4.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@mgtitimoli/eslint-config": "workspace:^",
+    "@tsconfig/strictest": "^2.0.8",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "tsc-files": "^1.1.4",
+    "typescript": "~6.0.3"
+  }
+}

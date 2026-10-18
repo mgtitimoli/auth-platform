@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ES2024"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "plugins": [{"name": "next"}],
+    "resolveJsonModule": true,
+    "target": "ES2024",
+    "verbatimModuleSyntax": true
+  },
+  "exclude": ["node_modules"],
+  "extends": "../../node_modules/@tsconfig/strictest/tsconfig.json",
+  "include": ["next-env.d.ts", "next.config.ts", ".next/types/**/*.ts", "src"]
+}

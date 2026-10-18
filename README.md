@@ -33,6 +33,7 @@ yarn install
 ## Workspaces
 
 - [auth-api](./workspaces/auth-api): REST API for users and sessions
+- [auth-backoffice](./workspaces/auth-backoffice): back office to sign up, sign in and manage users
 - [auth-domain](./workspaces/auth-domain): domain schemas, types and errors
 - [eslint-config](./workspaces/eslint-config): ESLint and Prettier configuration
 - [utils](./workspaces/utils): generic utilities
@@ -50,8 +51,9 @@ yarn watch
 Then sign in as `admin@example.com` / `Admin123!` (see
 [auth-api](./workspaces/auth-api)).
 
-`yarn watch` rebuilds the packages and runs the API, restarting it on every
-change (see [auth-api](./workspaces/auth-api) for its configuration).
+`yarn watch` rebuilds the packages, runs the API on `http://localhost:3001` and
+the backoffice on `http://localhost:3000`, restarting them on every change (see
+[auth-api](./workspaces/auth-api) and [auth-backoffice](./workspaces/auth-backoffice)).
 
 ## Scripts
 
