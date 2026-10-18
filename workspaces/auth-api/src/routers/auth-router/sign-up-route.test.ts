@@ -1,42 +1,21 @@
-import * as withResponse from "@mgtitimoli/utils/fetch/response";
 import {failedResponseSchema} from "@mgtitimoli/utils/hono/response";
-import {isMatchingHash} from "@mgtitimoli/utils/password";
-import {ensureIsDefined} from "@mgtitimoli/utils/validation";
+import * as withPassword from "@mgtitimoli/utils/password";
 import {describe, expect, it} from "vitest";
 
 import {database} from "@/database/database";
 import {allSessionColumnNames} from "@/database/session-column-name";
 import {allUserColumnNames} from "@/database/user-column-name";
-import {router} from "@/router";
-import {sessionCookieName} from "@/utils/session-cookie/session-cookie";
+import {createSignUpInput, getSessionIdFrom, postJson} from "@/utils/testing";
 
-const signUpInput = {
-  email: "ada@example.com",
-  firstName: "Ada",
-  lastName: "Lovelace",
-  password: "analytical1!"
-};
+const signUpInput = createSignUpInput();
 
-const signUp = (body: unknown) =>
-  router.request("/auth/sign-up", {
-    body: JSON.stringify(body),
-    headers: {"Content-Type": "application/json"},
-    method: "POST"
-  });
+const signUp = (body: unknown) => postJson("/auth/sign-up", body);
 
-// The session id is only sent in the session cookie
 const getSessionFrom = (response: Response) =>
   database
     .selectFrom("sessions")
     .select(allSessionColumnNames)
-    .where(
-      "id",
-      "=",
-      ensureIsDefined(
-        withResponse.getCookie(response, sessionCookieName),
-        "The response has no session cookie"
-      )
-    )
+    .where("id", "=", getSessionIdFrom(response))
     .executeTakeFirstOrThrow();
 
 const getUserCount = async () => {
@@ -97,7 +76,9 @@ describe("POST /auth/sign-up", () => {
       .executeTakeFirstOrThrow();
 
     expect(passwordHash).not.toContain(signUpInput.password);
-    expect(await isMatchingHash(signUpInput.password, passwordHash)).toBe(true);
+    expect(
+      await withPassword.isMatchingHash(signUpInput.password, passwordHash)
+    ).toBe(true);
   });
 
   it("rejects an email that is already registered", async () => {

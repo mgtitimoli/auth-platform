@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 
 import type {User} from "./domain-schema";
-import {isActive} from "./user";
+import * as withUser from "./user";
 
 const user: User = {
   createdAt: "2026-01-01T00:00:00.000Z",
@@ -16,10 +16,10 @@ const user: User = {
 
 describe("isActive", () => {
   it("is true for an active user", () => {
-    expect(isActive(user)).toBe(true);
+    expect(withUser.isActive(user)).toBe(true);
   });
 
   it("is false for an inactive user", () => {
-    expect(isActive({...user, status: "inactive"})).toBe(false);
+    expect(withUser.isActive({...user, status: "inactive"})).toBe(false);
   });
 });

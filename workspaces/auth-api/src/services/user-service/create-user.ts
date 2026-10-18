@@ -1,10 +1,11 @@
 import type {SignUpInput} from "@mgtitimoli/auth-domain/domain-schema";
 import {startTransactionIfNeeded} from "@mgtitimoli/utils/kysely";
-import {getHash} from "@mgtitimoli/utils/password";
+import * as withPassword from "@mgtitimoli/utils/password";
 
 import type {Database} from "@/database/database";
 import * as userCredentialRepository from "@/repositories/user-credential-repository";
 import * as userRepository from "@/repositories/user-repository";
+import {environmentVariables} from "@/utils/environment/environment-variables";
 
 type Params = {
   database: Database;
@@ -16,7 +17,10 @@ const createUser = async ({database, input}: Params) => {
 
   // Hashed before any query, so a transaction started here isn't held open
   // while scrypt runs
-  const passwordHash = await getHash(password);
+  const passwordHash = await withPassword.getHash(
+    password,
+    environmentVariables.PASSWORD_HASH_COST
+  );
 
   return startTransactionIfNeeded(database, async transaction => {
     const user = await userRepository.createUser({

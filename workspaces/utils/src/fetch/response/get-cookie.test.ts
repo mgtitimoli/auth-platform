@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {getCookie} from "./get-cookie";
+import * as withResponse from "@/fetch/response";
 
 const createResponse = (setCookies: string[]) => {
   const headers = new Headers();
@@ -17,18 +17,18 @@ describe("getCookie", () => {
       "session=abc123; Path=/; HttpOnly"
     ]);
 
-    expect(getCookie(response, "session")).toBe("abc123");
+    expect(withResponse.getCookie(response, "session")).toBe("abc123");
   });
 
   it("returns an empty value for a removed cookie", () => {
     const response = createResponse(["session=; Max-Age=0; Path=/"]);
 
-    expect(getCookie(response, "session")).toBe("");
+    expect(withResponse.getCookie(response, "session")).toBe("");
   });
 
   it("returns undefined when the response doesn't set the cookie", () => {
     const response = createResponse(["sessions=abc123"]);
 
-    expect(getCookie(response, "session")).toBeUndefined();
+    expect(withResponse.getCookie(response, "session")).toBeUndefined();
   });
 });

@@ -1,4 +1,5 @@
 import {logLevelSchema} from "@mgtitimoli/utils/logging/log-level";
+import {passwordHashCostSchema} from "@mgtitimoli/utils/password/password-hash-cost";
 import {mapIfDefined} from "@mgtitimoli/utils/validation";
 import {z} from "zod";
 
@@ -14,6 +15,7 @@ const environmentVariablesSchema = z.object({
   ENVIRONMENT_NAME: environmentNameSchema,
   LOG_LEVEL: logLevelSchema.default("info"),
   LOGS_RETAINED: z.boolean(),
+  PASSWORD_HASH_COST: passwordHashCostSchema.optional(),
   // Unset locally: the cookie is then sent only to the API's own host
   SESSION_COOKIE_DOMAIN: z.string().min(1).optional(),
   SESSION_COOKIE_SECURE: z.boolean(),
@@ -29,6 +31,7 @@ const environmentVariables = environmentVariablesSchema.parse({
   ENVIRONMENT_NAME: process.env["ENVIRONMENT_NAME"],
   LOG_LEVEL: process.env["LOG_LEVEL"],
   LOGS_RETAINED: process.env["LOGS_RETAINED"] === "true",
+  PASSWORD_HASH_COST: mapIfDefined(process.env["PASSWORD_HASH_COST"], Number),
   SESSION_COOKIE_DOMAIN: process.env["SESSION_COOKIE_DOMAIN"],
   SESSION_COOKIE_SECURE: process.env["SESSION_COOKIE_SECURE"] === "true",
   TZ: process.env["TZ"]

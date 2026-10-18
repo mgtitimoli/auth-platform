@@ -35,6 +35,7 @@ The API listens on `http://localhost:3001`:
 | `POST /auth/sign-in` | Signs a user in (sets the session cookie) |
 | `POST /auth/sign-out` | Terminates the session and removes the cookie |
 | `GET /users/me` | The signed-in user |
+| `GET /users?limit=&offset=` | A page of users, ordered by creation (`limit` defaults to 6, at most 100; `offset` defaults to 0), with the total |
 
 Every endpoint except health, OpenAPI, Swagger, sign-up and sign-in needs the
 session cookie (401 otherwise). In Swagger, sign in with "Try it out": the
@@ -118,6 +119,7 @@ migrate it and delete every row before each test. They never mock the database.
 | `ENVIRONMENT_NAME` | `local`, `test`, `development` or `production` (`local` enables readable logs and the log file) |
 | `LOG_LEVEL` | Log level (default `info`) |
 | `LOGS_RETAINED` | `true` to append to the log file instead of overwriting it |
+| `PASSWORD_HASH_COST` | Optional scrypt cost (N) for new password hashes. Defaults to OWASP's 2^17; `.env.test` lowers it to 1024 so tests hash fast |
 | `SESSION_COOKIE_DOMAIN` | Optional domain of the session cookie (e.g. `example.com`), so subdomains share it |
 | `SESSION_COOKIE_SECURE` | `true` to send the session cookie only over HTTPS |
 | `TZ` | Must be `UTC` |

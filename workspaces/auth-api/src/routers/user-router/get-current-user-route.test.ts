@@ -1,40 +1,14 @@
 import {userSchema} from "@mgtitimoli/auth-domain/domain-schema";
-import * as withResponse from "@mgtitimoli/utils/fetch/response";
 import {failedResponseSchema} from "@mgtitimoli/utils/hono/response";
-import {ensureIsDefined} from "@mgtitimoli/utils/validation";
 import {describe, expect, it} from "vitest";
 import {z} from "zod";
 
 import {router} from "@/router";
-import {sessionCookieName} from "@/utils/session-cookie/session-cookie";
+import {createSignUpInput, signUp} from "@/utils/testing";
 
-const signUpInput = {
-  email: "ada@example.com",
-  firstName: "Ada",
-  lastName: "Lovelace",
-  password: "analytical1!"
-};
+const signUpInput = createSignUpInput();
 
 const getCurrentUserSucceededResponseSchema = z.object({data: userSchema});
-
-// The Cookie header that sends the response's session back
-const getSessionCookieFrom = (response: Response) => {
-  const sessionId = ensureIsDefined(
-    withResponse.getCookie(response, sessionCookieName),
-    "The response has no session cookie"
-  );
-
-  return sessionCookieName + "=" + sessionId;
-};
-
-const signUp = async () =>
-  getSessionCookieFrom(
-    await router.request("/auth/sign-up", {
-      body: JSON.stringify(signUpInput),
-      headers: {"Content-Type": "application/json"},
-      method: "POST"
-    })
-  );
 
 const getCurrentUser = (cookie?: string) =>
   router.request("/users/me", {

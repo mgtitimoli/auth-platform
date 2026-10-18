@@ -2,7 +2,7 @@ import type {SignInInput} from "@mgtitimoli/auth-domain/domain-schema";
 import {InactiveUserError} from "@mgtitimoli/auth-domain/inactive-user-error";
 import {InvalidCredentialsError} from "@mgtitimoli/auth-domain/invalid-credentials-error";
 import * as withUser from "@mgtitimoli/auth-domain/user";
-import {isMatchingHash} from "@mgtitimoli/utils/password";
+import * as withPassword from "@mgtitimoli/utils/password";
 
 import type {Database} from "@/database/database";
 import * as userCredentialRepository from "@/repositories/user-credential-repository";
@@ -28,7 +28,7 @@ const isMatchingPassword = async (
     return false;
   }
 
-  return isMatchingHash(password, userCredential.passwordHash);
+  return withPassword.isMatchingHash(password, userCredential.passwordHash);
 };
 
 const signIn = async ({database, input}: Params) => {

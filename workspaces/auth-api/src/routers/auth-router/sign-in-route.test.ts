@@ -1,47 +1,29 @@
-import * as withResponse from "@mgtitimoli/utils/fetch/response";
 import {failedResponseSchema} from "@mgtitimoli/utils/hono/response";
-import {ensureIsDefined} from "@mgtitimoli/utils/validation";
 import {beforeEach, describe, expect, it} from "vitest";
 
 import {database} from "@/database/database";
 import {allSessionColumnNames} from "@/database/session-column-name";
-import {router} from "@/router";
-import {sessionCookieName} from "@/utils/session-cookie/session-cookie";
+import {
+  createSignUpInput,
+  getSessionIdFrom,
+  postJson,
+  signUp
+} from "@/utils/testing";
 
-const signUpInput = {
-  email: "ada@example.com",
-  firstName: "Ada",
-  lastName: "Lovelace",
-  password: "analytical1!"
-};
+const signUpInput = createSignUpInput();
 
 const signInInput = {
   email: signUpInput.email,
   password: signUpInput.password
 };
 
-const post = (path: string, body: unknown) =>
-  router.request(path, {
-    body: JSON.stringify(body),
-    headers: {"Content-Type": "application/json"},
-    method: "POST"
-  });
+const signIn = (body: unknown) => postJson("/auth/sign-in", body);
 
-const signIn = (body: unknown) => post("/auth/sign-in", body);
-
-// The session id is only sent in the session cookie
 const getSessionFrom = (response: Response) =>
   database
     .selectFrom("sessions")
     .select(allSessionColumnNames)
-    .where(
-      "id",
-      "=",
-      ensureIsDefined(
-        withResponse.getCookie(response, sessionCookieName),
-        "The response has no session cookie"
-      )
-    )
+    .where("id", "=", getSessionIdFrom(response))
     .executeTakeFirstOrThrow();
 
 const getLoginsCounter = async (userId: string) => {
@@ -64,7 +46,7 @@ const expectInvalidCredentials = async (response: Response) => {
 
 describe("POST /auth/sign-in", () => {
   beforeEach(async () => {
-    await post("/auth/sign-up", signUpInput);
+    await signUp(signUpInput);
   });
 
   it("creates a session, sent only in the cookie, and increments the logins counter", async () => {

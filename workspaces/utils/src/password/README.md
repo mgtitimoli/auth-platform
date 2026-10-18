@@ -11,7 +11,8 @@ parameters can change without invalidating existing hashes.
 #### Description
 
 Function that returns a hash of the given password, using a random salt and
-the scrypt parameters recommended by OWASP (N=2^17, r=8, p=1).
+the scrypt parameters recommended by OWASP (N=2^17, r=8, p=1). The cost (N)
+can be given to hash faster, e.g. in tests.
 
 #### Example
 
@@ -20,6 +21,8 @@ import {getHash} from "@mgtitimoli/utils/password";
 
 const passwordHash = await getHash("correct horse");
 // scrypt$131072$8$1$<salt>$<key>
+
+const testPasswordHash = await getHash("correct horse", 2 ** 10);
 ```
 
 ### isMatchingHash
@@ -41,3 +44,4 @@ await isMatchingHash("battery staple", passwordHash); // false
 ## Modules
 
 - [password-hash](./password-hash.ts)
+- [password-hash-cost](./password-hash-cost.ts)

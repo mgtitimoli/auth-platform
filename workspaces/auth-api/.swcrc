@@ -1,6 +1,6 @@
 {
   "$schema": "https://swc.rs/schema.json",
-  "exclude": ["\\.test\\.ts$"],
+  "exclude": ["\\.test\\.ts$", "/utils/testing/"],
   "jsc": {
     "baseUrl": ".",
     "experimental": {

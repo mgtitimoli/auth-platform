@@ -72,6 +72,12 @@ the database.
   `router.request(...)` and check the database through Kysely.
 - Parse response bodies with the domain schemas (`userSchema`,
   `failedResponseSchema`, …), so tests also check the documented shape.
+- Shared helpers live in `src/utils/testing` (imported from
+  `@/utils/testing`, excluded from the build): `signUp(input?)` and
+  `signIn(input)` return the `Cookie` header of the new session,
+  `createSignUpInput(overrides?)` builds a valid input, and `postJson` posts a
+  body (with an optional cookie). Passwords are hashed at a low cost in tests
+  (`PASSWORD_HASH_COST` in `.env.test`), so signing up many users is cheap.
 - Run a single test with `yarn auth-api:run vitest run -t "<name>"`. Logs are
   silent in tests (`LOG_LEVEL=silent` in `.env.test`): set it to `error` to see
   the cause of a 500.
