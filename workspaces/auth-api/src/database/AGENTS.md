@@ -76,9 +76,10 @@ Repositories select and return columns explicitly, never with `selectAll()` /
 
 ### Running and Verifying
 
-- `yarn auth-api:run database:migrate-all [environment]` applies every pending
-  migration, `database:migrate` applies one, and `database:rollback` reverts
-  the last one applied.
+- `yarn auth-api:run database migrate-all` applies every pending migration of
+  the current environment, `database migrate` applies one, and
+  `database rollback` reverts the last one applied (another environment:
+  `env run --environment <name> yarn database migrate-all`).
 - Verify a new migration on `local` by applying it, rolling it back and
   applying it again, so both `up` and `down` run.
 - The tests migrate the test database themselves.
@@ -93,4 +94,4 @@ Repositories select and return columns explicitly, never with `selectAll()` /
   it itself, with `@mgtitimoli/utils` (e.g. `withPassword.getHash`).
 - Seeds are idempotent: they skip what already exists, so they can run more
   than once.
-- Run one with `yarn auth-api:run database:seed <seed> [environment]`.
+- Run one with `yarn auth-api:run database seed <seed>`.

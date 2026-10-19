@@ -41,10 +41,10 @@ yarn install
 ## Development
 
 ```sh
-yarn auth-api:run env:use local
-yarn auth-api:run database:start local
-yarn auth-api:run database:migrate-all
-yarn auth-api:run database:seed 00001-seed-admin-users
+yarn auth-api:run env use local
+yarn auth-api:run database start
+yarn auth-api:run database migrate-all
+yarn auth-api:run database seed 00001-seed-admin-users
 yarn watch
 ```
 

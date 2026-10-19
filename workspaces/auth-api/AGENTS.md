@@ -30,15 +30,29 @@ Layered architecture: Routers → Services → Repositories → Database
 
 ## Database
 
-### Safety
+### Environments
 
-Database scripts that talk to a database take an optional environment
-(`yarn auth-api:run database:migrate-all test`) and use `.env.<environment>`;
-without one they use `.env`. **Before running any of them without an
-environment**, check where the `.env` symlink points:
+Scripts never choose an environment: they act on the current one, which is the
+user's choice (`.env`, set with `env use`). Never run `env use` to switch it for
+a command: run that command in another environment with `env run`, which leaves
+`.env` untouched:
 
 ```bash
-yarn auth-api:run env:which
+yarn auth-api:run env run --environment test yarn database migrate-all
+```
+
+New scripts follow the same rule: they read the environment's variables
+(`ENVIRONMENT_NAME`, `AUTH_DATABASE_URL`, …) and their npm entry goes through
+`scripts/environment.sh run`. Every script has a `help` command
+(`yarn auth-api:run database help`).
+
+### Safety
+
+**Before running any database script in the current environment**, check where
+the `.env` symlink points:
+
+```bash
+yarn auth-api:run env which
 ```
 
 `local` and `test` are the docker-compose databases: safe to proceed. For any
@@ -47,24 +61,24 @@ deletes).
 
 ### Running queries
 
-Use the `database:cli` script to open a `psql` session connected to the
-database of the given environment (or of `.env`):
+Use the `database cli` script to open a `psql` session connected to the
+environment's database:
 
 ```bash
-yarn auth-api:run database:cli local
+yarn auth-api:run database cli
 ```
 
 When running non-interactive queries, pass `-X` to ignore `.psqlrc` and get
 consistent output regardless of local display settings (for example,
-`yarn auth-api:run database:cli local -X -Atc "select 1"`).
+`yarn auth-api:run env run --environment local yarn database cli -X -Atc "select 1"`).
 
 See [src/database/AGENTS.md](./src/database/AGENTS.md) for schema and
 migration conventions.
 
 ## Testing
 
-`yarn auth-api:run test` starts the test database (`database:start test`, port
-5433), migrates it once (`vitest.global-setup.ts`) and deletes every row before
+`yarn auth-api:run test` starts the test database (`database start` in the
+`test` environment, port 5433), migrates it once (`vitest.global-setup.ts`) and deletes every row before
 each test (`vitest.setup.ts`). Test files run one at a time, since they share
 the database.
 

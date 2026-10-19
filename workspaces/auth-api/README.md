@@ -6,17 +6,22 @@ REST API for users and sessions, built with [Hono](https://hono.dev) and
 ## Requirements
 
 - [Docker](https://www.docker.com) with Compose, for the local and test databases
-- `psql` (the PostgreSQL client), only for `database:cli`
+- `psql` (the PostgreSQL client), only for `database cli`
 
 ## Running
 
 ```sh
-yarn auth-api:run env:use local
-yarn auth-api:run database:start local
-yarn auth-api:run database:migrate-all
-yarn auth-api:run database:seed 00001-seed-admin-users
+yarn auth-api:run env use local
+yarn auth-api:run database start
+yarn auth-api:run database migrate-all
+yarn auth-api:run database seed 00001-seed-admin-users
 yarn watch
 ```
+
+To run the API in Docker instead of `yarn watch` (the image of
+[Dockerfile.auth-api](../../Dockerfile.auth-api)), run
+`yarn auth-api:run container start` after the seed, and `container stop` to stop
+it.
 
 Sign in with the seeded admin:
 
@@ -56,22 +61,25 @@ Logs are also written to `logs/auth-api.log` when running locally.
 
 ## Database
 
-There are two PostgreSQL 16 containers, defined in
-[docker-compose.yml](./docker-compose.yml) (database, user and password: `auth`):
+Each environment that runs in Docker has its own compose file, with a
+PostgreSQL 16 database (database, user and password: `auth`, shared through
+[docker-compose.postgres.yml](./docker-compose.postgres.yml)) and the API's
+container:
 
-| Environment | Port | Storage |
-|---|---|---|
-| `local` | 5432 | a Docker volume: survives `database:stop`, `database:clear local` deletes it |
-| `test` | 5433 | in memory: cleared every time it stops |
+| Environment | Compose file | Database port | Database storage |
+|---|---|---|---|
+| `local` | [docker-compose.local.yml](./docker-compose.local.yml) | 5432 | a Docker volume: survives `database stop`, `database clear` deletes it |
+| `test` | [docker-compose.test.yml](./docker-compose.test.yml) | 5433 | in memory: cleared every time it stops |
 
-The container scripts take the environment as an argument, and the scripts that
-talk to a database take an optional one: they use `.env.<environment>`, or
-`.env` when none is given.
+Scripts never take an environment: they act on the current one, the one `.env`
+points to (`env use`). To run a single command in another environment, without
+changing `.env`, use `env run`:
 
 ```sh
-yarn auth-api:run database:start local
-yarn auth-api:run database:migrate-all          # the database of .env
-yarn auth-api:run database:cli test -c "select count(*) from users"
+yarn auth-api:run env use local
+yarn auth-api:run database start
+yarn auth-api:run database migrate-all
+yarn auth-api:run env run --environment test yarn database cli -c "select count(*) from users"
 ```
 
 ### Design
@@ -88,17 +96,17 @@ yarn auth-api:run database:cli test -c "select count(*) from users"
 ### Seeds
 
 Seeds live in [src/database/seeds](./src/database/seeds) and are run by name
-(`database:seed <seed> [environment]`). `00001-seed-admin-users` creates the
+(`database seed <seed>`). `00001-seed-admin-users` creates the
 admins listed above, skipping the ones that already exist. Their passwords are
 public, so never run it against a shared environment.
 
 ### Migrations
 
 Migrations live in [src/database/migrations](./src/database/migrations) and are
-applied manually (`database:migrate-all [environment]`): the Docker image only
-runs the API. To migrate a shared environment, create its gitignored
-`.env.<environment>` with its credentials and run
-`yarn auth-api:run database:migrate-all <environment>`.
+applied manually (`database migrate-all`): the Docker image only runs the API.
+To migrate a shared environment, create its gitignored `.env.<environment>`
+with its credentials and run
+`yarn auth-api:run env run --environment <environment> yarn database migrate-all`.
 
 ## Testing
 
@@ -106,12 +114,13 @@ runs the API. To migrate a shared environment, create its gitignored
 yarn auth-api:run test
 ```
 
-The tests run against the `test` database: `test` starts it, and the tests
-migrate it and delete every row before each test. They never mock the database.
+The tests run against the `test` database: `test` starts it (whatever `.env`
+points to), and the tests migrate it and delete every row before each test.
+They never mock the database.
 
 ## Environment variables
 
-`.env` is a symlink to one of the `.env.*` files (`yarn auth-api:run env:use <name>`).
+`.env` is a symlink to one of the `.env.*` files (`yarn auth-api:run env use <name>`).
 `.env.local` and `.env.test` contain the local and test settings.
 
 | Variable | Description |
@@ -142,6 +151,10 @@ docker run -p 3001:3001 \
   auth-api
 ```
 
+`container start` builds and runs this same image in the current environment
+(see [Database](#database)), with the database as `postgres:5432` inside the
+compose network instead of the env file's `localhost` address.
+
 ## Scripts
 
 | Script | Description |
@@ -153,17 +166,6 @@ docker run -p 3001:3001 \
 | `lint` | Lints the workspace |
 | `check-types:all` | Type-checks the workspace |
 | `check-types:files` | Type-checks the given files |
-| `database:start <local\|test>` | Starts a database |
-| `database:stop <local\|test>` | Stops a database (`local` keeps its data) |
-| `database:clear <local\|test>` | Stops a database and deletes its data |
-| `database:status <local\|test>` | Shows whether a database is running |
-| `database:logs <local\|test>` | Follows a database's logs |
-| `database:cli [environment]` | Opens `psql` (extra arguments are passed to it) |
-| `database:migrate [environment]` | Applies the next pending migration |
-| `database:migrate-all [environment]` | Applies every pending migration |
-| `database:rollback [environment]` | Reverts the last applied migration |
-| `database:list-migrations [environment]` | Lists the migrations and whether they're applied |
-| `database:seed <seed> [environment]` | Runs the given seed |
-| `env:list` | Lists the available `.env.*` files |
-| `env:use` | Points `.env` to the given `.env.*` file |
-| `env:which` | Shows which `.env.*` file `.env` points to |
+| `container <command>` | Manages the API's container in the current environment (`container help`) |
+| `database <command>` | Manages the current environment's database (`database help`) |
+| `env <command>` | Manages the environments (`env help`) |

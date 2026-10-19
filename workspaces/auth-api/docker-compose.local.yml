@@ -1,0 +1,34 @@
+name: auth-api-local
+
+services:
+  postgres:
+    extends:
+      file: docker-compose.postgres.yml
+      service: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  auth-api:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.auth-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env.local
+    environment:
+      # The local environment as seen from inside Docker: the database is the
+      # postgres service, not the host's port
+      AUTH_DATABASE_URL: postgres://auth:auth@postgres:5432/auth
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:' + process.env.AUTH_API_PORT + '/health').then(response => process.exit(response.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 1s
+      retries: 30
+      timeout: 5s
+    ports:
+      - "${AUTH_API_PORT}:${AUTH_API_PORT}"
+
+volumes:
+  postgres_data:

@@ -1,90 +1,64 @@
 #!/usr/bin/env bash
 # @file database.sh
-# @brief Manages the auth-api databases.
+# @brief Manages the database of the loaded environment.
 # @description
-#   Container commands (start, stop, status, logs, clear) act on the docker
-#   compose database of the given environment (local or test).
-#   Database commands (cli, migrate, migrate-all, rollback, list-migrations,
-#   seed) act on the database of .env.<environment>, or of .env when no
-#   environment is given (an argument starting with "-" is passed through
-#   instead). seed takes the seed name before the environment.
+#   The environment is loaded by environment.sh run.
 set -euo pipefail
 
-readonly COMPOSE_FILE="docker-compose.yml"
 readonly KYSELY_CONFIG="src/database/kysely.config.ts"
-readonly LOCAL_VOLUME="auth-api_postgres_data"
 
-# @description Prints an error and exits.
+source "$(dirname "$0")/compose.sh"
+
+# @description Prints how to use this script.
+# @noargs
+# @stdout The usage.
+print_usage() {
+  cat <<'EOF'
+Usage: database.sh <command> [arguments]
+
+Acts on the database of the loaded environment.
+
+  start                            Starts the database and waits until it's ready
+  stop                             Stops the database (local keeps its data)
+  status                           Prints whether the database is running
+  logs                             Follows the database's logs
+  clear                            Stops the database and deletes its data
+  cli [psql arguments]             Opens psql
+  migrate [kysely arguments]       Applies the next pending migration
+  migrate-all [kysely arguments]   Applies every pending migration
+  rollback [kysely arguments]      Reverts the last applied migration
+  list-migrations                  Lists the migrations and whether they're applied
+  seed <seed> [kysely arguments]   Runs the given seed
+  help                             Prints this help
+EOF
+}
+
+# @description Prints an error and the usage, and exits.
 # @arg $1 string Error message.
 # @exitcode 1 Always.
-# @stderr The error message.
-fail() {
+# @stderr The error message and the usage.
+fail_with_usage() {
   printf 'Error: %s\n' "$1" >&2
+
+  print_usage >&2
 
   exit 1
 }
 
-# @description Runs docker compose on the auth-api compose file, with every
-#   profile enabled.
-# @arg $@ string docker compose arguments.
-compose() {
-  docker compose -f "$COMPOSE_FILE" --profile test "$@"
-}
-
-# @description Prints the compose service of the given environment.
-# @arg $1 string Environment (local or test).
-# @exitcode 1 If the environment is neither local nor test.
-# @stdout The service name.
-get_service_name() {
-  case "${1:-}" in
-    local)
-      printf 'postgres\n'
-      ;;
-    test)
-      printf 'postgres-test\n'
-      ;;
-    *)
-      fail "the environment must be local or test"
-      ;;
-  esac
-}
-
-# @description Exports the variables of the env file of the given environment.
-# @arg $1 string Environment (empty for .env).
-# @exitcode 1 If the env file doesn't exist.
-load_env_file() {
-  local env_file=".env${1:+.$1}"
-
-  if [[ ! -f "$env_file" ]]
-  then
-    fail "$env_file does not exist"
-  fi
-
-  set -a
-
-  source "$env_file"
-
-  set +a
-}
-
-# @description Runs a container command on the database of an environment.
+# @description Runs a container command on the environment's database.
 # @arg $1 string Command (start, stop, status, logs or clear).
-# @arg $2 string Environment (local or test).
 run_container_command() {
   local command="$1"
-  local service_name
-
-  service_name="$(get_service_name "${2:-}")"
 
   case "$command" in
     start)
-      compose up --detach --wait "$service_name"
+      run_compose up --detach --wait postgres
       ;;
     stop)
-      compose stop "$service_name"
+      run_compose stop postgres
       ;;
     status)
-      if ! compose ps --format '{{.State}}' "$service_name" | grep --color=never running
+      if ! run_compose ps --format '{{.State}}' postgres | grep --color=never running
       then
         printf 'down\n'
 
@@ -92,16 +66,14 @@ run_container_command() {
       fi
       ;;
     logs)
-      compose logs --follow "$service_name"
+      run_compose logs --follow postgres
       ;;
     clear)
-      # The test database lives in a tmpfs, so removing its container clears it
-      compose rm --force --stop --volumes "$service_name"
+      run_compose rm --force --stop --volumes postgres
 
-      if [[ "$service_name" == "postgres" ]]
-      then
-        docker volume rm --force "$LOCAL_VOLUME" > /dev/null
-      fi
+      # The compose project is auth-api-<environment>; environments that keep
+      # their data (local) do it in this volume
+      docker volume rm --force "auth-api-${ENVIRONMENT_NAME}_postgres_data" > /dev/null
       ;;
   esac
 }
@@ -117,15 +89,13 @@ run_kysely_migrate() {
   kysely migrate "$subcommand" --config "$KYSELY_CONFIG" "$@"
 }
 
-# @description Runs a database command on the database of an environment.
+# @description Runs a database command on AUTH_DATABASE_URL.
 # @arg $1 string Command (cli, migrate, migrate-all, rollback, list-migrations or seed).
 # @arg $2 string Seed name (seed only).
-# @arg $3 string Optional environment (uses .env when missing).
 # @arg $@ string Extra arguments for psql or kysely-ctl.
 # @exitcode 1 If seed is given no seed name.
 run_database_command() {
   local command="$1"
-  local environment=""
   local seed_name=""
 
   shift
@@ -136,20 +106,11 @@ run_database_command() {
 
     if [[ -z "$seed_name" || "$seed_name" == -* ]]
     then
-      fail "seed requires a seed name"
+      fail_with_usage "seed requires a seed name"
     fi
 
     shift
   fi
-
-  if (( $# > 0 )) && [[ "$1" != -* ]]
-  then
-    environment="$1"
-
-    shift
-  fi
-
-  load_env_file "$environment"
 
   case "$command" in
     cli)
@@ -180,13 +141,20 @@ main() {
 
   case "$command" in
     start | stop | status | logs | clear)
+      : "${ENVIRONMENT_NAME:?no environment loaded (run it through environment.sh run)}"
+
       run_container_command "$@"
       ;;
     cli | migrate | migrate-all | rollback | list-migrations | seed)
+      : "${AUTH_DATABASE_URL:?no environment loaded (run it through environment.sh run)}"
+
       run_database_command "$@"
       ;;
+    help)
+      print_usage
+      ;;
     *)
-      fail "unknown command: ${command:-<none>}"
+      fail_with_usage "unknown command: ${command:-<none>}"
       ;;
   esac
 }

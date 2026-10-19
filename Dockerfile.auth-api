@@ -66,6 +66,10 @@ RUN yarn workspaces focus @mgtitimoli/auth-api @mgtitimoli/auth-domain @mgtitimo
 
 WORKDIR /app/workspaces/auth-api
 
+# The local environment also logs to logs/auth-api.log, and the node user
+# can't create directories in the root-owned workspace
+RUN mkdir logs && chown node:node logs
+
 EXPOSE 3001
 
 USER node
