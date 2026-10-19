@@ -15,11 +15,11 @@ src/
 │   ├── components/ # shared components; application/ is the app shell
 │   ├── screens/    # one folder per screen
 │   └── utils/      # utilities
-└── proxy.ts        # redirects (once it exists)
+└── proxy.ts        # redirects by session cookie
 ```
 
 - `src/app` only has routing files: each `page.tsx` is a one-line re-export of
-  a screen (`export {HomeScreen as default} from "@/client/screens/home-screen";`),
+  a screen (`export {SignUpScreen as default} from "@/client/screens/sign-up-screen";`),
   and `layout.tsx` re-exports the application layout. Pages are grouped in the
   `(public)` and `(private)` route groups, which don't appear in the URL; each
   group's `layout.tsx` re-exports its layout component (`public-layout`, …), so
@@ -76,6 +76,12 @@ No Server Components or Server Actions: screens and components start with
 (`authApi.useMutation("post", "/auth/sign-up")`) and `authApiClient` for plain
 calls. The API's URL comes from `NEXT_PUBLIC_AUTH_API_URL`, inlined at build
 time (`.env.local` locally).
+
+- `proxy.ts` only sees whether the session cookie exists. Private screens also
+  use `useRedirectIfUnauthorized`, which takes the user to `/sign-in` when the
+  API rejects the session (the API's 401 removes the dead cookie, so the proxy
+  lets them through).
+- Queries don't retry client errors (4xx): they fail the same way again.
 
 ## Styling
 

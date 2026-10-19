@@ -1,11 +1,23 @@
 "use client";
 
-import {authApi} from "@/client/utils/auth-api";
+import {authApi, useRedirectIfUnauthorized} from "@/client/utils/auth-api";
 
 import * as styles from "./users-screen.css";
 
 const UsersScreen = () => {
-  const {data: currentUser} = authApi.useQuery("get", "/users/me");
+  const {isRedirecting} = useRedirectIfUnauthorized();
+
+  // Disabled while redirecting, so the cleared cache doesn't refetch it
+  const {data: currentUser} = authApi.useQuery(
+    "get",
+    "/users/me",
+    {},
+    {enabled: !isRedirecting}
+  );
+
+  if (isRedirecting) {
+    return null;
+  }
 
   return (
     <main className={styles.root}>

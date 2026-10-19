@@ -21,9 +21,15 @@ yarn auth-backoffice:run dev
 
 | Path | Page |
 |---|---|
+| `/` | Redirects: to `/users` with a session, to `/sign-up` without one |
 | `/sign-in` | Sign-in form: signs the user in and goes to `/users` |
 | `/sign-up` | Sign-up form: creates the user, signs them in and goes to `/users` |
 | `/users` | Greets the signed-in user (`Hello <first name>`) |
+
+[src/proxy.ts](./src/proxy.ts) guards the pages by the session cookie: without
+it, private pages go to `/sign-in`; with it, the sign-in and sign-up pages go to
+`/users`. When the API rejects the session (it ended), the user is taken to
+`/sign-in`.
 
 ## Environment variables
 

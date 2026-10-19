@@ -46,6 +46,18 @@ if (error instanceof AuthApiResponseError && error.status === 409) {
 }
 ```
 
+## Session cookie
+
+`authApiSessionCookieName` is the name of the `HttpOnly` cookie auth-api sets on
+sign-up and sign-in. A client can't read its value, but a server in front of it
+(e.g. Next's proxy) can check whether it's present:
+
+```ts
+import {authApiSessionCookieName} from "@mgtitimoli/auth-api-tools/auth-api-session-cookie-name";
+
+const hasSession = request.cookies.has(authApiSessionCookieName);
+```
+
 ## Updating the types
 
 `src/auth-api-schema.ts` is generated from the API's OpenAPI document and
@@ -61,6 +73,7 @@ yarn auth-api-tools:run update-auth-api-schema
 - [auth-api-response-error](./src/auth-api-response-error.ts)
 - [auth-api-schema](./src/auth-api-schema.ts) (generated)
 - [react/auth-api-query-client](./src/react/auth-api-query-client.ts)
+- [auth-api-session-cookie-name](./src/auth-api-session-cookie-name.ts)
 
 ## Scripts
 
