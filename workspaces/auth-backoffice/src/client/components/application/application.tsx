@@ -4,6 +4,8 @@ import {QueryClientProvider} from "@tanstack/react-query";
 import {useState} from "react";
 import type {ReactNode} from "react";
 
+import {ToastProvider} from "@/client/components/toast";
+
 import * as withApplicationQueryClient from "./application-query-client";
 
 type Props = {
@@ -15,7 +17,9 @@ const Application = ({children}: Props) => {
   const [queryClient] = useState(withApplicationQueryClient.create);
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>{children}</ToastProvider>
+    </QueryClientProvider>
   );
 };
 

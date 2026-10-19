@@ -60,6 +60,12 @@ No Server Components or Server Actions: screens and components start with
   `useTable`'s result to `Table`. `Table` renders any table, so it uses a
   feature's APIs only after checking the table registers it (the predicates in
   `@mgtitimoli/utils/tanstack-table`).
+- Dialogs are controlled by their screen (`isOpen` and `onOpenChange`): the
+  screen opens them, and closes them when their content reports it's done
+  (`onCreate`).
+- Toasts confirm what changed somewhere else on the screen: screens add them
+  with Base UI's `Toast.useToastManager()`, and the application renders them
+  (`ToastProvider`).
 - Paginated lists keep the page in component state and show the previous page
   while the next one loads (TanStack Query's `keepPreviousData`), with the
   list marked busy and the pagination disabled meanwhile.

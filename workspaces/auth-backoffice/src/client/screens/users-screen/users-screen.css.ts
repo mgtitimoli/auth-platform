@@ -10,9 +10,16 @@ const root = style({
   gap: space.lg
 });
 
+const header = style({
+  alignItems: "center",
+  display: "flex",
+  gap: space.md,
+  justifyContent: "space-between"
+});
+
 const title = style({
   fontSize: fontSizes.xl,
   margin: 0
 });
 
-export {root, title};
+export {header, root, title};
