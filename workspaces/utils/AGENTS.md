@@ -17,7 +17,6 @@ Each `src/<name>` folder is a future standalone published package:
 
 - Imports within the workspace use the `@/` alias; `tsc-alias` rewrites them in
   the emitted `.d.ts` files.
-- Exported functions declare their return types.
 - Hono middleware factories are named with nouns (`sessionMiddleware(options)`),
   like Hono's own (`cors()`, `logger()`).
 

@@ -7,6 +7,7 @@ self-contained, so it can later be published as a standalone package.
 
 - [error](./src/error)
 - [fetch](./src/fetch)
+- [formatting](./src/formatting)
 - [hono](./src/hono)
 - [http](./src/http)
 - [kysely](./src/kysely)

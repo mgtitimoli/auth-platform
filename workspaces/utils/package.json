@@ -12,6 +12,10 @@
       "types": "./dist/fetch/response/index.d.ts",
       "import": "./dist/fetch/response/index.js"
     },
+    "./formatting": {
+      "types": "./dist/formatting/index.d.ts",
+      "import": "./dist/formatting/index.js"
+    },
     "./hono": {
       "types": "./dist/hono/index.d.ts",
       "import": "./dist/hono/index.js"
