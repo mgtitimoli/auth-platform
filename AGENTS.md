@@ -4,6 +4,8 @@ This is a monorepo with the following workspaces:
 
 - `auth-api`: REST API for users and sessions (see
   [its AGENTS.md](./workspaces/auth-api/AGENTS.md))
+- `auth-api-tools`: typed client for `auth-api`, used by the backoffice (see
+  [its AGENTS.md](./workspaces/auth-api-tools/AGENTS.md))
 - `auth-backoffice`: back office to sign up, sign in and manage users (see
   [its AGENTS.md](./workspaces/auth-backoffice/AGENTS.md))
 - `auth-domain`: domain schemas, types and errors shared by `auth-api` and the

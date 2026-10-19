@@ -9,6 +9,7 @@ set -euo pipefail
 readonly ORDERED_PACKAGE_NAMES=(
   "utils"
   "auth-domain"
+  "auth-api-tools"
 )
 
 # @description Prints how to use this script.

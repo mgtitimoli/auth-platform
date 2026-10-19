@@ -10,6 +10,7 @@
     "workspaces/*"
   ],
   "scripts": {
+    "auth-api-tools:run": "yarn workspace @mgtitimoli/auth-api-tools run",
     "auth-api:run": "yarn workspace @mgtitimoli/auth-api run",
     "auth-backoffice:run": "yarn workspace @mgtitimoli/auth-backoffice run",
     "auth-domain:run": "yarn workspace @mgtitimoli/auth-domain run",
@@ -21,7 +22,7 @@
     "setup": "yarn setup:husky",
     "setup:husky": "husky",
     "utils:run": "yarn workspace @mgtitimoli/utils run",
-    "watch": "yarn build-packages && concurrently --names auth-api,auth-backoffice,auth-domain,utils --prefix-colors blue,cyan,magenta,green 'yarn auth-api:run watch' 'yarn auth-backoffice:run dev' 'yarn auth-domain:run watch' 'yarn utils:run watch'"
+    "watch": "yarn build-packages && concurrently --names auth-api,auth-api-tools,auth-backoffice,auth-domain,utils --prefix-colors blue,yellow,cyan,magenta,green 'yarn auth-api:run watch' 'yarn auth-api-tools:run watch' 'yarn auth-backoffice:run dev' 'yarn auth-domain:run watch' 'yarn utils:run watch'"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",

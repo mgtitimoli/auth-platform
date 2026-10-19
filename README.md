@@ -33,6 +33,7 @@ yarn install
 ## Workspaces
 
 - [auth-api](./workspaces/auth-api): REST API for users and sessions
+- [auth-api-tools](./workspaces/auth-api-tools): typed client for auth-api (OpenAPI types, fetch client, React Query hooks)
 - [auth-backoffice](./workspaces/auth-backoffice): back office to sign up, sign in and manage users
 - [auth-domain](./workspaces/auth-domain): domain schemas, types and errors
 - [eslint-config](./workspaces/eslint-config): ESLint and Prettier configuration

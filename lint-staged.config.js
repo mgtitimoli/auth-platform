@@ -10,6 +10,7 @@ const getPackageConfigs = packageName => ({
 
 const lintStagedConfig = {
   ...getPackageConfigs("auth-api"),
+  ...getPackageConfigs("auth-api-tools"),
   ...getPackageConfigs("auth-backoffice"),
   ...getPackageConfigs("auth-domain"),
   ...getPackageConfigs("utils"),

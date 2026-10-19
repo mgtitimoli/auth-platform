@@ -1,0 +1,64 @@
+{
+  "name": "@mgtitimoli/auth-api-tools",
+  "private": true,
+  "type": "module",
+  "description": "Typed client for auth-api: its OpenAPI types, a fetch client and React Query hooks",
+  "exports": {
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js"
+    }
+  },
+  "scripts": {
+    "build": "yarn clean && concurrently --names swc,tsc 'yarn build:swc' 'yarn build:tsc'",
+    "build:swc": "swc src -d dist --strip-leading-paths",
+    "build:tsc": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "check-types:all": "tsc --noEmit",
+    "check-types:files": "tsc-files --noEmit",
+    "clean": "rm -rf dist",
+    "lint": "eslint",
+    "update-auth-api-schema": "openapi-typescript http://localhost:8080/openapi --output src/auth-api-schema.ts",
+    "watch": "concurrently --names swc,tsc,tsc-alias 'yarn watch:swc' 'yarn watch:tsc' 'yarn watch:tsc-alias'",
+    "watch:swc": "swc src -d dist --strip-leading-paths --watch",
+    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput --watch",
+    "watch:tsc-alias": "tsc-alias -p tsconfig.build.json --watch"
+  },
+  "dependencies": {
+    "@mgtitimoli/utils": "workspace:^",
+    "@swc/helpers": "^0.5.23",
+    "openapi-fetch": "^0.17.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@mgtitimoli/eslint-config": "workspace:^",
+    "@swc/cli": "^0.8.1",
+    "@swc/core": "^1.16.18",
+    "@tanstack/react-query": "^5.104.4",
+    "@tsconfig/strictest": "^2.0.8",
+    "@types/react": "^19.3.0",
+    "concurrently": "^10.0.6",
+    "eslint": "^9.39.5",
+    "openapi-react-query": "^0.5.4",
+    "openapi-typescript": "^7.13.0",
+    "react": "^19.3.1",
+    "tsc-alias": "^1.9.8",
+    "tsc-files": "^1.1.4",
+    "typescript": "~6.0.3"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.104.4",
+    "openapi-react-query": "^0.5.4",
+    "react": "^19.3.1"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-query": {
+      "optional": true
+    },
+    "openapi-react-query": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  }
+}
