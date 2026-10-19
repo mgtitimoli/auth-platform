@@ -1459,8 +1459,10 @@ __metadata:
     "@swc/cli": ^0.8.1
     "@swc/core": ^1.16.18
     "@swc/helpers": ^0.5.23
+    "@tanstack/react-query": ^5.104.4
     "@tsconfig/strictest": ^2.0.8
     "@types/node": ^24.19.2
+    "@types/react": ^19.3.0
     concurrently: ^10.0.6
     eslint: ^9.39.5
     hono: ^4.13.13
@@ -1468,6 +1470,7 @@ __metadata:
     hono-pino: ^0.10.3
     kysely: ^0.29.7
     pino: ^10.4.0
+    react: ^19.3.1
     tsc-alias: ^1.9.8
     tsc-files: ^1.1.4
     typescript: ~6.0.3
@@ -1477,11 +1480,13 @@ __metadata:
   peerDependencies:
     "@hono/node-server": ^2.1.5
     "@standard-schema/spec": ^1.1.0
+    "@tanstack/react-query": ^5.104.4
     hono: ^4.13.13
     hono-openapi: ^1.5.0
     hono-pino: ^0.10.3
     kysely: ^0.29.7
     pino: ^10.4.0
+    react: ^19.3.1
     zod: ^4.6.7
   peerDependenciesMeta:
     "@hono/node-server":

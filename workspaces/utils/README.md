@@ -13,6 +13,7 @@ self-contained, so it can later be published as a standalone package.
 - [logging](./src/logging)
 - [object](./src/object)
 - [password](./src/password)
+- [tanstack-query](./src/tanstack-query)
 - [validation](./src/validation)
 - [zod](./src/zod)
 
