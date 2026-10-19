@@ -16,6 +16,7 @@ self-contained, so it can later be published as a standalone package.
 - [password](./src/password)
 - [react](./src/react)
 - [tanstack-query](./src/tanstack-query)
+- [tanstack-table](./src/tanstack-table)
 - [validation](./src/validation)
 - [zod](./src/zod)
 
