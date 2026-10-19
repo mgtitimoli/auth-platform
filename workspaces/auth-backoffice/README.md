@@ -49,7 +49,8 @@ The root `test:e2e` starts auth-api's test environment (its database and API
 container, so it needs Docker and ports 3000, 8080 and 5433 free: stop
 `yarn watch` first), then runs this workspace's `test:e2e`, which builds the
 backoffice and runs the [Playwright](https://playwright.dev) tests in
-[e2e](./e2e) against it.
+[e2e](./e2e) against it. It stops the test environment afterwards, so every run
+starts with an empty database.
 
 ## Docker
 

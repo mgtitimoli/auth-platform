@@ -17,16 +17,19 @@ print_usage() {
 Usage: test-e2e.sh [-h | --help]
 
 Runs the backoffice's e2e tests against auth-api's test environment (its
-database and API container). Needs Docker, and ports 3000, 8080 and 5433 free.
+database and API container), stopping it afterwards, so every run starts with
+an empty database. Needs Docker, and ports 3000, 8080 and 5433 free.
 
   -h, --help   Prints this help
 EOF
 }
 
-# @description Stops the API container, freeing its port for yarn watch.
+# @description Stops the API container and the test database: its port is free
+#   for yarn watch again, and the next run starts with an empty database.
 # @noargs
-stop_api_container() {
+stop_test_environment() {
   yarn auth-api:run container stop
+  yarn auth-api:run database stop
 }
 
 main() {
@@ -58,11 +61,11 @@ main() {
   export NEXT_PUBLIC_AUTH_API_URL="http://localhost:$AUTH_API_PORT"
 
   yarn build-packages
+
+  trap stop_test_environment EXIT
+
   yarn auth-api:run database start
   yarn auth-api:run database migrate-all
-
-  trap stop_api_container EXIT
-
   yarn auth-api:run container start
   yarn auth-backoffice:run test:e2e
 }
