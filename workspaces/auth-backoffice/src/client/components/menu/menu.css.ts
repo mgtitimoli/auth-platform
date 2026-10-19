@@ -36,10 +36,38 @@ const item = style({
   }
 });
 
+const radioItem = style([
+  item,
+  {
+    alignItems: "center",
+    display: "flex",
+    gap: space.sm
+  }
+]);
+
+const radioItemIndicator = style({
+  display: "inline-flex",
+  marginLeft: "auto"
+});
+
+const groupLabel = style({
+  color: colors.mutedForeground,
+  fontSize: fontSizes.sm,
+  padding: space.sm
+});
+
 const separator = style({
   background: colors.border,
   height: "1px",
   margin: space.sm + " 0"
 });
 
-export {item, popup, separator, trigger};
+export {
+  groupLabel,
+  item,
+  popup,
+  radioItem,
+  radioItemIndicator,
+  separator,
+  trigger
+};

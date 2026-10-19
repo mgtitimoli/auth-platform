@@ -45,7 +45,14 @@ it, private pages go to `/sign-in`; with it, the sign-in and sign-up pages go to
 Styles use [vanilla-extract](https://vanilla-extract.style). The light and dark
 themes are CSS variables (`applicationThemeVars`, in
 [application-theme.css.ts](./src/client/components/application/application-theme.css.ts)),
-and the dark one applies when the operating system prefers it.
+selected by `<html>`'s `data-theme` attribute, and following the operating
+system when there's none.
+
+Signed-in users choose Light, Dark or System in the account menu.
+[@wrksz/themes](https://github.com/jakubwarkusz/themes) keeps the choice in
+`localStorage` (in sync across tabs) and applies it before the first paint.
+When the session ends (logging out, or the API rejecting it), the theme goes
+back to System, so the next user starts from the operating system's theme.
 
 ## Testing
 

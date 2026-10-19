@@ -77,15 +77,16 @@ No Server Components or Server Actions: screens and components start with
 calls. The API's URL comes from `NEXT_PUBLIC_AUTH_API_URL`, inlined at build
 time (`.env.local` locally).
 
-- `proxy.ts` only sees whether the session cookie exists. Private screens also
-  use `useRedirectIfUnauthorized`, which takes the user to `/sign-in` when the
-  API rejects the session (the API's 401 removes the dead cookie, so the proxy
-  lets them through).
+- `proxy.ts` only sees whether the session cookie exists. The private layout
+  also uses `useHandleUnauthorized(onUnauthorized)`, which runs when the API
+  rejects the session (the API's 401 removes the dead cookie, so the proxy
+  lets them through). A session ends the same way whether the user logs out or
+  the API rejects it: the private layout handles both with one callback.
 - Queries don't retry client errors (4xx): they fail the same way again.
 - Components call `authApi.useQuery` / `useMutation` directly, without a hook
   per endpoint: the query cache already dedupes and shares the data, so a
   wrapper would only be an indirection. Session flows that do more than one
-  call are hooks (`useSignOut(onSignOut)`), and whatever ends a session clears
+  call are hooks with callbacks (`useSignOut(onSignOut)`), and whatever ends a session clears
   the query cache, so the next user never sees the previous one's data.
 
 ## Styling
@@ -95,6 +96,10 @@ time (`.env.local` locally).
 - Use the theme's variables (`applicationThemeVars` from
   `@/client/components/application/application-theme.css`), never literal
   colors or sizes: they switch between the light and dark themes through CSS.
+- The theme choice comes from `@wrksz/themes` (`useTheme()` from
+  `@wrksz/themes/client`); its provider, in the application layout, sets
+  `data-theme`, which the theme's CSS reads. Whatever ends a session sets it
+  back to `system`.
 - Theme colors use `rgb(r g b)`, with `/ alpha` for transparency
   (`rgb(0 0 0 / 0.5)`): readable channels, one notation for everything.
 
@@ -108,7 +113,10 @@ time (`.env.local` locally).
 - Tests never depend on each other's data: each one signs up with a unique
   email. Helpers shared by several test files live in `e2e/utils/`.
 - Set `colorScheme` in a test (`test.use({colorScheme: "dark"})`) when the
-  system theme matters.
+  system theme matters, and check which theme applies through the computed
+  `color-scheme` (`getColorScheme`), not through color values.
+- Test our code, not libraries': e.g. the account menu's theme choice and
+  sign-out's reset, but not that the theme library persists the choice.
 
 ## Type Checking
 

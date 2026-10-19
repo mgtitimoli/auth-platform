@@ -10,7 +10,6 @@ import type {
   MutationKey,
   QueryCacheNotifyEvent
 } from "@tanstack/react-query";
-import {useRouter} from "next/navigation";
 import {useState} from "react";
 
 type CacheEvent = MutationCacheNotifyEvent | QueryCacheNotifyEvent;
@@ -41,30 +40,28 @@ const isUnauthorizedErrorEvent = (event: CacheEvent) => {
   );
 };
 
-const useRedirectIfUnauthorized = () => {
+const useHandleUnauthorized = (onUnauthorized: () => unknown) => {
   const queryClient = useQueryClient();
 
-  const router = useRouter();
+  const [isUnauthorized, setIsUnauthorized] = useState(false);
 
-  const [isRedirecting, setIsRedirecting] = useState(false);
-
-  const redirectIfUnauthorized = (event: CacheEvent) => {
+  const handleCacheEvent = (event: CacheEvent) => {
     if (!isUnauthorizedErrorEvent(event)) {
       return;
     }
 
-    setIsRedirecting(true);
+    setIsUnauthorized(true);
 
     // The previous user's data must not survive a client-side navigation
     queryClient.clear();
 
-    router.replace("/sign-in");
+    onUnauthorized();
   };
 
-  useQueryCacheListener(redirectIfUnauthorized);
-  useMutationCacheListener(redirectIfUnauthorized);
+  useQueryCacheListener(handleCacheEvent);
+  useMutationCacheListener(handleCacheEvent);
 
-  return {isRedirecting};
+  return {isUnauthorized};
 };
 
-export {useRedirectIfUnauthorized};
+export {useHandleUnauthorized};

@@ -1,6 +1,6 @@
 import {expect, test} from "@playwright/test";
 
-import {createSignUpInput, signUp} from "./utils";
+import {addStaleSessionCookie, createSignUpInput, signUp} from "./utils";
 
 test.describe("without a session", () => {
   test("/ goes to sign-up", async ({page}) => {
@@ -34,10 +34,7 @@ test.describe("with a stale session", () => {
     context,
     page
   }) => {
-    // A cookie whose session doesn't exist, as after a terminated session
-    await context.addCookies([
-      {domain: "localhost", name: "session", path: "/", value: "stale"}
-    ]);
+    await addStaleSessionCookie(context);
 
     await page.goto("/users");
 

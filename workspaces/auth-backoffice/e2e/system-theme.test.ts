@@ -1,7 +1,6 @@
 import {expect, test} from "@playwright/test";
 
-const getBodyBackgroundColor = () =>
-  getComputedStyle(document.body).backgroundColor;
+import {getColorScheme} from "./utils";
 
 test.describe("with a light system theme", () => {
   test.use({colorScheme: "light"});
@@ -9,9 +8,7 @@ test.describe("with a light system theme", () => {
   test("shows the light theme", async ({page}) => {
     await page.goto("/");
 
-    expect(await page.evaluate(getBodyBackgroundColor)).toBe(
-      "rgb(255, 255, 255)"
-    );
+    expect(await getColorScheme(page)).toBe("light");
   });
 });
 
@@ -21,6 +18,6 @@ test.describe("with a dark system theme", () => {
   test("shows the dark theme", async ({page}) => {
     await page.goto("/");
 
-    expect(await page.evaluate(getBodyBackgroundColor)).toBe("rgb(10, 10, 10)");
+    expect(await getColorScheme(page)).toBe("dark");
   });
 });

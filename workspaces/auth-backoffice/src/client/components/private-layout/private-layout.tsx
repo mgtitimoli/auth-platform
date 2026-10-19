@@ -2,19 +2,18 @@
 
 import type {ReactNode} from "react";
 
-import {useRedirectIfUnauthorized} from "@/client/utils/auth-api";
-
 import {AccountMenu} from "./account-menu";
 import * as styles from "./private-layout.css";
+import {usePrivateLayout} from "./use-private-layout";
 
 type Props = {
   children: ReactNode;
 };
 
 const PrivateLayout = ({children}: Props) => {
-  const {isRedirecting} = useRedirectIfUnauthorized();
+  const {handleSessionEnd, isUnauthorized} = usePrivateLayout();
 
-  if (isRedirecting) {
+  if (isUnauthorized) {
     return null;
   }
 
@@ -22,7 +21,7 @@ const PrivateLayout = ({children}: Props) => {
     <>
       <header className={styles.header}>
         <span className={styles.appName}>Auth Backoffice</span>
-        <AccountMenu />
+        <AccountMenu onSignOut={handleSessionEnd} />
       </header>
       <main className={styles.main}>{children}</main>
     </>
