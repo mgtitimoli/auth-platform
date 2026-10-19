@@ -51,6 +51,15 @@ No Server Components or Server Actions: screens and components start with
   `<Component>Props` (`ComponentProps<typeof Component>`) and what it passes
   through `Exposed<Component>Props` (`Omit<…>` of what it controls itself):
   `type Props = ExposedFieldControlProps & {label: string};`.
+- Tables are [TanStack Table](https://tanstack.com/table) instances (headless)
+  rendered by the shared `Table` component: a screen registers the features it
+  needs, declares its columns with a column helper at module scope, and passes
+  `useTable`'s result to `Table`. `Table` renders any table, so it uses a
+  feature's APIs only after checking the table registers it (the predicates in
+  `@mgtitimoli/utils/tanstack-table`).
+- Paginated lists keep the page in component state and show the previous page
+  while the next one loads (TanStack Query's `keepPreviousData`), with the
+  list marked busy and the pagination disabled meanwhile.
 
 ## Forms
 

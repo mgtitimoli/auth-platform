@@ -9,7 +9,11 @@ type Names = Pick<SignUpInput, "firstName" | "lastName">;
 const expectSignedInAs = async (page: Page, {firstName, lastName}: Names) => {
   await openAccountMenu(page);
 
-  await expect(page.getByText(firstName + " " + lastName)).toBeVisible();
+  await expect(
+    page
+      .getByRole("menu", {name: "Account"})
+      .getByText(firstName + " " + lastName)
+  ).toBeVisible();
 
   await page.keyboard.press("Escape");
 };
