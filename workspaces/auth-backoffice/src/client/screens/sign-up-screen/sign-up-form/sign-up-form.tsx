@@ -1,59 +1,31 @@
 "use client";
 
-import {TextField} from "@/client/components/fields";
-import {Form} from "@/client/components/form";
+import type {ComponentProps} from "react";
+
+import {NewUserForm} from "@/client/components/new-user-form";
 
 import {useSignUpForm} from "./use-sign-up-form";
 
-type Props = {
-  isDisabled?: boolean;
+type NewUserFormProps = ComponentProps<typeof NewUserForm>;
+
+type ExposedNewUserFormProps = Omit<
+  NewUserFormProps,
+  "onSubmit" | "submitLabel"
+>;
+
+type Props = ExposedNewUserFormProps & {
   onSignUp: () => unknown;
 };
 
-const SignUpForm = ({isDisabled = false, onSignUp}: Props) => {
-  const {errors, isSubmitting, register, submit} = useSignUpForm({onSignUp});
+const SignUpForm = ({onSignUp, ...newUserFormProps}: Props) => {
+  const {signUp} = useSignUpForm({onSignUp});
 
   return (
-    <Form
-      error={errors.root?.message}
-      isDisabled={isDisabled || isSubmitting}
-      onSubmit={submit}
+    <NewUserForm
+      {...newUserFormProps}
+      onSubmit={signUp}
       submitLabel="Sign up"
-    >
-      <TextField
-        autoComplete="given-name"
-        error={errors.firstName?.message}
-        label="First name"
-        {...register("firstName")}
-      />
-      <TextField
-        autoComplete="family-name"
-        error={errors.lastName?.message}
-        label="Last name"
-        {...register("lastName")}
-      />
-      <TextField
-        autoComplete="email"
-        error={errors.email?.message}
-        label="Email"
-        type="email"
-        {...register("email")}
-      />
-      <TextField
-        autoComplete="new-password"
-        error={errors.password?.message}
-        label="Password"
-        type="password"
-        {...register("password")}
-      />
-      <TextField
-        autoComplete="new-password"
-        error={errors.passwordConfirmation?.message}
-        label="Confirm password"
-        type="password"
-        {...register("passwordConfirmation")}
-      />
-    </Form>
+    />
   );
 };
 

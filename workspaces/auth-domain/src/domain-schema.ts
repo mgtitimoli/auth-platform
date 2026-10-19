@@ -5,6 +5,8 @@ import {userStatusSchema} from "./user-status";
 
 type CreateUserInput = z.infer<typeof createUserInputSchema>;
 
+type NewUserInput = z.infer<typeof newUserInputSchema>;
+
 type OpaqueToken = z.infer<typeof opaqueTokenSchema>;
 
 type Session = z.infer<typeof sessionSchema>;
@@ -73,14 +75,16 @@ const sessionSchema = z
   })
   .meta({ref: "Session"});
 
-const createUserInputSchema = z
-  .object({
-    email: emailSchema,
-    firstName: nameSchema,
-    lastName: nameSchema,
-    password: passwordSchema
-  })
-  .meta({ref: "CreateUserInput"});
+// The inputs that create a user derive from it, so either can gain fields
+// without the other inheriting them
+const newUserInputSchema = z.object({
+  email: emailSchema,
+  firstName: nameSchema,
+  lastName: nameSchema,
+  password: passwordSchema
+});
+
+const createUserInputSchema = newUserInputSchema.meta({ref: "CreateUserInput"});
 
 const updateUserInputSchema = z
   .strictObject({
@@ -92,14 +96,7 @@ const updateUserInputSchema = z
   .refine(hasEntries, {message: "At least one field must be given"})
   .meta({ref: "UpdateUserInput"});
 
-const signUpInputSchema = z
-  .object({
-    email: emailSchema,
-    firstName: nameSchema,
-    lastName: nameSchema,
-    password: passwordSchema
-  })
-  .meta({ref: "SignUpInput"});
+const signUpInputSchema = newUserInputSchema.meta({ref: "SignUpInput"});
 
 // The password policy is only checked on sign-up, so sign-in doesn't reveal it
 const signInInputSchema = z
@@ -111,6 +108,7 @@ const signInInputSchema = z
 
 export {
   createUserInputSchema,
+  newUserInputSchema,
   opaqueTokenSchema,
   passwordSchema,
   sessionSchema,
@@ -122,6 +120,7 @@ export {
 };
 export type {
   CreateUserInput,
+  NewUserInput,
   OpaqueToken,
   Session,
   SignInInput,

@@ -1,12 +1,20 @@
 "use client";
 
+import type {ComponentProps} from "react";
+
 import {TextField} from "@/client/components/fields";
 import {Form} from "@/client/components/form";
 
 import {useSignInForm} from "./use-sign-in-form";
 
-type Props = {
-  isDisabled?: boolean;
+type FormProps = ComponentProps<typeof Form>;
+
+type ExposedFormProps = Omit<
+  FormProps,
+  "children" | "error" | "onSubmit" | "submitLabel"
+>;
+
+type Props = ExposedFormProps & {
   onSignIn: () => unknown;
 };
 

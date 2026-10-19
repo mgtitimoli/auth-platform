@@ -28,7 +28,7 @@ src/
   `application-layout.tsx` is the root layout (a server component: `metadata`,
   `<html>`, `<body>`) and `application.tsx` is its client part (providers).
 - `src/client/screens/<name>-screen/` holds a screen, its hook and its own
-  components, each in its own folder (`sign-up-screen/sign-up-form/`).
+  components, each in its own folder (`sign-in-screen/sign-in-form/`).
 - `src/client/components/<name>/` holds a shared component (`<name>.tsx`,
   `<name>.css.ts` and an `index.ts`).
 - A component or util lives next to its only user; once several use it, it
@@ -45,6 +45,9 @@ No Server Components or Server Actions: screens and components start with
   likely to grow, lives in a sibling `use-<name>.ts` hook.
 - Components report what happened through `on<Event>` callbacks and never
   decide what comes next (navigating, closing a dialog): their container does.
+  Callback props are always named as event handlers, never as actions
+  (`onSubmit`, not `submit`), even when the container does the work in the
+  handler and the component awaits it.
 - Interactive components wrap Base UI, styled through `className` and its
   `data-*` attributes.
 - A component wrapping another names the wrapped one's props
@@ -71,7 +74,10 @@ No Server Components or Server Actions: screens and components start with
   above the submit button), so each form only lists its fields.
 - A form owns its request, and maps API errors that belong to a field onto it
   (`AuthApiResponseError` and its status); any other failure goes to the form's
-  `root` error.
+  `root` error. A form shared by flows with different requests (the
+  `NewUserForm`) can't own one: each flow wraps it in its own form
+  (`SignUpForm`), which owns the request and passes it as the shared form's
+  `onSubmit`; the shared form awaits it and maps a rejection the same way.
 - Field components take the error as a string, so they don't depend on
   `react-hook-form`.
 - A form is disabled while its request is pending or while its container says
