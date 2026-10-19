@@ -4,6 +4,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 FROM base AS builder
 
+# Inlined into the client bundle by next build, so each environment's image is
+# built with its own value
+ARG NEXT_PUBLIC_AUTH_API_URL
+
 WORKDIR /app
 
 COPY .yarnrc.yml ./
@@ -11,17 +15,35 @@ COPY .yarn/plugins ./.yarn/plugins
 COPY .yarn/releases ./.yarn/releases
 COPY package.json yarn.lock ./
 
-# Only its manifest is needed: auth-backoffice depends on it (for linting), so
+# Only its manifest is needed: the workspaces depend on it (for linting), so
 # yarn needs it to resolve the workspace graph
 COPY workspaces/eslint-config/package.json ./workspaces/eslint-config/
+
+COPY workspaces/utils/.swcrc ./workspaces/utils/
+COPY workspaces/utils/tsconfig*.json ./workspaces/utils/
+COPY workspaces/utils/package.json ./workspaces/utils/
+COPY workspaces/utils/src ./workspaces/utils/src
+
+COPY workspaces/auth-domain/.swcrc ./workspaces/auth-domain/
+COPY workspaces/auth-domain/tsconfig*.json ./workspaces/auth-domain/
+COPY workspaces/auth-domain/package.json ./workspaces/auth-domain/
+COPY workspaces/auth-domain/src ./workspaces/auth-domain/src
+
+COPY workspaces/auth-api-tools/.swcrc ./workspaces/auth-api-tools/
+COPY workspaces/auth-api-tools/tsconfig*.json ./workspaces/auth-api-tools/
+COPY workspaces/auth-api-tools/package.json ./workspaces/auth-api-tools/
+COPY workspaces/auth-api-tools/src ./workspaces/auth-api-tools/src
 
 COPY workspaces/auth-backoffice/next.config.ts ./workspaces/auth-backoffice/
 COPY workspaces/auth-backoffice/tsconfig.json ./workspaces/auth-backoffice/
 COPY workspaces/auth-backoffice/package.json ./workspaces/auth-backoffice/
 COPY workspaces/auth-backoffice/src ./workspaces/auth-backoffice/src
 
-RUN yarn workspaces focus @mgtitimoli/auth-backoffice
+RUN yarn workspaces focus @mgtitimoli/auth-backoffice @mgtitimoli/auth-api-tools @mgtitimoli/auth-domain @mgtitimoli/utils
 
+RUN yarn workspace @mgtitimoli/utils build
+RUN yarn workspace @mgtitimoli/auth-domain build
+RUN yarn workspace @mgtitimoli/auth-api-tools build
 RUN yarn workspace @mgtitimoli/auth-backoffice build
 
 FROM base AS production

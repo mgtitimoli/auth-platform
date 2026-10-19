@@ -17,6 +17,19 @@ only the backoffice:
 yarn auth-backoffice:run dev
 ```
 
+## Pages
+
+| Path | Page |
+|---|---|
+| `/sign-up` | Sign-up form: creates the user, signs them in and goes to `/users` |
+| `/users` | Greets the signed-in user (`Hello <first name>`) |
+
+## Environment variables
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_AUTH_API_URL` | The API's URL. Inlined at build time, so each environment's build needs its own; [.env.local](./.env.local) has the local one |
+
 ## Theme
 
 Styles use [vanilla-extract](https://vanilla-extract.style). The light and dark
@@ -42,7 +55,9 @@ backoffice and runs the [Playwright](https://playwright.dev) tests in
 From the repository root:
 
 ```sh
-docker build -f Dockerfile.auth-backoffice -t auth-backoffice .
+docker build -f Dockerfile.auth-backoffice \
+  --build-arg NEXT_PUBLIC_AUTH_API_URL=https://… \
+  -t auth-backoffice .
 docker run -p 3000:3000 auth-backoffice
 ```
 

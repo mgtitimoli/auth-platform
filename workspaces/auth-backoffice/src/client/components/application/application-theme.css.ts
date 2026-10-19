@@ -8,8 +8,11 @@ const applicationThemeVars = createThemeContract({
   colors: {
     background: null,
     border: null,
+    danger: null,
     foreground: null,
-    mutedForeground: null
+    mutedForeground: null,
+    primary: null,
+    primaryForeground: null
   },
   fontFamilies: {
     body: null
@@ -57,8 +60,11 @@ const lightValues = {
   colors: {
     background: "rgb(255 255 255)",
     border: "rgb(229 229 229)",
+    danger: "rgb(220 38 38)",
     foreground: "rgb(10 10 10)",
-    mutedForeground: "rgb(115 115 115)"
+    mutedForeground: "rgb(115 115 115)",
+    primary: "rgb(23 23 23)",
+    primaryForeground: "rgb(250 250 250)"
   }
 };
 
@@ -67,8 +73,11 @@ const darkValues = {
   colors: {
     background: "rgb(10 10 10)",
     border: "rgb(38 38 38)",
+    danger: "rgb(248 113 113)",
     foreground: "rgb(250 250 250)",
-    mutedForeground: "rgb(163 163 163)"
+    mutedForeground: "rgb(163 163 163)",
+    primary: "rgb(250 250 250)",
+    primaryForeground: "rgb(23 23 23)"
   }
 };
 

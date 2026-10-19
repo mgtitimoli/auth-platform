@@ -20,19 +20,57 @@ src/
 
 - `src/app` only has routing files: each `page.tsx` is a one-line re-export of
   a screen (`export {HomeScreen as default} from "@/client/screens/home-screen";`),
-  and `layout.tsx` re-exports the application layout.
+  and `layout.tsx` re-exports the application layout. Pages are grouped in the
+  `(public)` and `(private)` route groups, which don't appear in the URL.
 - `src/client/components/application/` is the app shell:
   `application-layout.tsx` is the root layout (a server component: `metadata`,
   `<html>`, `<body>`) and `application.tsx` is its client part (providers).
-- `src/client/screens/<name>-screen/` holds a screen (`<name>-screen.tsx`), its
-  hooks (`use-<name>-screen.ts`, …), its own components and an `index.ts`.
-- `src/client/components/<name>/` holds a shared component (`<name>.tsx` and an
-  `index.ts`).
+- `src/client/screens/<name>-screen/` holds a screen, its hook and its own
+  components, each in its own folder (`sign-up-screen/sign-up-form/`).
+- `src/client/components/<name>/` holds a shared component (`<name>.tsx`,
+  `<name>.css.ts` and an `index.ts`).
+- A component or util lives next to its only user; once several use it, it
+  moves to the `components/` or `utils/` folder of their closest common parent.
 
 ## Rendering
 
 No Server Components or Server Actions: screens and components start with
 `"use client"`. The only server component is the application layout.
+
+## Components
+
+- Components are mostly markup: logic that is more than trivial, or that is
+  likely to grow, lives in a sibling `use-<name>.ts` hook.
+- Components report what happened through `on<Event>` callbacks and never
+  decide what comes next (navigating, closing a dialog): their container does.
+- Interactive components wrap Base UI, styled through `className` and its
+  `data-*` attributes.
+- A component wrapping another names the wrapped one's props
+  `<Component>Props` (`ComponentProps<typeof Component>`) and what it passes
+  through `Exposed<Component>Props` (`Omit<…>` of what it controls itself):
+  `type Props = ExposedFieldControlProps & {label: string};`.
+
+## Forms
+
+- `react-hook-form` with the zod resolver, validating against the domain
+  schemas (extended only with what the form adds). Forms set `noValidate`, so
+  zod is the only validator.
+- A form owns its request, and maps API errors that belong to a field onto it
+  (`AuthApiResponseError` and its status); any other failure goes to the form's
+  `root` error.
+- Field components take the error as a string, so they don't depend on
+  `react-hook-form`.
+- A form is disabled while its request is pending or while its container says
+  so (an `isDisabled` prop): `router.push` returns nothing to await, so a
+  screen that navigates after success wraps it in `useTransition`.
+
+## API
+
+`src/client/utils/auth-api/` holds the module-level clients (from
+`@mgtitimoli/auth-api-tools`): `authApi` for hooks
+(`authApi.useMutation("post", "/auth/sign-up")`) and `authApiClient` for plain
+calls. The API's URL comes from `NEXT_PUBLIC_AUTH_API_URL`, inlined at build
+time (`.env.local` locally).
 
 ## Styling
 
@@ -51,6 +89,8 @@ No Server Components or Server Actions: screens and components start with
   auth-api's test environment (run `yarn auth-backoffice:run test:e2e:install`
   once first). The backoffice's own `test:e2e` expects an API at
   `NEXT_PUBLIC_AUTH_API_URL`.
+- Tests never depend on each other's data: each one signs up with a unique
+  email.
 - Set `colorScheme` in a test (`test.use({colorScheme: "dark"})`) when the
   system theme matters.
 
