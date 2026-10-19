@@ -21,6 +21,7 @@
     "run-all-parallel": "yarn workspaces foreach --parallel --verbose run",
     "setup": "yarn setup:husky",
     "setup:husky": "husky",
+    "test:e2e": "scripts/test-e2e.sh",
     "utils:run": "yarn workspace @mgtitimoli/utils run",
     "watch": "yarn build-packages && concurrently --names auth-api,auth-api-tools,auth-backoffice,auth-domain,utils --prefix-colors blue,yellow,cyan,magenta,green 'yarn auth-api:run watch' 'yarn auth-api-tools:run watch' 'yarn auth-backoffice:run dev' 'yarn auth-domain:run watch' 'yarn utils:run watch'"
   },

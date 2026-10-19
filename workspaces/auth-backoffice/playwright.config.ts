@@ -16,7 +16,7 @@ const playwrightConfig = defineConfig({
   },
   webServer: {
     command: "yarn start",
-    reuseExistingServer: !isCi,
+    reuseExistingServer: false,
     url: baseUrl
   }
 });

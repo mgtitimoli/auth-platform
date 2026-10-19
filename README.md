@@ -68,9 +68,7 @@ everything on every change (see
 | `run-all-parallel` | Same as `run-all`, in parallel |
 | `<workspace>:run` | Runs the given script in a workspace (for example `yarn auth-api:run build`) |
 | `setup` | Installs the git hooks |
-
-The backoffice's end-to-end tests run separately (`yarn auth-backoffice:run test:e2e`,
-see [auth-backoffice](./workspaces/auth-backoffice)).
+| `test:e2e` | Runs the backoffice's end-to-end tests against auth-api's test environment (see [auth-backoffice](./workspaces/auth-backoffice)) |
 
 Type checking (`yarn run-all check-types:all`) and tests (`yarn run-all test`)
 need the packages built first (`yarn build-packages`), because workspaces

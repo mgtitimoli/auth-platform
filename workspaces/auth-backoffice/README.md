@@ -28,11 +28,14 @@ and the dark one applies when the operating system prefers it.
 
 ```sh
 yarn auth-backoffice:run test:e2e:install   # once: downloads Playwright's Chromium
-yarn auth-backoffice:run test:e2e
+yarn test:e2e                               # from the repository root
 ```
 
-`test:e2e` builds the backoffice and runs the [Playwright](https://playwright.dev)
-tests in [e2e](./e2e) against it.
+The root `test:e2e` starts auth-api's test environment (its database and API
+container, so it needs Docker and ports 3000, 8080 and 5433 free: stop
+`yarn watch` first), then runs this workspace's `test:e2e`, which builds the
+backoffice and runs the [Playwright](https://playwright.dev) tests in
+[e2e](./e2e) against it.
 
 ## Docker
 
@@ -53,7 +56,7 @@ and only the files it needs, without installing `node_modules`.
 | `dev` | Runs the backoffice in development mode |
 | `build` | Builds the backoffice (the standalone output, with its static assets) |
 | `start` | Runs the built backoffice (the standalone server, as in Docker) |
-| `test:e2e` | Builds the backoffice and runs the e2e tests |
+| `test:e2e` | Builds the backoffice and runs the e2e tests (against an API already running; see Testing) |
 | `test:e2e:install` | Installs the Playwright browser (Chromium) |
 | `lint` | Lints the workspace |
 | `check-types:all` | Generates Next's types (`next typegen`) and type-checks the workspace |

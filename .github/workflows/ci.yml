@@ -53,8 +53,9 @@ jobs:
       - name: Install the Playwright browser
         run: yarn auth-backoffice:run test:e2e:install
 
+      # Starts auth-api's test database and API container with docker compose
       - name: Test
-        run: yarn auth-backoffice:run test:e2e
+        run: yarn test:e2e
 
       - name: Upload the Playwright report
         if: failure()

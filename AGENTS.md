@@ -53,6 +53,10 @@ To run the tests of a workspace, run `yarn <workspace>:run test`; for all
 workspaces, `yarn run-all test`. auth-api's tests need Docker (they start their
 own database).
 
+The backoffice's end-to-end tests run from the root with `yarn test:e2e`, which
+starts auth-api's test environment (Docker) first: the root is the only place
+that combines workspaces, and workspaces never start each other.
+
 ## Commits
 
 Commit messages follow Conventional Commits with a sentence-case subject

@@ -9,7 +9,7 @@
   "scripts": {
     "build": "next build && cp -r .next/static .next/standalone/workspaces/auth-backoffice/.next/",
     "check-types:all": "next typegen && tsc --noEmit",
-    "check-types:files": "next typegen && tsc-files --noEmit",
+    "check-types:files": "next typegen && tsc-files --noEmit next-env.d.ts",
     "dev": "next dev --port 3000",
     "lint": "eslint",
     "start": "PORT=3000 node .next/standalone/workspaces/auth-backoffice/server.js",

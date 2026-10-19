@@ -45,8 +45,10 @@ No Server Components or Server Actions: screens and components start with
 ## Testing
 
 - e2e tests live in `e2e/` (`*.test.ts`), with Playwright against the built
-  backoffice: `yarn auth-backoffice:run test:e2e` (run
-  `yarn auth-backoffice:run test:e2e:install` once first).
+  backoffice. Run them from the root with `yarn test:e2e`, which also starts
+  auth-api's test environment (run `yarn auth-backoffice:run test:e2e:install`
+  once first). The backoffice's own `test:e2e` expects an API at
+  `NEXT_PUBLIC_AUTH_API_URL`.
 - Set `colorScheme` in a test (`test.use({colorScheme: "dark"})`) when the
   system theme matters.
 
