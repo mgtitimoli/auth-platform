@@ -60,7 +60,8 @@ that combines workspaces, and workspaces never start each other.
 ## Commits
 
 Commit messages follow Conventional Commits with a sentence-case subject
-(enforced by commitlint).
+(enforced by commitlint), plus a short body: what changes and why, concise
+and without listing files (git already shows them).
 
 ## Secrets
 

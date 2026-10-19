@@ -93,7 +93,8 @@ yarn setup
 ```
 
 Commit messages follow [Conventional Commits](https://www.conventionalcommits.org)
-with a sentence-case subject (for example, `feat: Add sign-in page`). The
+with a sentence-case subject (for example, `feat: Add sign-in page`), plus a
+short body explaining what changes and why. The
 `commit-msg` hook checks them with [commitlint](https://commitlint.js.org), and the
 `pre-commit` hook lints the staged files with
 [lint-staged](https://github.com/lint-staged/lint-staged).
