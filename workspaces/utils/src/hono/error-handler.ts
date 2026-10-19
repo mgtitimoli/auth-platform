@@ -30,7 +30,10 @@ const errorHandler =
 
     const response = error.getResponse();
 
-    const headers = Object.fromEntries(response.headers.entries());
+    // The body is rebuilt as JSON, so the original body's type doesn't apply
+    const headers = Object.fromEntries(
+      [...response.headers].filter(([name]) => name !== "content-type")
+    );
 
     const httpStatusCode = withHttpStatusCode.getFrom(error.status);
 
