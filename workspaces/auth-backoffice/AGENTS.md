@@ -41,6 +41,8 @@ No Server Components or Server Actions: screens and components start with
 - Use the theme's variables (`applicationThemeVars` from
   `@/client/components/application/application-theme.css`), never literal
   colors or sizes: they switch between the light and dark themes through CSS.
+- Theme colors use `rgb(r g b)`, with `/ alpha` for transparency
+  (`rgb(0 0 0 / 0.5)`): readable channels, one notation for everything.
 
 ## Testing
 

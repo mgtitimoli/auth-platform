@@ -55,20 +55,20 @@ const sharedValues = {
 const lightValues = {
   ...sharedValues,
   colors: {
-    background: "#ffffff",
-    border: "#e5e5e5",
-    foreground: "#0a0a0a",
-    mutedForeground: "#737373"
+    background: "rgb(255 255 255)",
+    border: "rgb(229 229 229)",
+    foreground: "rgb(10 10 10)",
+    mutedForeground: "rgb(115 115 115)"
   }
 };
 
 const darkValues = {
   ...sharedValues,
   colors: {
-    background: "#0a0a0a",
-    border: "#262626",
-    foreground: "#fafafa",
-    mutedForeground: "#a3a3a3"
+    background: "rgb(10 10 10)",
+    border: "rgb(38 38 38)",
+    foreground: "rgb(250 250 250)",
+    mutedForeground: "rgb(163 163 163)"
   }
 };
 
