@@ -21,10 +21,9 @@ import {userRouter} from "./routers/user-router";
 import * as sessionService from "./services/session-service";
 import {environmentNames} from "./utils/environment/environment-name";
 import {environmentVariables} from "./utils/environment/environment-variables";
-import {
-  sessionCookieName,
-  sessionCookieSecuritySchemes
-} from "./utils/session-cookie/session-cookie";
+import * as withSessionCookie from "./utils/session-cookie/session-cookie";
+
+const {sessionCookieName, sessionCookieSecuritySchemes} = withSessionCookie;
 
 const isLocalEnvironment =
   environmentVariables.ENVIRONMENT_NAME === environmentNames.local;
@@ -88,7 +87,8 @@ router.use(
     sessionMiddleware({
       cookieName: sessionCookieName,
       getSession: sessionId =>
-        sessionService.getActiveSession({database, id: sessionId})
+        sessionService.getActiveSession({database, id: sessionId}),
+      onInvalidCookie: withSessionCookie.remove
     })
   )
 );

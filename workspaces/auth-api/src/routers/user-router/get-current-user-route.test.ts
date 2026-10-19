@@ -1,7 +1,9 @@
+import * as withResponse from "@mgtitimoli/utils/fetch/response";
 import {getErrorFrom} from "@mgtitimoli/utils/hono/response";
 import {describe, expect, it} from "vitest";
 
 import {router} from "@/router";
+import {sessionCookieName} from "@/utils/session-cookie/session-cookie";
 import {createSignUpInput, signUp} from "@/utils/testing";
 
 import {getCurrentUserSucceededResponseSchema} from "./get-current-user-route";
@@ -34,13 +36,16 @@ describe("GET /users/me", () => {
 
     expect(response.status).toBe(401);
     expect(await getErrorFrom(response)).toBe("Unauthorized");
+    expect(withResponse.getCookie(response, sessionCookieName)).toBeUndefined();
   });
 
-  it("rejects an unknown session", async () => {
+  it("rejects an unknown session, removing its cookie", async () => {
     await signUp();
 
     const response = await getCurrentUser("session=unknown");
 
     expect(response.status).toBe(401);
+    expect(withResponse.getCookie(response, sessionCookieName)).toBe("");
+    expect(response.headers.getSetCookie().join()).toMatch(/Max-Age=0/);
   });
 });

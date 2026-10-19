@@ -97,7 +97,7 @@ router.use(loggerMiddleware({isJsonLogger: false, logger}));
 
 #### Description
 
-Function that creates a middleware that reads the session id from the given cookie, loads the session with the given `getSession`, and sets it in the context (`c.get("session")`). It responds 401 when there's no cookie or `getSession` returns nothing.
+Function that creates a middleware that reads the session id from the given cookie, loads the session with the given `getSession`, and sets it in the context (`c.get("session")`). It responds 401 when there's no cookie or `getSession` returns nothing; in the second case it first calls `onInvalidCookie`, if given, so the app can react to a cookie that no longer matches a session (e.g. remove it).
 
 #### Example
 
@@ -107,7 +107,8 @@ import {sessionMiddleware} from "@mgtitimoli/utils/hono/middlewares";
 router.use(
   sessionMiddleware({
     cookieName: "session",
-    getSession: sessionId => sessionRepository.getActiveSession(sessionId)
+    getSession: sessionId => sessionRepository.getActiveSession(sessionId),
+    onInvalidCookie: c => deleteCookie(c, "session", {path: "/"})
   })
 );
 ```

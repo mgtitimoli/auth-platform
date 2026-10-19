@@ -91,7 +91,12 @@ yarn auth-api:run env run --environment test yarn database cli -c "select count(
   the `sessions` table could use active sessions until they're terminated.
 - Sign-up and sign-in send the session id only in an `HttpOnly` cookie, never in
   the body, so the page's JavaScript can't read it. Every other request must
-  include that cookie (browsers do it automatically).
+  include that cookie (browsers do it automatically). A cookie that no longer
+  matches an active session is removed by the 401 that rejects it, since only
+  the API can remove an `HttpOnly` cookie.
+- Sessions last until they're terminated (sign-out, deactivation, deletion):
+  there's no expiry, so the cookie has no `Max-Age` either. A cookie lifetime
+  without a matching server-side one would only hide the session, not end it.
 
 ### Seeds
 

@@ -11,6 +11,8 @@ type GetSession<TSession> = (
 type Params<TSession> = {
   cookieName: string;
   getSession: GetSession<TSession>;
+  // A cookie was sent, but no active session matches it
+  onInvalidCookie?: (c: Context) => unknown;
 };
 
 type SessionMiddlewareEnv<TSession> = {
@@ -21,14 +23,21 @@ type SessionMiddlewareEnv<TSession> = {
 
 const sessionMiddleware = <TSession>({
   cookieName,
-  getSession
+  getSession,
+  onInvalidCookie
 }: Params<TSession>): MiddlewareHandler<SessionMiddlewareEnv<TSession>> =>
   createMiddleware<SessionMiddlewareEnv<TSession>>(async (c, next) => {
     const sessionId = getCookie(c, cookieName);
 
-    const session = sessionId ? await getSession(sessionId, c) : undefined;
+    if (!sessionId) {
+      throw new HTTPException(401);
+    }
+
+    const session = await getSession(sessionId, c);
 
     if (!session) {
+      await onInvalidCookie?.(c);
+
       throw new HTTPException(401);
     }
 
