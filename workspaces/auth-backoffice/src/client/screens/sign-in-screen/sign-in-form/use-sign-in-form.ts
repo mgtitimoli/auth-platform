@@ -3,7 +3,6 @@ import {AuthApiResponseError} from "@mgtitimoli/auth-api-tools/auth-api-response
 import {signInInputSchema} from "@mgtitimoli/auth-domain/domain-schema";
 import type {SignInInput} from "@mgtitimoli/auth-domain/domain-schema";
 import * as withHttpStatusCode from "@mgtitimoli/utils/http/http-status-code";
-import type {FormEvent} from "react";
 import {useForm} from "react-hook-form";
 
 import {authApi} from "@/client/utils/auth-api";
@@ -34,7 +33,7 @@ const useSignInForm = ({onSignIn}: Params) => {
     resolver: zodResolver(signInInputSchema)
   });
 
-  const submitValues = handleSubmit(async values => {
+  const submit = handleSubmit(async values => {
     try {
       await signIn.mutateAsync({body: values});
     } catch (error) {
@@ -51,11 +50,6 @@ const useSignInForm = ({onSignIn}: Params) => {
 
     onSignIn();
   });
-
-  // Every failure is set on the form, so the promise is never left rejected
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    void submitValues(event);
-  };
 
   return {
     errors: formState.errors,
