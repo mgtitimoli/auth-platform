@@ -1,6 +1,8 @@
 import {useQueryClient} from "@tanstack/react-query";
 import type {QueryCacheNotifyEvent} from "@tanstack/react-query";
-import {useEffect, useEffectEvent} from "react";
+import {useEffect} from "react";
+
+import {useLatestRef} from "@/react";
 
 type QueryCacheListener = (event: QueryCacheNotifyEvent) => unknown;
 
@@ -9,14 +11,16 @@ const useQueryCacheListener = (
 ): void => {
   const queryCache = useQueryClient().getQueryCache();
 
-  const onQueryCacheEvent = useEffectEvent(queryCacheListener);
+  // TanStack notifies synchronously, even while another component renders
+  // (when useQuery creates its observer), so this can't be a useEffectEvent
+  const queryCacheListenerRef = useLatestRef(queryCacheListener);
 
   useEffect(
     () =>
       queryCache.subscribe(event => {
-        onQueryCacheEvent(event);
+        queryCacheListenerRef.current(event);
       }),
-    [queryCache]
+    [queryCache, queryCacheListenerRef]
   );
 };
 

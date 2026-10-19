@@ -36,6 +36,10 @@
       "types": "./dist/password/index.d.ts",
       "import": "./dist/password/index.js"
     },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js"
+    },
     "./tanstack-query": {
       "types": "./dist/tanstack-query/index.d.ts",
       "import": "./dist/tanstack-query/index.js"

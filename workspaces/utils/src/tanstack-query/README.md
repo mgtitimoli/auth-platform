@@ -26,6 +26,10 @@ Hook that calls the given listener with every event of the query client's
 mutation cache (a mutation added, updated, removed…). The listener doesn't need
 to be memoized: the latest one is always called, and the hook subscribes once.
 
+TanStack notifies synchronously, even while another component renders (when
+`useMutation` creates its observer), so the listener must filter the events
+before setting any state.
+
 #### Example
 
 ```ts
@@ -47,6 +51,10 @@ Hook that calls the given listener with every event of the query client's
 query cache (a query added, updated, observed, removed…). The listener doesn't
 need to be memoized: the latest one is always called, and the hook subscribes
 once.
+
+TanStack notifies synchronously, even while another component renders (when
+`useQuery` creates its observer), so the listener must filter the events before
+setting any state.
 
 #### Example
 

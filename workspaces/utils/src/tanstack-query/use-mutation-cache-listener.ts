@@ -1,6 +1,8 @@
 import {useQueryClient} from "@tanstack/react-query";
 import type {MutationCacheNotifyEvent} from "@tanstack/react-query";
-import {useEffect, useEffectEvent} from "react";
+import {useEffect} from "react";
+
+import {useLatestRef} from "@/react";
 
 type MutationCacheListener = (event: MutationCacheNotifyEvent) => unknown;
 
@@ -9,14 +11,16 @@ const useMutationCacheListener = (
 ): void => {
   const mutationCache = useQueryClient().getMutationCache();
 
-  const onMutationCacheEvent = useEffectEvent(mutationCacheListener);
+  // TanStack notifies synchronously, even while another component renders
+  // (when useMutation creates its observer), so this can't be a useEffectEvent
+  const mutationCacheListenerRef = useLatestRef(mutationCacheListener);
 
   useEffect(
     () =>
       mutationCache.subscribe(event => {
-        onMutationCacheEvent(event);
+        mutationCacheListenerRef.current(event);
       }),
-    [mutationCache]
+    [mutationCache, mutationCacheListenerRef]
   );
 };
 
