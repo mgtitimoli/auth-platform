@@ -70,7 +70,7 @@ WORKDIR /app/workspaces/auth-api
 # can't create directories in the root-owned workspace
 RUN mkdir logs && chown node:node logs
 
-EXPOSE 3001
+EXPOSE 8080
 
 USER node
 

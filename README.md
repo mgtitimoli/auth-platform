@@ -51,7 +51,7 @@ yarn watch
 Then sign in as `admin@example.com` / `Admin123!` (see
 [auth-api](./workspaces/auth-api)).
 
-`yarn watch` rebuilds the packages, runs the API on `http://localhost:3001` and
+`yarn watch` rebuilds the packages, runs the API on `http://localhost:8080` and
 the backoffice on `http://localhost:3000`, restarting them on every change (see
 [auth-api](./workspaces/auth-api) and [auth-backoffice](./workspaces/auth-backoffice)).
 

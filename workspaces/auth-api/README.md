@@ -29,7 +29,7 @@ Sign in with the seeded admin:
 |---|---|
 | `admin@example.com` | `Admin123!` |
 
-The API listens on `http://localhost:3001`:
+The API listens on `http://localhost:8080`:
 
 | Endpoint | Description |
 |---|---|
@@ -53,8 +53,8 @@ cookie jar:
 ```sh
 curl -c cookies.txt -H 'Content-Type: application/json' \
   -d '{"email":"admin@example.com","password":"Admin123!"}' \
-  http://localhost:3001/auth/sign-in
-curl -b cookies.txt http://localhost:3001/users/me
+  http://localhost:8080/auth/sign-in
+curl -b cookies.txt http://localhost:8080/users/me
 ```
 
 Logs are also written to `logs/auth-api.log` when running locally.
@@ -142,8 +142,8 @@ From the repository root:
 
 ```sh
 docker build -f Dockerfile.auth-api -t auth-api .
-docker run -p 3001:3001 \
-  -e AUTH_API_PORT=3001 \
+docker run -p 8080:8080 \
+  -e AUTH_API_PORT=8080 \
   -e AUTH_DATABASE_URL=postgres://… \
   -e ENVIRONMENT_NAME=production \
   -e SESSION_COOKIE_SECURE=true \
