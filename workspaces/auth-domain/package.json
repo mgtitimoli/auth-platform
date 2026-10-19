@@ -18,7 +18,7 @@
     "clean": "rm -rf dist",
     "lint": "eslint",
     "test": "vitest run",
-    "watch": "yarn clean && concurrently --names swc,tsc,tsc-alias 'yarn watch:swc' 'yarn watch:tsc' 'yarn watch:tsc-alias'",
+    "watch": "concurrently --names swc,tsc,tsc-alias 'yarn watch:swc' 'yarn watch:tsc' 'yarn watch:tsc-alias'",
     "watch:swc": "swc src -d dist --strip-leading-paths --watch",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput --watch",
     "watch:tsc-alias": "tsc-alias -p tsconfig.build.json --watch"

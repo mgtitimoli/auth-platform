@@ -51,15 +51,16 @@ yarn watch
 Then sign in as `admin@example.com` / `Admin123!` (see
 [auth-api](./workspaces/auth-api)).
 
-`yarn watch` rebuilds the packages, runs the API on `http://localhost:8080` and
-the backoffice on `http://localhost:3000`, restarting them on every change (see
+`yarn watch` builds the packages, then runs the API on `http://localhost:8080`
+and the backoffice on `http://localhost:3000`, rebuilding and restarting
+everything on every change (see
 [auth-api](./workspaces/auth-api) and [auth-backoffice](./workspaces/auth-backoffice)).
 
 ## Scripts
 
 | Script | Description |
 |---|---|
-| `watch` | Runs every workspace in watch mode |
+| `watch` | Builds the packages, then runs every workspace in watch mode |
 | `build-all` | Builds every workspace |
 | `build-packages` | Builds the packages other workspaces depend on |
 | `run-all` | Runs the given script in every workspace (for example `yarn run-all lint`) |
