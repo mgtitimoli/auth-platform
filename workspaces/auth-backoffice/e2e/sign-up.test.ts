@@ -1,8 +1,8 @@
 import {expect, test} from "@playwright/test";
 
-import {createSignUpInput, signUp} from "./utils";
+import {createSignUpInput, expectSignedInAs, signUp} from "./utils";
 
-test("signing up lands on the users page, greeting the user", async ({
+test("signing up signs the user in and lands on the users page", async ({
   page
 }) => {
   const input = createSignUpInput();
@@ -10,16 +10,11 @@ test("signing up lands on the users page, greeting the user", async ({
   await signUp(page, input);
 
   await expect(page).toHaveURL("/users");
-  await expect(
-    page.getByRole("heading", {name: "Hello " + input.firstName})
-  ).toBeVisible();
+  await expectSignedInAs(page, input);
 });
 
 test("mismatched passwords block the sign-up", async ({page}) => {
-  await signUp(page, {
-    ...createSignUpInput(),
-    passwordConfirmation: "Another-s3cret"
-  });
+  await signUp(page, createSignUpInput(), "Another-s3cret");
 
   await expect(page.getByText("Passwords don't match")).toBeVisible();
   await expect(page).toHaveURL("/sign-up");

@@ -5,7 +5,9 @@ import {applicationThemeVars} from "@/client/components/application/application-
 const {fontSizes, space} = applicationThemeVars;
 
 const root = style({
-  padding: space.xl
+  display: "flex",
+  flexDirection: "column",
+  gap: space.lg
 });
 
 const title = style({

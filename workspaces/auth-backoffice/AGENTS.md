@@ -82,6 +82,11 @@ time (`.env.local` locally).
   API rejects the session (the API's 401 removes the dead cookie, so the proxy
   lets them through).
 - Queries don't retry client errors (4xx): they fail the same way again.
+- Components call `authApi.useQuery` / `useMutation` directly, without a hook
+  per endpoint: the query cache already dedupes and shares the data, so a
+  wrapper would only be an indirection. Session flows that do more than one
+  call are hooks (`useSignOut(onSignOut)`), and whatever ends a session clears
+  the query cache, so the next user never sees the previous one's data.
 
 ## Styling
 

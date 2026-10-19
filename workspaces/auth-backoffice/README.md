@@ -24,7 +24,10 @@ yarn auth-backoffice:run dev
 | `/` | Redirects: to `/users` with a session, to `/sign-up` without one |
 | `/sign-in` | Sign-in form: signs the user in and goes to `/users` |
 | `/sign-up` | Sign-up form: creates the user, signs them in and goes to `/users` |
-| `/users` | Greets the signed-in user (`Hello <first name>`) |
+| `/users` | The users page |
+
+Private pages share a navbar with an account menu (the avatar): who's signed
+in and Log out.
 
 [src/proxy.ts](./src/proxy.ts) guards the pages by the session cookie: without
 it, private pages go to `/sign-in`; with it, the sign-in and sign-up pages go to

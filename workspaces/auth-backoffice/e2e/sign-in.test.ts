@@ -1,8 +1,8 @@
+import type {SignUpInput} from "@mgtitimoli/auth-domain/domain-schema";
 import {expect, test} from "@playwright/test";
 import type {Browser, Page} from "@playwright/test";
 
-import {createSignUpInput, signUp} from "./utils";
-import type {SignUpInput} from "./utils";
+import {createSignUpInput, expectSignedInAs, signUp} from "./utils";
 
 // In its own context, so the page signing in starts without a session
 const signUpInNewContext = async (browser: Browser, input: SignUpInput) => {
@@ -25,7 +25,7 @@ const signIn = async (page: Page, email: string, password: string) => {
   await page.getByRole("button", {name: "Sign in"}).click();
 };
 
-test("signing in lands on the users page, greeting the user", async ({
+test("signing in lands on the users page as the user", async ({
   browser,
   page
 }) => {
@@ -36,9 +36,7 @@ test("signing in lands on the users page, greeting the user", async ({
   await signIn(page, input.email, input.password);
 
   await expect(page).toHaveURL("/users");
-  await expect(
-    page.getByRole("heading", {name: "Hello " + input.firstName})
-  ).toBeVisible();
+  await expectSignedInAs(page, input);
 });
 
 test("wrong credentials are reported on the form", async ({browser, page}) => {
