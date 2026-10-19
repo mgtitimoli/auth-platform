@@ -1,6 +1,8 @@
 import type {Metadata} from "next";
 import type {ReactNode} from "react";
 
+import "./application-global-style.css";
+
 import {Application} from "./application";
 
 type Props = {

@@ -17,6 +17,23 @@ only the backoffice:
 yarn auth-backoffice:run dev
 ```
 
+## Theme
+
+Styles use [vanilla-extract](https://vanilla-extract.style). The light and dark
+themes are CSS variables (`applicationThemeVars`, in
+[application-theme.css.ts](./src/client/components/application/application-theme.css.ts)),
+and the dark one applies when the operating system prefers it.
+
+## Testing
+
+```sh
+yarn auth-backoffice:run test:e2e:install   # once: downloads Playwright's Chromium
+yarn auth-backoffice:run test:e2e
+```
+
+`test:e2e` builds the backoffice and runs the [Playwright](https://playwright.dev)
+tests in [e2e](./e2e) against it.
+
 ## Docker
 
 From the repository root:
@@ -34,8 +51,10 @@ and only the files it needs, without installing `node_modules`.
 | Script | Description |
 |---|---|
 | `dev` | Runs the backoffice in development mode |
-| `build` | Builds the backoffice (standalone output) |
-| `start` | Runs the built backoffice |
+| `build` | Builds the backoffice (the standalone output, with its static assets) |
+| `start` | Runs the built backoffice (the standalone server, as in Docker) |
+| `test:e2e` | Builds the backoffice and runs the e2e tests |
+| `test:e2e:install` | Installs the Playwright browser (Chromium) |
 | `lint` | Lints the workspace |
 | `check-types:all` | Generates Next's types (`next typegen`) and type-checks the workspace |
 | `check-types:files` | Same, for the given files |

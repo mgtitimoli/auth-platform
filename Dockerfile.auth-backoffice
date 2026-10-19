@@ -32,10 +32,9 @@ RUN apt-get update \
 
 WORKDIR /app
 
-# The standalone output already contains the server and the node_modules it
-# needs; the static assets are copied next to it, so the server serves them
+# The standalone output (the build script also copies the static assets into it)
+# contains the server and the node_modules it needs
 COPY --from=builder /app/workspaces/auth-backoffice/.next/standalone ./
-COPY --from=builder /app/workspaces/auth-backoffice/.next/static ./workspaces/auth-backoffice/.next/static
 
 ENV HOSTNAME=0.0.0.0
 ENV NODE_ENV=production

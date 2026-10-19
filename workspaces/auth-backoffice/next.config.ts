@@ -1,6 +1,11 @@
 import path from "node:path";
 
+import {createVanillaExtractPlugin} from "@vanilla-extract/next-plugin";
 import type {NextConfig} from "next";
+
+const withVanillaExtract = createVanillaExtractPlugin({
+  unstable_turbopack: {mode: "auto"}
+});
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -9,4 +14,4 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(import.meta.dirname, "../..")
 };
 
-export default nextConfig;
+export default withVanillaExtract(nextConfig);

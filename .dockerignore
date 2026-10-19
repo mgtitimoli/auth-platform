@@ -17,6 +17,8 @@ lint-staged.config.js
 **/eslint.config.js
 **/logs
 **/next-env.d.ts
+**/playwright-report
+**/test-results
 **/node_modules
 
 workspaces/*/.env*

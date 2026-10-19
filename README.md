@@ -67,6 +67,9 @@ the backoffice on `http://localhost:3000`, restarting them on every change (see
 | `<workspace>:run` | Runs the given script in a workspace (for example `yarn auth-api:run build`) |
 | `setup` | Installs the git hooks |
 
+The backoffice's end-to-end tests run separately (`yarn auth-backoffice:run test:e2e`,
+see [auth-backoffice](./workspaces/auth-backoffice)).
+
 Type checking (`yarn run-all check-types:all`) and tests (`yarn run-all test`)
 need the packages built first (`yarn build-packages`), because workspaces
 consume each other's `dist`. auth-api's tests start their own database (see
