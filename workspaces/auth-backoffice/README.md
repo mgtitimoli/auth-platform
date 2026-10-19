@@ -21,6 +21,7 @@ yarn auth-backoffice:run dev
 
 | Path | Page |
 |---|---|
+| `/sign-in` | Sign-in form: signs the user in and goes to `/users` |
 | `/sign-up` | Sign-up form: creates the user, signs them in and goes to `/users` |
 | `/users` | Greets the signed-in user (`Hello <first name>`) |
 

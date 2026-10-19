@@ -2,15 +2,12 @@ import {style} from "@vanilla-extract/css";
 
 import {applicationThemeVars} from "@/client/components/application/application-theme.css";
 
-const {fontSizes, space} = applicationThemeVars;
+const {colors, fontSizes, space} = applicationThemeVars;
 
 const root = style({
   display: "flex",
   flexDirection: "column",
-  gap: space.lg,
-  margin: "0 auto",
-  maxWidth: "24rem",
-  padding: space.xl + " " + space.md
+  gap: space.lg
 });
 
 const title = style({
@@ -18,4 +15,10 @@ const title = style({
   margin: 0
 });
 
-export {root, title};
+const footer = style({
+  color: colors.mutedForeground,
+  fontSize: fontSizes.sm,
+  margin: 0
+});
+
+export {footer, root, title};

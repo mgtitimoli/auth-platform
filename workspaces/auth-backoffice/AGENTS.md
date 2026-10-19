@@ -21,7 +21,9 @@ src/
 - `src/app` only has routing files: each `page.tsx` is a one-line re-export of
   a screen (`export {HomeScreen as default} from "@/client/screens/home-screen";`),
   and `layout.tsx` re-exports the application layout. Pages are grouped in the
-  `(public)` and `(private)` route groups, which don't appear in the URL.
+  `(public)` and `(private)` route groups, which don't appear in the URL; each
+  group's `layout.tsx` re-exports its layout component (`public-layout`, …), so
+  what its pages share lives in one place.
 - `src/client/components/application/` is the app shell:
   `application-layout.tsx` is the root layout (a server component: `metadata`,
   `<html>`, `<body>`) and `application.tsx` is its client part (providers).
@@ -55,6 +57,9 @@ No Server Components or Server Actions: screens and components start with
 - `react-hook-form` with the zod resolver, validating against the domain
   schemas (extended only with what the form adds). Forms set `noValidate`, so
   zod is the only validator.
+- Forms render through the shared `Form` component, which owns what must be
+  the same everywhere (`noValidate`, disabling while busy, the form-level error
+  above the submit button), so each form only lists its fields.
 - A form owns its request, and maps API errors that belong to a field onto it
   (`AuthApiResponseError` and its status); any other failure goes to the form's
   `root` error.
@@ -90,7 +95,7 @@ time (`.env.local` locally).
   once first). The backoffice's own `test:e2e` expects an API at
   `NEXT_PUBLIC_AUTH_API_URL`.
 - Tests never depend on each other's data: each one signs up with a unique
-  email.
+  email. Helpers shared by several test files live in `e2e/utils/`.
 - Set `colorScheme` in a test (`test.use({colorScheme: "dark"})`) when the
   system theme matters.
 
