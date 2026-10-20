@@ -41,4 +41,4 @@ excluded from `dist` (`.swcrc` and `tsconfig.build.json`).
 ## Building
 
 Other workspaces consume `dist`: after a change, rebuild with `yarn utils:run build`
-(`yarn watch` at the root does it automatically).
+(`yarn dev` at the root does it automatically).

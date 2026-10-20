@@ -6,10 +6,10 @@ Back office to sign up, sign in and manage users, built with
 ## Running
 
 ```sh
-yarn watch
+yarn dev
 ```
 
-From the repository root, `yarn watch` runs the backoffice on
+From the repository root, `yarn dev` runs the backoffice on
 `http://localhost:3000` together with the API (see the root README). To run
 only the backoffice:
 
@@ -58,12 +58,12 @@ back to System, so the next user starts from the operating system's theme.
 
 ```sh
 yarn auth-backoffice:run test:e2e:install   # once: downloads Playwright's Chromium
-yarn test:e2e                               # from the repository root
+yarn test-e2e                               # from the repository root
 ```
 
-The root `test:e2e` starts auth-api's test environment (its database and API
+The root `test-e2e` starts auth-api's test environment (its database and API
 container, so it needs Docker and ports 3000, 8080 and 5433 free: stop
-`yarn watch` first), then runs this workspace's `test:e2e`, which builds the
+`yarn dev` first), then runs this workspace's `test:e2e`, which builds the
 backoffice and runs the [Playwright](https://playwright.dev) tests in
 [e2e](./e2e) against it. It stops the test environment afterwards, so every run
 starts with an empty database.

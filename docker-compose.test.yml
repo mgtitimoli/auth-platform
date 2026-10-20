@@ -1,25 +1,27 @@
-name: auth-api-local
+name: auth-api-test
 
 services:
   postgres:
     extends:
       file: docker-compose.postgres.yml
       service: postgres
+    # Durability isn't needed for a database that only lives during the tests
+    command: ["postgres", "-c", "fsync=off", "-c", "synchronous_commit=off", "-c", "full_page_writes=off"]
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
 
   auth-api:
     build:
-      context: ../..
+      context: .
       dockerfile: Dockerfile.auth-api
     depends_on:
       postgres:
         condition: service_healthy
-    env_file: .env.local
+    env_file: workspaces/auth-api/.env.test
     environment:
-      # The local environment as seen from inside Docker: the database is the
+      # The test environment as seen from inside Docker: the database is the
       # postgres service, not the host's port
       AUTH_DATABASE_URL: postgres://auth:auth@postgres:5432/auth
     healthcheck:
@@ -29,6 +31,3 @@ services:
       timeout: 5s
     ports:
       - "${AUTH_API_PORT}:${AUTH_API_PORT}"
-
-volumes:
-  postgres_data:

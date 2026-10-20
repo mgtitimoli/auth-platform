@@ -31,9 +31,12 @@ jobs:
       - name: Lint
         run: yarn run-all-parallel lint
 
-      # auth-api's tests start their own database with docker compose
-      - name: Test
-        run: yarn run-all test
+      # Starts auth-api's test database with docker compose
+      - name: Test auth-api
+        run: yarn test-auth-api
+
+      - name: Test the other workspaces
+        run: yarn workspaces foreach --all --exclude @mgtitimoli/auth-api --verbose run test
 
   e2e:
     name: E2E
@@ -55,7 +58,7 @@ jobs:
 
       # Starts auth-api's test database and API container with docker compose
       - name: Test
-        run: yarn test:e2e
+        run: yarn test-e2e
 
       - name: Upload the Playwright report
         if: failure()

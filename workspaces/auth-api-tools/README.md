@@ -61,7 +61,7 @@ const hasSession = request.cookies.has(authApiSessionCookieName);
 ## Updating the types
 
 `src/auth-api-schema.ts` is generated from the API's OpenAPI document and
-committed. After changing the API, start it (`yarn watch` at the root) and run:
+committed. After changing the API, start it (`yarn dev` at the root) and run:
 
 ```sh
 yarn auth-api-tools:run update-auth-api-schema

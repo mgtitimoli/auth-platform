@@ -38,13 +38,14 @@ a command: run that command in another environment with `env run`, which leaves
 `.env` untouched:
 
 ```bash
-yarn auth-api:run env run --environment test yarn database migrate-all
+yarn auth-api:run env run --environment test yarn database:migrate-all
 ```
 
 New scripts follow the same rule: they read the environment's variables
 (`ENVIRONMENT_NAME`, `AUTH_DATABASE_URL`, …) and their npm entry goes through
-`scripts/environment.sh run`. Every script has a `help` command
-(`yarn auth-api:run database help`).
+`scripts/environment.sh run`. The containers (database, API) are managed from
+the root (`yarn service <service> <action>`), in the
+environment selected here.
 
 ### Safety
 
@@ -61,24 +62,24 @@ deletes).
 
 ### Running queries
 
-Use the `database cli` script to open a `psql` session connected to the
+Use the `database:cli` script to open a `psql` session connected to the
 environment's database:
 
 ```bash
-yarn auth-api:run database cli
+yarn auth-api:run database:cli
 ```
 
 When running non-interactive queries, pass `-X` to ignore `.psqlrc` and get
 consistent output regardless of local display settings (for example,
-`yarn auth-api:run env run --environment local yarn database cli -X -Atc "select 1"`).
+`yarn auth-api:run env run --environment local yarn database:cli -X -Atc "select 1"`).
 
 See [src/database/AGENTS.md](./src/database/AGENTS.md) for schema and
 migration conventions.
 
 ## Testing
 
-`yarn auth-api:run test` starts the test database (`database start` in the
-`test` environment, port 5433), migrates it once (`vitest.global-setup.ts`) and deletes every row before
+`yarn test-auth-api` (at the root) starts the test database (port 5433) and runs
+`yarn auth-api:run test`, which expects it running. The tests migrate it once (`vitest.global-setup.ts`) and deletes every row before
 each test (`vitest.setup.ts`). Test files run one at a time, since they share
 the database.
 
@@ -98,7 +99,7 @@ the database.
 
 ## Testing the API by hand
 
-The local server is started by the user (`yarn watch` at the root).
+The local server is started by the user (`yarn dev` at the root).
 
 **No trailing slashes.** Hono does not match routes with a trailing slash:
 `GET /health/` returns 404, `GET /health` works.

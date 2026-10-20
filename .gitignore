@@ -7,5 +7,6 @@ test-results/
 logs/
 .env
 .env.*
+!.env.demo
 !.env.local
 !.env.test

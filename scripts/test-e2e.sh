@@ -2,9 +2,8 @@
 # @file test-e2e.sh
 # @brief Runs the backoffice's e2e tests against auth-api's test environment.
 # @description
-#   The only place that combines the workspaces: it loads auth-api's test
-#   environment, starts its database and API container, and runs the
-#   backoffice's e2e tests against them.
+#   Loads auth-api's test environment, starts its database and API container,
+#   and runs the backoffice's e2e tests against them.
 set -euo pipefail
 
 readonly AUTH_API_ENV_FILE="workspaces/auth-api/.env.test"
@@ -25,11 +24,11 @@ EOF
 }
 
 # @description Stops the API container and the test database: its port is free
-#   for yarn watch again, and the next run starts with an empty database.
+#   for yarn dev again, and the next run starts with an empty database.
 # @noargs
 stop_test_environment() {
-  yarn auth-api:run container stop
-  yarn auth-api:run database stop
+  yarn service auth-api stop
+  yarn service postgres stop
 }
 
 main() {
@@ -64,9 +63,9 @@ main() {
 
   trap stop_test_environment EXIT
 
-  yarn auth-api:run database start
-  yarn auth-api:run database migrate-all
-  yarn auth-api:run container start
+  yarn service postgres start
+  yarn auth-api:run database:migrate-all
+  yarn service auth-api start
   yarn auth-backoffice:run test:e2e
 }
 

@@ -4,9 +4,13 @@ import type {Page} from "@playwright/test";
 const pageStatusPattern = /^Page (\d+) of \d+$/;
 
 // The users are ordered by creation, and the tests share the database, so a
-// user can be on any page: this pages forward until their row shows
+// user can be on any page: this pages forward from the first one until their
+// row shows (other tests' deletes can move it back a page meanwhile)
 const findUserRow = async (page: Page, email: string) => {
   const row = page.getByRole("row").filter({hasText: email});
+
+  // Back to the first page
+  await page.reload();
 
   const pageStatus = page.getByText(pageStatusPattern);
 

@@ -39,20 +39,38 @@ yarn install
 - [eslint-config](./workspaces/eslint-config): ESLint and Prettier configuration
 - [utils](./workspaces/utils): generic utilities
 
+## Demo
+
+```sh
+yarn demo
+```
+
+It needs only Docker: it builds and runs the whole project from its images
+(PostgreSQL, the API on `http://localhost:8080` and the backoffice on
+`http://localhost:3000`), migrating the database and seeding the admin first.
+Open `http://localhost:3000` and sign in as `admin@example.com` / `Admin123!`,
+or sign up. Every run starts from a fresh database: what you create is gone the
+next time you run it (stop it with Ctrl+C).
+
+The admin is seeded as the initial administrator for the planned roles and
+permissions (see [Future improvements](#future-improvements)); today every user
+can manage users.
+
 ## Development
 
 ```sh
 yarn auth-api:run env use local
-yarn auth-api:run database start
-yarn auth-api:run database migrate-all
-yarn auth-api:run database seed 00001-seed-admin-users
-yarn watch
+yarn service postgres start
+yarn auth-api:run database:migrate-all
+yarn auth-api:run database:seed 00001-seed-admin-users
+yarn dev
 ```
 
 Then sign in as `admin@example.com` / `Admin123!` (see
-[auth-api](./workspaces/auth-api)).
+[auth-api](./workspaces/auth-api)). The local database keeps its data between
+runs; `yarn service postgres stop` stops it.
 
-`yarn watch` builds the packages, then runs the API on `http://localhost:8080`
+`yarn dev` builds the packages, then runs the API on `http://localhost:8080`
 and the backoffice on `http://localhost:3000`, rebuilding and restarting
 everything on every change (see
 [auth-api](./workspaces/auth-api) and [auth-backoffice](./workspaces/auth-backoffice)).
@@ -61,18 +79,26 @@ everything on every change (see
 
 | Script | Description |
 |---|---|
-| `watch` | Builds the packages, then runs every workspace in watch mode |
+| `dev` | Builds the packages, then runs the API and the backoffice in development mode, rebuilding the packages and restarting the servers on every change |
+| `demo` | Runs the whole project from its images in the `demo` environment, with a fresh database (see [Demo](#demo)) |
+| `service <service> <action>` | Manages a service of the current environment (`start`, `stop`, `status`, `logs`, `clear`); `service list` prints them |
 | `build-all` | Builds every workspace |
 | `build-packages` | Builds the packages other workspaces depend on |
 | `run-all` | Runs the given script in every workspace (for example `yarn run-all lint`) |
 | `run-all-parallel` | Same as `run-all`, in parallel |
 | `<workspace>:run` | Runs the given script in a workspace (for example `yarn auth-api:run build`) |
 | `setup` | Installs the git hooks |
-| `test:e2e` | Runs the backoffice's end-to-end tests against auth-api's test environment (see [auth-backoffice](./workspaces/auth-backoffice)) |
+| `test-auth-api` | Runs auth-api's tests against its test database (see [auth-api](./workspaces/auth-api)) |
+| `test-e2e` | Runs the backoffice's end-to-end tests against auth-api's test environment (see [auth-backoffice](./workspaces/auth-backoffice)) |
 
 Type checking (`yarn run-all check-types:all`) and tests (`yarn run-all test`)
 need the packages built first (`yarn build-packages`), because workspaces
-consume each other's `dist`. auth-api's tests start their own database (see
+consume each other's `dist`. auth-api's tests need their database running, so
+run them with `yarn test-auth-api`.
+
+The compose files of the environments (`docker-compose.<environment>.yml`) and
+the images (`Dockerfile.<app>`) live at the root, which is the only place that
+combines workspaces; the environment is chosen with auth-api's `env use` (see
 [auth-api](./workspaces/auth-api)).
 
 ## Future improvements

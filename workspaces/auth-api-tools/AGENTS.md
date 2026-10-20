@@ -22,5 +22,5 @@ The code runs in the browser (and in Node.js): never use Node.js-only APIs.
 ## Building
 
 Other workspaces consume `dist`: after a change, rebuild with
-`yarn auth-api-tools:run build` (`yarn watch` at the root does it
+`yarn auth-api-tools:run build` (`yarn dev` at the root does it
 automatically).

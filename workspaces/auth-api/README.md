@@ -6,24 +6,23 @@ REST API for users and sessions, built with [Hono](https://hono.dev) and
 ## Requirements
 
 - [Docker](https://www.docker.com) with Compose, for the local and test databases
-- `psql` (the PostgreSQL client), only for `database cli`
+- `psql` (the PostgreSQL client), only for `database:cli`
 
 ## Running
 
+From the repository root:
+
 ```sh
 yarn auth-api:run env use local
-yarn auth-api:run database start
-yarn auth-api:run database migrate-all
-yarn auth-api:run database seed 00001-seed-admin-users
-yarn watch
+yarn service postgres start
+yarn auth-api:run database:migrate-all
+yarn auth-api:run database:seed 00001-seed-admin-users
+yarn dev
 ```
 
-To run the API in Docker instead of `yarn watch` (the image of
-[Dockerfile.auth-api](../../Dockerfile.auth-api)), run
-`yarn auth-api:run container start` after the seed, and `container stop` to stop
-it.
-
-Sign in with the seeded admin:
+Sign in with the seeded admin, the initial administrator once roles and
+permissions arrive (see the root README's future improvements); today every
+user can manage users:
 
 | Email | Password |
 |---|---|
@@ -61,15 +60,18 @@ Logs are also written to `logs/auth-api.log` when running locally.
 
 ## Database
 
-Each environment that runs in Docker has its own compose file, with a
-PostgreSQL 16 database (database, user and password: `auth`, shared through
-[docker-compose.postgres.yml](./docker-compose.postgres.yml)) and the API's
-container:
+Each environment that runs in Docker has its own compose file at the repository
+root, with a PostgreSQL 16 database (database, user and password: `auth`,
+shared through [docker-compose.postgres.yml](../../docker-compose.postgres.yml));
+the test one also runs the API's container, for the backoffice's end-to-end
+tests. The root manages them (`yarn service <service> <action>`, and
+`yarn service list` for the environment's services), in the environment
+selected here:
 
 | Environment | Compose file | Database port | Database storage |
 |---|---|---|---|
-| `local` | [docker-compose.local.yml](./docker-compose.local.yml) | 5432 | a Docker volume: survives `database stop`, `database clear` deletes it |
-| `test` | [docker-compose.test.yml](./docker-compose.test.yml) | 5433 | in memory: cleared every time it stops |
+| `local` | [docker-compose.local.yml](../../docker-compose.local.yml) | 5432 | a Docker volume: survives `service postgres stop`, `service postgres clear` deletes it |
+| `test` | [docker-compose.test.yml](../../docker-compose.test.yml) | 5433 | in memory: cleared every time it stops |
 
 Scripts never take an environment: they act on the current one, the one `.env`
 points to (`env use`). To run a single command in another environment, without
@@ -77,9 +79,9 @@ changing `.env`, use `env run`:
 
 ```sh
 yarn auth-api:run env use local
-yarn auth-api:run database start
-yarn auth-api:run database migrate-all
-yarn auth-api:run env run --environment test yarn database cli -c "select count(*) from users"
+yarn service postgres start
+yarn auth-api:run database:migrate-all
+yarn auth-api:run env run --environment test yarn database:cli -c "select count(*) from users"
 ```
 
 ### Design
@@ -101,27 +103,32 @@ yarn auth-api:run env run --environment test yarn database cli -c "select count(
 ### Seeds
 
 Seeds live in [src/database/seeds](./src/database/seeds) and are run by name
-(`database seed <seed>`). `00001-seed-admin-users` creates the
+(`database:seed <seed>`). `00001-seed-admin-users` creates the
 admins listed above, skipping the ones that already exist. Their passwords are
 public, so never run it against a shared environment.
 
 ### Migrations
 
 Migrations live in [src/database/migrations](./src/database/migrations) and are
-applied manually (`database migrate-all`): the Docker image only runs the API.
+applied manually (`database:migrate-all`): the production image only runs the
+API (`yarn demo` migrates from the image's build stage).
 To migrate a shared environment, create its gitignored `.env.<environment>`
 with its credentials and run
-`yarn auth-api:run env run --environment <environment> yarn database migrate-all`.
+`yarn auth-api:run env run --environment <environment> yarn database:migrate-all`.
 
 ## Testing
 
+From the repository root:
+
 ```sh
-yarn auth-api:run test
+yarn test-auth-api
 ```
 
-The tests run against the `test` database: `test` starts it (whatever `.env`
-points to), and the tests migrate it and delete every row before each test.
-They never mock the database.
+It starts the `test` database (whatever `.env` points to), runs this workspace's
+`test` and stops the database. The tests migrate it and delete every row before
+each test; they never mock the database. While iterating, start the test
+database once (`yarn auth-api:run env use test`, then
+`yarn service postgres start`) and run `yarn auth-api:run test`.
 
 ## Environment variables
 
@@ -133,7 +140,7 @@ They never mock the database.
 | `AUTH_API_PORT` | Port the API listens on |
 | `AUTH_BACKOFFICE_URL` | The backoffice's origin, the only one allowed to call the API from a browser (CORS) |
 | `AUTH_DATABASE_URL` | PostgreSQL connection URL |
-| `ENVIRONMENT_NAME` | `local`, `test`, `development` or `production` (`local` enables readable logs and the log file) |
+| `ENVIRONMENT_NAME` | `local`, `test`, `demo`, `development` or `production` (`local` enables readable logs and the log file) |
 | `LOG_LEVEL` | Log level (default `info`) |
 | `LOGS_RETAINED` | `true` to append to the log file instead of overwriting it |
 | `PASSWORD_HASH_COST` | Optional scrypt cost (N) for new password hashes. Defaults to OWASP's 2^17; `.env.test` lowers it to 1024 so tests hash fast |
@@ -156,21 +163,25 @@ docker run -p 8080:8080 \
   auth-api
 ```
 
-`container start` builds and runs this same image in the current environment
-(see [Database](#database)), with the database as `postgres:5432` inside the
+The root's `service auth-api start` builds and runs this same image in the test
+environment (see [Database](#database)), with the database as `postgres:5432` inside the
 compose network instead of the env file's `localhost` address.
 
 ## Scripts
 
 | Script | Description |
 |---|---|
-| `watch` | Runs the API and restarts it on every change |
+| `dev` | Runs the API and restarts it on every change |
 | `build` | Builds the API into `dist` |
 | `start` | Runs the built API |
-| `test` | Starts the test database and runs the tests |
+| `test` | Runs the tests (the test database must be running; `yarn test-auth-api` at the root starts it) |
 | `lint` | Lints the workspace |
 | `check-types:all` | Type-checks the workspace |
 | `check-types:files` | Type-checks the given files |
-| `container <command>` | Manages the API's container in the current environment (`container help`) |
-| `database <command>` | Manages the current environment's database (`database help`) |
+| `database:cli` | Opens `psql` on the current environment's database |
+| `database:list-migrations` | Lists the migrations and whether they're applied |
+| `database:migrate` | Applies the next pending migration |
+| `database:migrate-all` | Applies every pending migration |
+| `database:rollback` | Reverts the last applied migration |
+| `database:seed <seed>` | Runs the given seed |
 | `env <command>` | Manages the environments (`env help`) |

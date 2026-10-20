@@ -10,13 +10,17 @@
     "build": "rm -rf dist && swc src -d dist --strip-leading-paths",
     "check-types:all": "tsc --noEmit",
     "check-types:files": "tsc-files --noEmit",
-    "container": "scripts/environment.sh run scripts/container.sh",
-    "database": "scripts/environment.sh run scripts/database.sh",
+    "database:cli": "scripts/environment.sh run sh -c 'psql \"$AUTH_DATABASE_URL\" \"$@\"' --",
+    "database:list-migrations": "scripts/environment.sh run kysely migrate list --config src/database/kysely.config.ts",
+    "database:migrate": "scripts/environment.sh run kysely migrate up --config src/database/kysely.config.ts",
+    "database:migrate-all": "scripts/environment.sh run kysely migrate latest --config src/database/kysely.config.ts",
+    "database:rollback": "scripts/environment.sh run kysely migrate down --config src/database/kysely.config.ts",
+    "database:seed": "scripts/environment.sh run sh -c '[ -n \"$1\" ] || { echo \"Error: seed name is required\" >&2; exit 1; }; name=$1; shift; kysely seed run --config src/database/kysely.config.ts --specific \"$name\" \"$@\"' --",
+    "dev": "tsx --env-file=.env --inspect --watch src/serve.ts",
     "env": "scripts/environment.sh",
     "lint": "eslint",
     "start": "node --enable-source-maps --env-file=.env dist/serve.js",
-    "test": "scripts/environment.sh run --environment test yarn database start && vitest run",
-    "watch": "tsx --env-file=.env --inspect --watch src/serve.ts"
+    "test": "vitest run"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.5",

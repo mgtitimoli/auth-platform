@@ -16,14 +16,17 @@
     "auth-domain:run": "yarn workspace @mgtitimoli/auth-domain run",
     "build-all": "yarn build-packages && yarn auth-api:run build && yarn auth-backoffice:run build",
     "build-packages": "scripts/build-packages.sh",
+    "demo": "docker compose --file docker-compose.demo.yml up --build --force-recreate --renew-anon-volumes",
+    "dev": "yarn build-packages && concurrently --names auth-api,auth-api-tools,auth-backoffice,auth-domain,utils --prefix-colors blue,yellow,cyan,magenta,green 'yarn auth-api:run dev' 'yarn auth-api-tools:run watch' 'yarn auth-backoffice:run dev' 'yarn auth-domain:run watch' 'yarn utils:run watch'",
     "eslint-config:run": "yarn workspace @mgtitimoli/eslint-config run",
     "run-all": "yarn workspaces foreach --verbose run",
     "run-all-parallel": "yarn workspaces foreach --parallel --verbose run",
+    "service": "yarn auth-api:run env run ../../scripts/service.sh",
     "setup": "yarn setup:husky",
     "setup:husky": "husky",
-    "test:e2e": "scripts/test-e2e.sh",
-    "utils:run": "yarn workspace @mgtitimoli/utils run",
-    "watch": "yarn build-packages && concurrently --names auth-api,auth-api-tools,auth-backoffice,auth-domain,utils --prefix-colors blue,yellow,cyan,magenta,green 'yarn auth-api:run watch' 'yarn auth-api-tools:run watch' 'yarn auth-backoffice:run dev' 'yarn auth-domain:run watch' 'yarn utils:run watch'"
+    "test-auth-api": "scripts/test-auth-api.sh",
+    "test-e2e": "scripts/test-e2e.sh",
+    "utils:run": "yarn workspace @mgtitimoli/utils run"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",

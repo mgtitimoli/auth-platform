@@ -3,6 +3,7 @@ import {z} from "zod";
 type EnvironmentName = (typeof environmentNames)[keyof typeof environmentNames];
 
 const environmentNames = {
+  demo: "demo",
   development: "development",
   local: "local",
   production: "production",

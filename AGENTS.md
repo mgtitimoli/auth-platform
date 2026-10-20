@@ -50,12 +50,15 @@ Workspaces consume each other's `dist`, so build the packages first
 ## Testing
 
 To run the tests of a workspace, run `yarn <workspace>:run test`; for all
-workspaces, `yarn run-all test`. auth-api's tests need Docker (they start their
-own database).
+workspaces, `yarn run-all test`. auth-api's tests need their database: run them
+with `yarn test-auth-api`, which starts it (Docker) first.
 
-The backoffice's end-to-end tests run from the root with `yarn test:e2e`, which
-starts auth-api's test environment (Docker) first: the root is the only place
-that combines workspaces, and workspaces never start each other.
+The backoffice's end-to-end tests run from the root with `yarn test-e2e`, which
+starts auth-api's test environment (Docker) first.
+
+Containers (compose files, `service`, `demo`)
+live at the root: it's the only place that combines workspaces, and workspaces
+never start each other.
 
 ## Commits
 

@@ -30,4 +30,4 @@ run with `yarn auth-domain:run test`.
 ## Building
 
 Other workspaces consume `dist`: after a change, rebuild with
-`yarn auth-domain:run build` (`yarn watch` at the root does it automatically).
+`yarn auth-domain:run build` (`yarn dev` at the root does it automatically).
