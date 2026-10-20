@@ -62,7 +62,8 @@ No Server Components or Server Actions: screens and components start with
   `tableFeatures({tableMeta: metaHelper<…>()})`), so the columns stay static.
   `Table` renders any table, so it uses a
   feature's APIs only after checking the table registers it (the predicates in
-  `@mgtitimoli/utils/tanstack-table`).
+  `@mgtitimoli/utils/tanstack-table`): column sizes, and columns pinned at the
+  start, which stay visible while the table scrolls.
 - Dialogs are controlled by their screen (`isOpen` and `onOpenChange`): the
   screen opens them, and closes them when their content reports it's done
   (`onCreate`).

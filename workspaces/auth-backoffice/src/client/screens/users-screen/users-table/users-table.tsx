@@ -5,6 +5,7 @@ import * as withUserStatus from "@mgtitimoli/auth-domain/user-status";
 import type {UserStatus} from "@mgtitimoli/auth-domain/user-status";
 import {formatDate, formatNumber} from "@mgtitimoli/utils/formatting";
 import {
+  columnPinningFeature,
   columnSizingFeature,
   createColumnHelper,
   metaHelper,
@@ -29,6 +30,7 @@ type UsersTableMeta = Pick<Props, "onEdit">;
 const {userStatuses} = withUserStatus;
 
 const features = tableFeatures({
+  columnPinningFeature,
   columnSizingFeature,
   tableMeta: metaHelper<UsersTableMeta>()
 });
@@ -96,6 +98,8 @@ const UsersTable = ({isBusy, onEdit, users}: Props) => {
     data: users,
     features,
     getRowId: user => user.id,
+    // The name identifies the row, so it stays visible while the table scrolls
+    initialState: {columnPinning: {end: [], start: ["name"]}},
     meta: {onEdit}
   });
 
