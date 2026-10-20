@@ -21,12 +21,12 @@ test("the users table shows 6 users per page", async ({page}) => {
 
   const firstEmail = await firstEmailCell.textContent();
 
-  await page.getByRole("button", {name: "Next"}).click();
+  await page.getByRole("button", {name: "Next page"}).click();
 
   await expect(page.getByText(/^Page 2 of \d+$/)).toBeVisible();
   await expect(firstEmailCell).not.toHaveText(firstEmail ?? "");
 
-  await page.getByRole("button", {name: "Previous"}).click();
+  await page.getByRole("button", {name: "Previous page"}).click();
 
   await expect(page.getByText(/^Page 1 of \d+$/)).toBeVisible();
   await expect(firstEmailCell).toHaveText(firstEmail ?? "");

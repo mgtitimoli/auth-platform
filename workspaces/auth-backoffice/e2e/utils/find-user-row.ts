@@ -17,7 +17,7 @@ const findUserRow = async (page: Page, email: string) => {
       pageStatusPattern.exec((await pageStatus.textContent()) ?? "")?.[1]
     );
 
-    await page.getByRole("button", {name: "Next"}).click();
+    await page.getByRole("button", {name: "Next page"}).click();
 
     await expect(
       page.getByText(new RegExp("^Page " + (pageNumber + 1) + " of \\d+$"))

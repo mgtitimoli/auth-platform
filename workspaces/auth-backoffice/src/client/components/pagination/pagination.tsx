@@ -1,6 +1,8 @@
 "use client";
 
-import {Button} from "@/client/components/button";
+import {ChevronLeft, ChevronRight} from "lucide-react";
+
+import {IconButton} from "@/client/components/icon-button";
 
 import * as styles from "./pagination.css";
 
@@ -18,19 +20,21 @@ const Pagination = ({
   pageCount
 }: Props) => (
   <nav aria-label="Pagination" className={styles.root}>
-    <Button
+    <IconButton
+      aria-label="Previous page"
       disabled={isDisabled || page <= 1}
       onClick={() => onPageChange(page - 1)}
     >
-      Previous
-    </Button>
+      <ChevronLeft size={16} />
+    </IconButton>
     <span className={styles.status}>{"Page " + page + " of " + pageCount}</span>
-    <Button
+    <IconButton
+      aria-label="Next page"
       disabled={isDisabled || page >= pageCount}
       onClick={() => onPageChange(page + 1)}
     >
-      Next
-    </Button>
+      <ChevronRight size={16} />
+    </IconButton>
   </nav>
 );
 
