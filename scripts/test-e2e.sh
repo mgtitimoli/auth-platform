@@ -66,7 +66,7 @@ main() {
   yarn service postgres start
   yarn auth-api:run database:migrate-all
   yarn service auth-api start
-  yarn auth-backoffice:run test:e2e
+  yarn auth-backoffice:run test-e2e
 }
 
 main "$@"

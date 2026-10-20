@@ -76,13 +76,13 @@ back to System, so the next user starts from the operating system's theme.
 ## Testing
 
 ```sh
-yarn auth-backoffice:run test:e2e:install   # once: downloads Playwright's Chromium
-yarn test-e2e                               # from the repository root
+yarn auth-backoffice:run prepare-e2e   # once: downloads Playwright's Chromium
+yarn test-e2e                          # from the repository root
 ```
 
 The root `test-e2e` starts auth-api's test environment (its database and API
 container, so it needs Docker and ports 3000, 8080 and 5433 free: stop
-`yarn dev` first), then runs this workspace's `test:e2e`, which builds the
+`yarn dev` first), then runs this workspace's `test-e2e`, which builds the
 backoffice and runs the [Playwright](https://playwright.dev) tests in
 [e2e](./e2e) against it. It stops the test environment afterwards, so every run
 starts with an empty database.
@@ -108,8 +108,8 @@ and only the files it needs, without installing `node_modules`.
 | `dev` | Runs the backoffice in development mode |
 | `build` | Builds the backoffice (the standalone output, with its static assets) |
 | `start` | Runs the built backoffice (the standalone server, as in Docker) |
-| `test:e2e` | Builds the backoffice and runs the e2e tests (against an API already running; see Testing) |
-| `test:e2e:install` | Installs the Playwright browser (Chromium) |
+| `test-e2e` | Builds the backoffice and runs the e2e tests (against an API already running; see Testing) |
+| `prepare-e2e` | Installs the Playwright browser (Chromium) |
 | `lint` | Lints the workspace |
 | `check-types:all` | Generates Next's types (`next typegen`) and type-checks the workspace |
 | `check-types:files` | Same, for the given files |

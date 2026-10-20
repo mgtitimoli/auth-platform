@@ -54,7 +54,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Install the Playwright browser
-        run: yarn auth-backoffice:run test:e2e:install
+        run: yarn auth-backoffice:run prepare-e2e
 
       # Starts auth-api's test database and API container with docker compose
       - name: Test

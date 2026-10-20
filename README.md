@@ -238,7 +238,7 @@ everything on every change (see
 `test-auth-api` and `test-e2e` need Docker: they start the containers they need
 and stop them afterwards, so every run starts with an empty database. The
 end-to-end tests need Playwright's Chromium once
-(`yarn auth-backoffice:run test:e2e:install`) and ports 3000, 8080 and 5433
+(`yarn auth-backoffice:run prepare-e2e`) and ports 3000, 8080 and 5433
 free (stop `yarn dev` first). CI runs all of them, plus lint and type checking,
 on every pull request and push to `main`.
 
