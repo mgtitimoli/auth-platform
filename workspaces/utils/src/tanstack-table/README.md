@@ -9,4 +9,5 @@ has a feature's APIs, and narrow its type to them.
 
 ## Modules
 
+- [column](./column.ts)
 - [header](./header.ts)
