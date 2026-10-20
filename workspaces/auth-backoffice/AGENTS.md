@@ -138,11 +138,12 @@ time (`.env.local` locally).
 
 ## Testing
 
-- e2e tests live in `e2e/` (`*.test.ts`), with Playwright against the built
-  backoffice. Run them from the root with `yarn test-e2e`, which also starts
-  auth-api's test environment (run `yarn auth-backoffice:run prepare-e2e`
-  once first). The backoffice's own `test-e2e` expects an API at
-  `NEXT_PUBLIC_AUTH_API_URL`.
+- e2e tests live in `e2e/` (`*.test.ts`), with Playwright against whatever
+  serves the loaded environment's backoffice and API (`AUTH_BACKOFFICE_URL`,
+  `AUTH_API_PORT`, read in `e2e/utils/environment-variables.ts`). Run them from
+  the root with `yarn test-e2e`, which starts the test environment's images
+  (run `yarn auth-backoffice:run prepare-e2e` once first); the README has a
+  faster loop against `next dev` for writing them.
 - Tests never depend on each other's data: each one signs up with a unique
   email. Helpers shared by several test files live in `e2e/utils/`.
 - Set `colorScheme` in a test (`test.use({colorScheme: "dark"})`) when the

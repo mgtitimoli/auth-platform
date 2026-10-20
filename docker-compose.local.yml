@@ -1,14 +1,34 @@
-name: auth-api-local
+# The local environment: yarn dev starts only postgres (the API and the
+# backoffice run on the host), yarn services start runs everything. Its
+# database keeps its data, and migrations are applied manually
+name: auth-platform-local
 
 services:
   postgres:
     extends:
-      file: docker-compose.postgres.yml
+      file: docker-compose.base.yml
       service: postgres
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  auth-api:
+    extends:
+      file: docker-compose.base.yml
+      service: auth-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: workspaces/auth-api/.env.local
+
+  auth-backoffice:
+    extends:
+      file: docker-compose.base.yml
+      service: auth-backoffice
+    depends_on:
+      auth-api:
+        condition: service_healthy
 
 volumes:
   postgres_data:

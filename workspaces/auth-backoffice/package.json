@@ -14,7 +14,7 @@
     "lint": "eslint",
     "prepare-e2e": "playwright install --with-deps chromium",
     "start": "PORT=3000 node .next/standalone/workspaces/auth-backoffice/server.js",
-    "test-e2e": "yarn build && playwright test"
+    "test-e2e": "playwright test"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

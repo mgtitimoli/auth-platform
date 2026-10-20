@@ -44,9 +44,8 @@ yarn auth-api:run env run --environment test yarn database:migrate-all
 
 New scripts follow the same rule: they read the environment's variables
 (`ENVIRONMENT_NAME`, `AUTH_DATABASE_URL`, …) and their npm entry goes through
-`scripts/environment.sh run`. The containers (database, API) are managed from
-the root (`yarn service <service> <action>`), in the
-environment selected here.
+`scripts/environment.sh run`. The services (database, API, backoffice) are
+managed from the root (`yarn services`), in the environment selected here.
 
 ### Safety
 

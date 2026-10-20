@@ -56,7 +56,7 @@ with `yarn test-auth-api`, which starts it (Docker) first.
 The backoffice's end-to-end tests run from the root with `yarn test-e2e`, which
 starts auth-api's test environment (Docker) first.
 
-Containers (compose files, `service`, `demo`)
+Containers (compose files, `services`, `demo`)
 live at the root: it's the only place that combines workspaces, and workspaces
 never start each other.
 

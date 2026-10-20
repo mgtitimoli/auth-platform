@@ -56,12 +56,12 @@ yarn install
 yarn demo
 ```
 
-It needs only Docker: it builds and runs the whole project from its images
-(PostgreSQL, the API on `http://localhost:8080` and the backoffice on
-`http://localhost:3000`), migrating the database and seeding the admin first.
-Open `http://localhost:3000` and sign in as `admin@example.com` / `Admin123!`,
-or sign up. Every run starts from a fresh database: what you create is gone the
-next time you run it (stop it with Ctrl+C).
+After the installation, it needs only Docker: it builds and runs the whole
+project from its images (PostgreSQL, the API on `http://localhost:8080` and the
+backoffice on `http://localhost:3000`), migrating the database and seeding the
+admin first. Open `http://localhost:3000` and sign in as `admin@example.com` /
+`Admin123!`, or sign up. Every run starts from a fresh database: what you
+create is gone the next time you run it (stop it with Ctrl+C).
 
 The admin is seeded as the initial administrator for the planned roles and
 permissions (see [Future improvements](#future-improvements)); today every user
@@ -101,7 +101,7 @@ extracted into their own repositories, and live here for convenience.
 - **The root** holds what combines workspaces: the images
   (`Dockerfile.<app>`), the compose files of the environments
   (`docker-compose.<environment>.yml`) and the scripts that run them together
-  (`demo`, `service`, `test-auth-api`, `test-e2e`), in the environment chosen
+  (`demo`, `services`, `test-auth-api`, `test-e2e`), in the environment chosen
   with auth-api's `env use`. Workspaces never start each other.
 
 ### Architecture
@@ -159,15 +159,21 @@ read just as well as a quick reference for people.
 
 ## Environments
 
-An **environment** is a set of settings (auth-api's `.env.<environment>`) and,
-when it runs in Docker, a compose file at the root
-(`docker-compose.<environment>.yml`) with its **services**:
+An **environment** is a set of settings (auth-api's `.env.<environment>`) and a
+compose file at the root (`docker-compose.<environment>.yml`) with its
+**services**. Every environment has the whole project, defined once in
+[docker-compose.base.yml](./docker-compose.base.yml):
 
 | Environment | Services | Used by |
 |---|---|---|
-| `local` | `postgres` (port 5432, keeps its data) | `yarn dev`, which runs the API and the backoffice on your machine |
-| `test` | `postgres` (port 5433, in memory) and `auth-api` (the API's image, port 8080) | `yarn test-auth-api` and `yarn test-e2e` |
-| `demo` | `postgres`, `auth-api`, `auth-backoffice` and a one-off migrate-and-seed service | `yarn demo` |
+| `local` | `postgres` (port 5432, keeps its data), `auth-api`, `auth-backoffice` | `yarn dev` (only `postgres` in Docker) or `yarn services start` (everything in Docker); migrations are applied manually |
+| `test` | `postgres` (port 5433, in memory), `auth-api-migrate`, `auth-api`, `auth-backoffice` | `yarn test-auth-api` (only `postgres`) and `yarn test-e2e` |
+| `demo` | the same as `test`, with `auth-api-migrate` also seeding the admin | `yarn demo` |
+
+`auth-api-migrate` runs once, migrating the database before the API starts.
+The API listens on `AUTH_API_PORT` (8080) and the backoffice on
+`AUTH_BACKOFFICE_URL` (`http://localhost:3000`) in every environment, so only
+one of them can run at a time.
 
 Commands never choose an environment: they act on the current one, which you
 pick once with auth-api's `env` script:
@@ -183,34 +189,33 @@ one, use `env run`:
 
 ```sh
 yarn auth-api:run env run --environment test yarn database:migrate-all
-yarn auth-api:run env run --environment test yarn run --top-level service list
+yarn auth-api:run env run --environment test yarn run --top-level services list
 ```
 
-(`--top-level` runs a root script, such as `service`, from auth-api.)
+(`--top-level` runs a root script, such as `services`, from auth-api.)
 
 ## Services
 
 A **service** is one container of an environment, as its compose file defines
-it: a database (`postgres`), the API's image (`auth-api`), and so on. Each
-environment has only the services it needs (see the table in
-[Environments](#environments)), and `yarn service` manages the current
-environment's ones: starting and stopping them, checking whether they're
-running, following their logs and deleting their data:
+it: the database (`postgres`), the API (`auth-api`), and so on. `yarn services`
+manages the current environment's services: all of them, or the ones given with
+`--service`:
 
 ```sh
-yarn service list                 # postgres
-yarn service postgres start       # starts it and waits until it's ready
-yarn service postgres status      # running
-yarn service postgres logs        # follows its logs
-yarn service postgres stop        # stops it (local keeps its data)
-yarn service postgres clear       # stops it and deletes its data
+yarn services list                         # postgres, auth-api, auth-backoffice
+yarn services start                        # builds and starts them all
+yarn services start --service postgres     # only the database
+yarn services status                       # each one's state
+yarn services logs --service auth-api      # follows the API's logs
+yarn services stop                         # stops them (local keeps its data)
+yarn services clear --service postgres     # stops it and deletes its data
 ```
 
 ## Development
 
 ```sh
 yarn auth-api:run env use local
-yarn service postgres start
+yarn services start --service postgres
 yarn auth-api:run database:migrate-all
 yarn auth-api:run database:seed 00001-seed-admin-users
 yarn dev
@@ -218,12 +223,14 @@ yarn dev
 
 Then sign in as `admin@example.com` / `Admin123!` (see
 [auth-api](./workspaces/auth-api)). The local database keeps its data between
-runs; `yarn service postgres stop` stops it.
+runs; `yarn services stop` stops it.
 
-`yarn dev` builds the packages, then runs the API on `http://localhost:8080`
-and the backoffice on `http://localhost:3000`, rebuilding and restarting
-everything on every change (see
-[auth-api](./workspaces/auth-api) and [auth-backoffice](./workspaces/auth-backoffice)).
+`yarn dev` starts the current environment's database, builds the packages,
+then runs the API on `http://localhost:8080` and the backoffice on
+`http://localhost:3000`, rebuilding and restarting everything on every change
+(see [auth-api](./workspaces/auth-api) and
+[auth-backoffice](./workspaces/auth-backoffice)). To run local entirely in
+Docker instead (no reloading), use `yarn services start`.
 
 ## Testing
 
@@ -233,22 +240,23 @@ everything on every change (see
 | auth-domain, utils | Vitest unit tests | `yarn auth-domain:run test`, `yarn utils:run test` |
 | auth-api-tools | No tests of its own: its types are generated from the API's OpenAPI document, and the backoffice's end-to-end tests exercise its client | |
 | eslint-config | No tests: it's configuration, exercised by every workspace's `lint` | |
-| auth-backoffice | [Playwright](https://playwright.dev) end-to-end tests against the production build and auth-api's test environment | `yarn test-e2e` |
+| auth-backoffice | [Playwright](https://playwright.dev) end-to-end tests against the test environment's images | `yarn test-e2e` |
 
-`test-auth-api` and `test-e2e` need Docker: they start the containers they need
+`test-auth-api` and `test-e2e` need Docker: they start the services they need
 and stop them afterwards, so every run starts with an empty database. The
 end-to-end tests need Playwright's Chromium once
 (`yarn auth-backoffice:run prepare-e2e`) and ports 3000, 8080 and 5433
-free (stop `yarn dev` first). CI runs all of them, plus lint and type checking,
+free (stop `yarn dev` first); the backoffice's README explains a faster loop
+for writing them. CI runs all of them, plus lint and type checking,
 on every pull request and push to `main`.
 
 ## Scripts
 
 | Script | Description |
 |---|---|
-| `dev` | Builds the packages, then runs the API and the backoffice in development mode, rebuilding the packages and restarting the servers on every change |
+| `dev` | Starts the current environment's database and builds the packages, then runs the API and the backoffice in development mode, rebuilding the packages and restarting the servers on every change |
 | `demo` | Runs the whole project from its images in the `demo` environment, with a fresh database (see [Demo](#demo)) |
-| `service <service> <action>` | Manages a service of the current environment (`start`, `stop`, `status`, `logs`, `clear`); `service list` prints them |
+| `services <command> [--service <service>]...` | Manages the current environment's services, all of them or the ones given (`start`, `stop`, `status`, `logs`, `clear`); `services list` prints them (see [Services](#services)) |
 | `build-all` | Builds every workspace |
 | `build-packages` | Builds the packages other workspaces depend on |
 | `run-all` | Runs the given script in every workspace (for example `yarn run-all lint`) |
@@ -256,7 +264,7 @@ on every pull request and push to `main`.
 | `<workspace>:run` | Runs the given script in a workspace (for example `yarn auth-api:run build`) |
 | `setup` | Installs the git hooks |
 | `test-auth-api` | Runs auth-api's tests against its test database (see [auth-api](./workspaces/auth-api)) |
-| `test-e2e` | Runs the backoffice's end-to-end tests against auth-api's test environment (see [auth-backoffice](./workspaces/auth-backoffice)) |
+| `test-e2e` | Runs the backoffice's end-to-end tests against the test environment's services (see [auth-backoffice](./workspaces/auth-backoffice)) |
 
 Type checking (`yarn run-all check-types:all`) needs the packages built first
 (`yarn build-packages`), because workspaces consume each other's `dist`.

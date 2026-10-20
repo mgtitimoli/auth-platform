@@ -1,6 +1,6 @@
 import {defineConfig, devices} from "@playwright/test";
 
-const baseUrl = "http://localhost:3000";
+import {environmentVariables} from "./e2e/utils/environment-variables";
 
 const isCi = process.env["CI"] === "true";
 
@@ -11,13 +11,8 @@ const playwrightConfig = defineConfig({
   retries: isCi ? 1 : 0,
   testDir: "e2e",
   use: {
-    baseURL: baseUrl,
+    baseURL: environmentVariables.AUTH_BACKOFFICE_URL,
     trace: "retain-on-failure"
-  },
-  webServer: {
-    command: "yarn start",
-    reuseExistingServer: false,
-    url: baseUrl
   }
 });
 

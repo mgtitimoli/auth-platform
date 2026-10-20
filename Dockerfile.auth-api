@@ -28,7 +28,7 @@ COPY workspaces/auth-api/tsconfig.json ./workspaces/auth-api/
 COPY workspaces/auth-api/package.json ./workspaces/auth-api/
 COPY workspaces/auth-api/src ./workspaces/auth-api/src
 # Not in the production image: the database scripts (migrations, seeds) run
-# from this stage, e.g. docker-compose.demo.yml's migrations
+# from this stage, in the compose files' auth-api-migrate service
 COPY workspaces/auth-api/scripts ./workspaces/auth-api/scripts
 
 RUN yarn workspaces focus @mgtitimoli/auth-api @mgtitimoli/auth-domain @mgtitimoli/utils

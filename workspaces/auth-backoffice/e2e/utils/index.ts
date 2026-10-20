@@ -2,6 +2,7 @@ export * from "./add-stale-session-cookie";
 export * from "./create-sign-up-input";
 export * from "./create-user";
 export * from "./create-users";
+export * from "./environment-variables";
 export * from "./expect-signed-in-as";
 export * from "./fill-new-user-form";
 export * from "./find-user-row";

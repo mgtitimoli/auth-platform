@@ -56,7 +56,25 @@ jobs:
       - name: Install the Playwright browser
         run: yarn auth-backoffice:run prepare-e2e
 
-      # Starts auth-api's test database and API container with docker compose
+      # The compose files read the test environment's variables
+      - name: Load the test environment
+        run: cat workspaces/auth-api/.env.test >> "$GITHUB_ENV"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      # Builds the test environment's images with GitHub Actions' cache, so
+      # the test step's compose build reuses unchanged layers
+      - name: Build the images
+        uses: docker/bake-action@v7
+        with:
+          files: docker-compose.test.yml
+          load: true
+          set: |
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
+          source: .
+
       - name: Test
         run: yarn test-e2e
 

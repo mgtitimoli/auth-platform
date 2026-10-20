@@ -1,0 +1,54 @@
+# Every service, defined once and extended by docker-compose.<environment>.yml,
+# which adds what's specific to its environment (never run on its own)
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_PASSWORD: auth
+      POSTGRES_USER: auth
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth -d auth"]
+      interval: 1s
+      retries: 30
+      timeout: 5s
+
+  auth-api-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth-api
+      target: builder
+    command: ["yarn", "workspace", "@mgtitimoli/auth-api", "database:migrate-all"]
+    environment:
+      # Inside Docker, the database is the postgres service, not the host's port
+      AUTH_DATABASE_URL: postgres://auth:auth@postgres:5432/auth
+
+  auth-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth-api
+    environment:
+      AUTH_DATABASE_URL: postgres://auth:auth@postgres:5432/auth
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:' + process.env.AUTH_API_PORT + '/health').then(response => process.exit(response.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 1s
+      retries: 30
+      timeout: 5s
+    ports:
+      - "${AUTH_API_PORT}:${AUTH_API_PORT}"
+
+  auth-backoffice:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth-backoffice
+      args:
+        # Inlined at build time: the browser calls the API through its
+        # published port
+        NEXT_PUBLIC_AUTH_API_URL: http://localhost:${AUTH_API_PORT}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/sign-in').then(response => process.exit(response.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 1s
+      retries: 30
+      timeout: 5s
+    ports:
+      - "3000:3000"

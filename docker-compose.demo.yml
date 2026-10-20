@@ -1,20 +1,18 @@
 # The demo environment: the whole project from its images, to try it without
 # setting anything up (yarn demo); every run starts from a fresh database with
 # the seeded admin
-name: auth-api-demo
+name: auth-platform-demo
 
 services:
   postgres:
     extends:
-      file: docker-compose.postgres.yml
+      file: docker-compose.base.yml
       service: postgres
 
-  # Runs once: migrates the database and seeds the admin, then exits
   auth-api-migrate:
-    build:
-      context: .
-      dockerfile: Dockerfile.auth-api
-      target: builder
+    extends:
+      file: docker-compose.base.yml
+      service: auth-api-migrate
     command:
       - sh
       - -c
@@ -25,24 +23,18 @@ services:
     env_file: workspaces/auth-api/.env.demo
 
   auth-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.auth-api
+    extends:
+      file: docker-compose.base.yml
+      service: auth-api
     depends_on:
       auth-api-migrate:
         condition: service_completed_successfully
     env_file: workspaces/auth-api/.env.demo
-    ports:
-      - "8080:8080"
 
   auth-backoffice:
-    build:
-      context: .
-      dockerfile: Dockerfile.auth-backoffice
-      args:
-        # The browser calls the API directly, through its published port
-        NEXT_PUBLIC_AUTH_API_URL: http://localhost:8080
+    extends:
+      file: docker-compose.base.yml
+      service: auth-backoffice
     depends_on:
-      - auth-api
-    ports:
-      - "3000:3000"
+      auth-api:
+        condition: service_healthy

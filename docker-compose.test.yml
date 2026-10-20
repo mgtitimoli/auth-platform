@@ -1,9 +1,10 @@
-name: auth-api-test
+# The test environment: an in-memory database, migrated every time it starts
+name: auth-platform-test
 
 services:
   postgres:
     extends:
-      file: docker-compose.postgres.yml
+      file: docker-compose.base.yml
       service: postgres
     # Durability isn't needed for a database that only lives during the tests
     command: ["postgres", "-c", "fsync=off", "-c", "synchronous_commit=off", "-c", "full_page_writes=off"]
@@ -12,22 +13,28 @@ services:
     tmpfs:
       - /var/lib/postgresql/data
 
-  auth-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.auth-api
+  auth-api-migrate:
+    extends:
+      file: docker-compose.base.yml
+      service: auth-api-migrate
     depends_on:
       postgres:
         condition: service_healthy
     env_file: workspaces/auth-api/.env.test
-    environment:
-      # The test environment as seen from inside Docker: the database is the
-      # postgres service, not the host's port
-      AUTH_DATABASE_URL: postgres://auth:auth@postgres:5432/auth
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:' + process.env.AUTH_API_PORT + '/health').then(response => process.exit(response.ok ? 0 : 1), () => process.exit(1))"]
-      interval: 1s
-      retries: 30
-      timeout: 5s
-    ports:
-      - "${AUTH_API_PORT}:${AUTH_API_PORT}"
+
+  auth-api:
+    extends:
+      file: docker-compose.base.yml
+      service: auth-api
+    depends_on:
+      auth-api-migrate:
+        condition: service_completed_successfully
+    env_file: workspaces/auth-api/.env.test
+
+  auth-backoffice:
+    extends:
+      file: docker-compose.base.yml
+      service: auth-backoffice
+    depends_on:
+      auth-api:
+        condition: service_healthy

@@ -11,6 +11,7 @@ Back office to sign up, sign in and manage users, built with
 - [Environment variables](#environment-variables)
 - [Theme](#theme)
 - [Testing](#testing)
+  - [Iterating on the tests](#iterating-on-the-tests)
 - [Docker](#docker)
 - [Scripts](#scripts)
 
@@ -80,12 +81,32 @@ yarn auth-backoffice:run prepare-e2e   # once: downloads Playwright's Chromium
 yarn test-e2e                          # from the repository root
 ```
 
-The root `test-e2e` starts auth-api's test environment (its database and API
-container, so it needs Docker and ports 3000, 8080 and 5433 free: stop
-`yarn dev` first), then runs this workspace's `test-e2e`, which builds the
-backoffice and runs the [Playwright](https://playwright.dev) tests in
-[e2e](./e2e) against it. It stops the test environment afterwards, so every run
-starts with an empty database.
+The root `test-e2e` starts the test environment's services in Docker (the
+migrated database, the API and this backoffice's image), then runs this
+workspace's `test-e2e`, the [Playwright](https://playwright.dev) tests in
+[e2e](./e2e), against them, so they test the image that ships. It stops them
+afterwards, so every run starts with an empty database. It needs ports 3000,
+8080 and 5433 free (stop `yarn dev` first).
+
+The tests read the API's and the backoffice's addresses from the loaded
+environment (`AUTH_API_PORT`, `AUTH_BACKOFFICE_URL`), so they always run
+through auth-api's `env run`.
+
+### Iterating on the tests
+
+Rebuilding the image on every change is slow, so while writing or fixing tests,
+run the backoffice with reloading against the test environment's API instead:
+
+```sh
+yarn auth-api:run env use test
+yarn services start --service auth-api   # the migrated database and the API
+yarn auth-backoffice:run dev             # this backoffice, reloading on changes
+yarn auth-api:run env run yarn run --top-level auth-backoffice:run test-e2e
+```
+
+Rerun the last command as often as needed. The tests run against `next dev`
+here, not the production build, so finish with a full `yarn test-e2e`; then
+`yarn services stop` and `yarn auth-api:run env use local`.
 
 ## Docker
 
@@ -108,7 +129,7 @@ and only the files it needs, without installing `node_modules`.
 | `dev` | Runs the backoffice in development mode |
 | `build` | Builds the backoffice (the standalone output, with its static assets) |
 | `start` | Runs the built backoffice (the standalone server, as in Docker) |
-| `test-e2e` | Builds the backoffice and runs the e2e tests (against an API already running; see Testing) |
+| `test-e2e` | Runs the e2e tests against the backoffice and API of the loaded environment (see Testing) |
 | `prepare-e2e` | Installs the Playwright browser (Chromium) |
 | `lint` | Lints the workspace |
 | `check-types:all` | Generates Next's types (`next typegen`) and type-checks the workspace |

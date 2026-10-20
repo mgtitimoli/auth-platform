@@ -26,7 +26,7 @@ EOF
 #   starts with an empty database.
 # @noargs
 stop_test_database() {
-  yarn service postgres stop
+  yarn services stop --service postgres
 }
 
 main() {
@@ -59,7 +59,7 @@ main() {
 
   trap stop_test_database EXIT
 
-  yarn service postgres start
+  yarn services start --service postgres
   yarn auth-api:run test
 }
 
