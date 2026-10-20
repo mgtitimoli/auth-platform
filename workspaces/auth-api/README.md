@@ -7,6 +7,7 @@ REST API for users and sessions, built with [Hono](https://hono.dev) and
 
 - [Requirements](#requirements)
 - [Running](#running)
+- [API documentation](#api-documentation)
 - [Database](#database)
   - [Design](#design)
   - [Seeds](#seeds)
@@ -23,15 +24,26 @@ REST API for users and sessions, built with [Hono](https://hono.dev) and
 
 ## Running
 
-From the repository root:
+From the repository root, the first time (it creates the local database's
+tables and the admin):
 
 ```sh
 yarn auth-api:run env use local
 yarn services start --service postgres
 yarn auth-api:run database:migrate-all
 yarn auth-api:run database:seed 00001-seed-admin-users
+```
+
+Then, every time:
+
+```sh
+yarn auth-api:run env use local          # only if you switched to another environment
+yarn services start --service postgres   # only if it isn't running
 yarn dev
 ```
+
+After pulling new migrations, apply them with
+`yarn auth-api:run database:migrate-all`.
 
 Sign in with the seeded admin, the initial administrator once roles and
 permissions arrive (see the root README's future improvements); today every
@@ -58,9 +70,7 @@ The API listens on `http://localhost:8080`:
 | `GET /users?limit=&offset=` | A page of users, ordered by creation (`limit` defaults to 6, at most 100; `offset` defaults to 0), with the total |
 
 Every endpoint except health, OpenAPI, Swagger, sign-up and sign-in needs the
-session cookie (401 otherwise). In Swagger, sign in with "Try it out": the
-browser keeps the cookie and sends it with the next requests. With curl, use a
-cookie jar:
+session cookie (401 otherwise). With curl, use a cookie jar:
 
 ```sh
 curl -c cookies.txt -H 'Content-Type: application/json' \
@@ -70,6 +80,25 @@ curl -b cookies.txt http://localhost:8080/users/me
 ```
 
 Logs are also written to `logs/auth-api.log` when running locally.
+
+## API documentation
+
+The API documents itself: each route declares its definition next to its
+handler (summary, request body, responses and their status codes) with the
+same auth-domain schemas it validates requests with, and
+[hono-openapi](https://github.com/rhinobase/hono-openapi) builds the OpenAPI
+document from them. The documentation can't drift from what the API accepts
+and returns.
+
+- `GET /openapi`: the OpenAPI document (JSON). It declares the session cookie
+  as a security scheme, and the routes that need it.
+- `GET /swagger`: [Swagger UI](https://swagger.io/tools/swagger-ui/) on that
+  document. To call the protected routes, sign in with "Try it out": the
+  browser keeps the cookie and sends it with the next requests.
+
+[auth-api-tools](../auth-api-tools), the API's typed client, generates its
+types from this document (`update-auth-api-schema`), so the calls of any app
+using it, the backoffice first, are type-checked against the API.
 
 ## Database
 
@@ -83,6 +112,7 @@ root README), in the environment selected here:
 |---|---|---|---|
 | `local` | [docker-compose.local.yml](../../docker-compose.local.yml) | 5432 | a Docker volume: survives `services stop`, `services clear --service postgres` deletes it |
 | `test` | [docker-compose.test.yml](../../docker-compose.test.yml) | 5433 | in memory: cleared every time it stops |
+| `demo` | [docker-compose.demo.yml](../../docker-compose.demo.yml) | not published | fresh on every `yarn demo` |
 
 Scripts never take an environment: they act on the current one, the one `.env`
 points to (`env use`). To run a single command in another environment, without
@@ -151,7 +181,7 @@ database once (`yarn auth-api:run env use test`, then
 ## Environment variables
 
 `.env` is a symlink to one of the `.env.*` files (`yarn auth-api:run env use <name>`).
-`.env.local` and `.env.test` contain the local and test settings.
+`.env.local`, `.env.test` and `.env.demo` contain each environment's settings.
 
 | Variable | Description |
 |---|---|
@@ -174,6 +204,7 @@ From the repository root:
 docker build -f Dockerfile.auth-api -t auth-api .
 docker run -p 8080:8080 \
   -e AUTH_API_PORT=8080 \
+  -e AUTH_BACKOFFICE_URL=https://… \
   -e AUTH_DATABASE_URL=postgres://… \
   -e ENVIRONMENT_NAME=production \
   -e SESSION_COOKIE_SECURE=true \

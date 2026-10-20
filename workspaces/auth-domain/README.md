@@ -2,7 +2,8 @@
 
 Domain schemas ([zod](https://zod.dev)), types, utilities and errors shared by
 [auth-api](../auth-api) and the backoffice. It runs both in Node.js and in the
-browser.
+browser. The API validates its requests with these schemas and builds its
+OpenAPI document from them; the backoffice validates its forms with them.
 
 ## Contents
 

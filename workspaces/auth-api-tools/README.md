@@ -4,6 +4,13 @@ Typed client for [auth-api](../auth-api): its OpenAPI types, a fetch client
 ([openapi-fetch](https://openapi-ts.dev/openapi-fetch/)) and React Query hooks
 ([openapi-react-query](https://openapi-ts.dev/openapi-react-query/)).
 
+Its purpose is to be the one way to call auth-api: the types are generated
+from the API's own OpenAPI document, so every request and response is checked
+against what the API accepts and returns. The backoffice is its first
+consumer; the package is meant to be published, so any app consuming auth-api
+(another frontend, a service, a CLI) gets the same type safety without
+writing its own client.
+
 ## Contents
 
 - [Installation](#installation)
@@ -70,8 +77,8 @@ const hasSession = request.cookies.has(authApiSessionCookieName);
 
 ## Updating the types
 
-`src/auth-api-schema.ts` is generated from the API's OpenAPI document and
-committed. After changing the API, start it (`yarn dev` at the root) and run:
+`src/auth-api-schema.ts` is generated from the API's OpenAPI document (see
+[auth-api's API documentation](../auth-api#api-documentation)) and committed. After changing the API, start it (`yarn dev` at the root) and run:
 
 ```sh
 yarn auth-api-tools:run update-auth-api-schema
@@ -82,8 +89,8 @@ yarn auth-api-tools:run update-auth-api-schema
 - [auth-api-client](./src/auth-api-client.ts)
 - [auth-api-response-error](./src/auth-api-response-error.ts)
 - [auth-api-schema](./src/auth-api-schema.ts) (generated)
-- [react/auth-api-query-client](./src/react/auth-api-query-client.ts)
 - [auth-api-session-cookie-name](./src/auth-api-session-cookie-name.ts)
+- [react/auth-api-query-client](./src/react/auth-api-query-client.ts)
 
 ## Scripts
 

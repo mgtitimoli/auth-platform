@@ -58,7 +58,7 @@ same way pages re-export screens.
 
 | Variable | Description |
 |---|---|
-| `NEXT_PUBLIC_AUTH_API_URL` | The API's URL. Inlined at build time, so each environment's build needs its own; [.env.local](./.env.local) has the local one |
+| `NEXT_PUBLIC_AUTH_API_URL` | The API's URL. Inlined at build time, so each environment's build needs its own: [.env.local](./.env.local) has the local one for `next dev` and `next build`, and the compose files build the image with the loaded environment's (`http://localhost:` + `AUTH_API_PORT`) |
 
 ## Theme
 

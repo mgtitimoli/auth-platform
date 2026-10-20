@@ -35,8 +35,9 @@ import {getEntries} from "@mgtitimoli/utils/object";
 import * as withServer from "@mgtitimoli/utils/hono/server";
 ```
 
-Framework libraries (Hono, Kysely, pino, zod) are optional peer dependencies: install the
-ones used by the utilities you import.
+Framework libraries (Hono, Kysely, pino, React, TanStack Query, TanStack Table,
+zod) are optional peer dependencies: install the ones used by the utilities you
+import.
 
 ## Scripts
 

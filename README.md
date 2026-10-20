@@ -28,8 +28,9 @@ web application to sign up, sign in and manage users.
 - [Node.js](https://nodejs.org) 22.22.1 or later (the repository pins 24.22.0 in
   `.tool-versions` for [asdf](https://asdf-vm.com) users; asdf is optional)
 - [Yarn](https://yarnpkg.com): any installed version works
-- [Docker](https://www.docker.com) with Compose, for the local database (see each
-  workspace's README for its own requirements)
+- [Docker](https://www.docker.com) with Compose, for the environments' services
+  (the databases, the demo and the end-to-end tests; see each workspace's
+  README for its own requirements)
 
 ### Setup
 
@@ -93,8 +94,10 @@ extracted into their own repositories, and live here for convenience.
 - **auth-domain** is the contract both sides share: the zod schemas that
   validate the API's requests also validate the backoffice's forms, and its
   errors are the ones the API maps to status codes.
-- **auth-api-tools** is generated from the API's OpenAPI document, so the
-  backoffice calls the API with typed requests and responses.
+- **auth-api-tools** is auth-api's client, generated from its OpenAPI
+  document, so the backoffice calls the API with typed requests and responses.
+  It's meant to be published, so any app consuming auth-api gets the same type
+  safety.
 - **utils** holds generic utilities (no knowledge of users or sessions); what
   only one workspace needs lives in that workspace's `src/utils` (`src/client/utils`
   in the backoffice).
@@ -108,9 +111,10 @@ extracted into their own repositories, and live here for convenience.
 
 - **auth-api** ([Hono](https://hono.dev), [Kysely](https://kysely.dev),
   PostgreSQL) follows an onion architecture with the domain at its core:
-  routers → services → repositories → database. Routes
-  validate with the domain's schemas and only call services; each repository
-  function queries one table and returns domain types, never rows.
+  routers → services → repositories → database. Routes validate with the
+  domain's schemas, which also document them (OpenAPI and Swagger UI), and only
+  call services; each repository function queries one table and returns domain
+  types, never rows.
 - **auth-backoffice** ([Next.js](https://nextjs.org) with client components,
   [Base UI](https://base-ui.com), [vanilla-extract](https://vanilla-extract.style),
   [TanStack Query](https://tanstack.com/query) and
@@ -213,17 +217,27 @@ yarn services clear --service postgres     # stops it and deletes its data
 
 ## Development
 
+The first time, set up the local database (its tables and the admin):
+
 ```sh
 yarn auth-api:run env use local
 yarn services start --service postgres
 yarn auth-api:run database:migrate-all
 yarn auth-api:run database:seed 00001-seed-admin-users
+```
+
+Then, every time:
+
+```sh
+yarn auth-api:run env use local          # only if you switched to another environment
+yarn services start --service postgres   # only if it isn't running
 yarn dev
 ```
 
-Then sign in as `admin@example.com` / `Admin123!` (see
+Sign in as `admin@example.com` / `Admin123!` (see
 [auth-api](./workspaces/auth-api)). The local database keeps its data between
-runs; `yarn services stop` stops it.
+runs; `yarn services stop` stops it. After pulling new migrations, apply them
+with `yarn auth-api:run database:migrate-all`.
 
 `yarn dev` starts the current environment's database, builds the packages,
 then runs the API on `http://localhost:8080` and the backoffice on
@@ -281,7 +295,7 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 with a sentence-case subject (for example, `feat: Add sign-in page`), plus a
 short body explaining what changes and why. The
 `commit-msg` hook checks them with [commitlint](https://commitlint.js.org), and the
-`pre-commit` hook lints the staged files with
+`pre-commit` hook type-checks and lints the staged files with
 [lint-staged](https://github.com/lint-staged/lint-staged).
 
 ## Future improvements
@@ -298,9 +312,6 @@ short body explaining what changes and why. The
 - **Token authentication for non-browser clients:** sessions are only read
   from the `HttpOnly` cookie. Mobile apps or CLIs would need the session id in
   an `Authorization: Bearer` header instead.
-- **Password policy:** screening against a blocklist of breached passwords, and
-  [NIST SP 800-63B](https://pages.nist.gov/800-63-4/sp800-63b.html)'s policy
-  (at least 15 characters, no character-class rules).
 - **Changing one's own password:** today an administrator sets it.
 - **User settings stored in the API** (the theme), so they follow the user
   across devices instead of staying in the browser.
