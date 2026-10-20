@@ -17,7 +17,7 @@ type CacheEvent = MutationCacheNotifyEvent | QueryCacheNotifyEvent;
 const {httpStatusCodes} = withHttpStatusCode;
 
 // openapi-react-query keys every mutation by [method, path]
-const isSignInMutationKey = (mutationKey: MutationKey | undefined) => {
+const isSignInMutationKey = (mutationKey?: MutationKey) => {
   const [method, path] = mutationKey ?? [];
 
   return method === "post" && path === "/auth/sign-in";

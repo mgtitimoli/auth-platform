@@ -10,7 +10,7 @@ type Props = {
   onEdit: (user: User) => unknown;
   onOpenChange: (isOpen: boolean) => unknown;
   // The user being edited; the dialog is open while there's one
-  user: undefined | User;
+  user?: User;
 };
 
 const EditUserDialog = ({onEdit, onOpenChange, user}: Props) => (

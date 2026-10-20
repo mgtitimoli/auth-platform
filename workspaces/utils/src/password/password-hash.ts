@@ -22,7 +22,7 @@ const toString = ({key, salt, scryptParams}: PasswordHash) =>
     key.toString(encoding)
   ].join(separator);
 
-const parsePositiveInteger = (value: string | undefined) => {
+const parsePositiveInteger = (value?: string) => {
   const number = Number(value);
 
   return Number.isSafeInteger(number) && number > 0 ? number : undefined;

@@ -20,12 +20,13 @@ import * as styles from "./users-table.css";
 
 type Props = {
   isBusy: boolean;
+  onDelete: (user: User) => unknown;
   onEdit: (user: User) => unknown;
   users: User[];
 };
 
 // How the cells reach the screen's handlers, keeping the columns static
-type UsersTableMeta = Pick<Props, "onEdit">;
+type UsersTableMeta = Pick<Props, "onDelete" | "onEdit">;
 
 const {userStatuses} = withUserStatus;
 
@@ -82,6 +83,7 @@ const columns = columnHelper.columns([
   columnHelper.display({
     cell: ({row, table}) => (
       <UserActionsMenu
+        onDelete={() => table.options.meta?.onDelete(row.original)}
         onEdit={() => table.options.meta?.onEdit(row.original)}
         user={row.original}
       />
@@ -92,7 +94,7 @@ const columns = columnHelper.columns([
   })
 ]);
 
-const UsersTable = ({isBusy, onEdit, users}: Props) => {
+const UsersTable = ({isBusy, onDelete, onEdit, users}: Props) => {
   const table = useTable({
     columns,
     data: users,
@@ -100,7 +102,7 @@ const UsersTable = ({isBusy, onEdit, users}: Props) => {
     getRowId: user => user.id,
     // The name identifies the row, so it stays visible while the table scrolls
     initialState: {columnPinning: {end: [], start: ["name"]}},
-    meta: {onEdit}
+    meta: {onDelete, onEdit}
   });
 
   return <Table isBusy={isBusy} table={table} />;

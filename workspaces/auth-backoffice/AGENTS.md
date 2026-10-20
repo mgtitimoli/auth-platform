@@ -66,7 +66,7 @@ No Server Components or Server Actions: screens and components start with
   start, which stay visible while the table scrolls.
 - Dialogs are controlled by their screen (`isOpen` and `onOpenChange`): the
   screen opens them, and closes them when their content reports it's done
-  (`onCreate`).
+  (`onCreate`). Irreversible actions confirm through `AlertDialog`.
 - Toasts confirm what changed somewhere else on the screen: screens add them
   with Base UI's `Toast.useToastManager()`, and the application renders them
   (`ToastProvider`).

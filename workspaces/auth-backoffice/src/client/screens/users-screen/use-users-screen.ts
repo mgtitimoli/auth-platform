@@ -18,6 +18,8 @@ const useUsersScreen = () => {
 
   const [editedUser, setEditedUser] = useState<User>();
 
+  const [deletedUser, setDeletedUser] = useState<User>();
+
   const {data: usersResponse, isPlaceholderData} = authApi.useQuery(
     "get",
     "/users",
@@ -56,15 +58,51 @@ const useUsersScreen = () => {
     }
   };
 
+  const handleDelete = async (
+    {firstName, lastName}: User,
+    wasAlreadyDeleted: boolean
+  ) => {
+    setDeletedUser(undefined);
+
+    toastManager.add({
+      title:
+        firstName +
+        " " +
+        lastName +
+        (wasAlreadyDeleted ? " was already deleted" : " was deleted")
+    });
+
+    // Deleting the only user on the last page would leave it empty
+    const remainingPageCount = Math.ceil(
+      ((usersResponse?.pagination.total ?? 1) - 1) / pageSize
+    );
+
+    if (page > remainingPageCount && remainingPageCount > 0) {
+      setPage(remainingPageCount);
+    }
+
+    await queryClient.invalidateQueries({queryKey: ["get", "/users"]});
+  };
+
+  const handleDeleteUserDialogOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setDeletedUser(undefined);
+    }
+  };
+
   return {
+    deletedUser,
     editedUser,
     handleCreate,
+    handleDelete,
+    handleDeleteUserDialogOpenChange,
     handleEdit,
     handleEditUserDialogOpenChange,
     isCreateUserDialogOpen,
     isPlaceholderData,
     page,
     pageCount,
+    setDeletedUser,
     setEditedUser,
     setIsCreateUserDialogOpen,
     setPage,

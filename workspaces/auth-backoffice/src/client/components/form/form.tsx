@@ -2,7 +2,7 @@
 
 import type {FormEvent, ReactNode} from "react";
 
-import {Button} from "@/client/components/button";
+import {Button, buttonVariants} from "@/client/components/button";
 
 import * as styles from "./form.css";
 
@@ -33,7 +33,11 @@ const Form = ({
         </p>
       )}
       <div className={styles.actions}>
-        <Button disabled={isSubmitDisabled} type="submit">
+        <Button
+          disabled={isSubmitDisabled}
+          type="submit"
+          variant={buttonVariants.primary}
+        >
           {submitLabel}
         </Button>
       </div>

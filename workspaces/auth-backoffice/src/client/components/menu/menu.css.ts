@@ -1,6 +1,8 @@
-import {style} from "@vanilla-extract/css";
+import {style, styleVariants} from "@vanilla-extract/css";
 
 import {applicationThemeVars} from "@/client/components/application/application-theme.css";
+
+import {menuItemVariants} from "./menu-item-variant";
 
 const {colors, fontSizes, radii, space} = applicationThemeVars;
 
@@ -30,10 +32,19 @@ const item = style({
   outline: "none",
   padding: space.sm,
   selectors: {
+    "&[data-disabled]": {
+      cursor: "not-allowed",
+      opacity: 0.5
+    },
     "&[data-highlighted]": {
       background: colors.border
     }
   }
+});
+
+const itemVariants = styleVariants({
+  [menuItemVariants.danger]: [item, {color: colors.danger}],
+  [menuItemVariants.default]: [item]
 });
 
 const radioItem = style([
@@ -65,6 +76,7 @@ const separator = style({
 export {
   groupLabel,
   item,
+  itemVariants,
   popup,
   radioItem,
   radioItemIndicator,

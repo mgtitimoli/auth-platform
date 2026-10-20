@@ -1,14 +1,14 @@
-import {style} from "@vanilla-extract/css";
+import {style, styleVariants} from "@vanilla-extract/css";
 
 import {applicationThemeVars} from "@/client/components/application/application-theme.css";
 
+import {buttonVariants} from "./button-variant";
+
 const {colors, fontSizes, radii, space} = applicationThemeVars;
 
-const root = style({
-  background: colors.primary,
-  border: "none",
+const base = style({
+  border: "1px solid transparent",
   borderRadius: radii.md,
-  color: colors.primaryForeground,
   cursor: "pointer",
   font: "inherit",
   fontSize: fontSizes.sm,
@@ -22,4 +22,23 @@ const root = style({
   }
 });
 
-export {root};
+const variants = styleVariants({
+  [buttonVariants.danger]: [
+    base,
+    {background: colors.danger, color: colors.primaryForeground}
+  ],
+  [buttonVariants.primary]: [
+    base,
+    {background: colors.primary, color: colors.primaryForeground}
+  ],
+  [buttonVariants.secondary]: [
+    base,
+    {
+      background: "none",
+      borderColor: colors.border,
+      color: colors.foreground
+    }
+  ]
+});
+
+export {variants};
