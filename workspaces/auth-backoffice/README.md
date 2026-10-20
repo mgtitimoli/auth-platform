@@ -24,7 +24,7 @@ yarn auth-backoffice:run dev
 | `/` | Redirects: to `/users` with a session, to `/sign-up` without one |
 | `/sign-in` | Sign-in form: signs the user in and goes to `/users` |
 | `/sign-up` | Sign-up form: creates the user, signs them in and goes to `/users` |
-| `/users` | The users page: every user, 6 per page, and creating users |
+| `/users` | The users page: every user, 6 per page, creating and editing users |
 
 Private pages share a navbar with an account menu (the avatar): who's signed
 in and Log out.

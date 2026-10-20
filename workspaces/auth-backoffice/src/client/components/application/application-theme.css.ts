@@ -21,7 +21,8 @@ const applicationThemeVars = createThemeContract({
     lg: null,
     md: null,
     sm: null,
-    xl: null
+    xl: null,
+    xs: null
   },
   radii: {
     md: null
@@ -42,7 +43,8 @@ const sharedValues = {
     lg: "1.25rem",
     md: "1rem",
     sm: "0.875rem",
-    xl: "1.875rem"
+    xl: "1.875rem",
+    xs: "0.75rem"
   },
   radii: {
     md: "0.5rem"

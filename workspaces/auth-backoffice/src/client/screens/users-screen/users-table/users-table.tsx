@@ -7,22 +7,31 @@ import {formatDate, formatNumber} from "@mgtitimoli/utils/formatting";
 import {
   columnSizingFeature,
   createColumnHelper,
+  metaHelper,
   tableFeatures,
   useTable
 } from "@tanstack/react-table";
 
 import {Table, TableCellText} from "@/client/components/table";
 
+import {UserActionsMenu} from "./user-actions-menu";
 import * as styles from "./users-table.css";
 
 type Props = {
   isBusy: boolean;
+  onEdit: (user: User) => unknown;
   users: User[];
 };
 
+// How the cells reach the screen's handlers, keeping the columns static
+type UsersTableMeta = Pick<Props, "onEdit">;
+
 const {userStatuses} = withUserStatus;
 
-const features = tableFeatures({columnSizingFeature});
+const features = tableFeatures({
+  columnSizingFeature,
+  tableMeta: metaHelper<UsersTableMeta>()
+});
 
 const columnHelper = createColumnHelper<typeof features, User>();
 
@@ -67,15 +76,27 @@ const columns = columnHelper.columns([
     ),
     header: "Created",
     size: 200
+  }),
+  columnHelper.display({
+    cell: ({row, table}) => (
+      <UserActionsMenu
+        onEdit={() => table.options.meta?.onEdit(row.original)}
+        user={row.original}
+      />
+    ),
+    header: "",
+    id: "actions",
+    size: 56
   })
 ]);
 
-const UsersTable = ({isBusy, users}: Props) => {
+const UsersTable = ({isBusy, onEdit, users}: Props) => {
   const table = useTable({
     columns,
     data: users,
     features,
-    getRowId: user => user.id
+    getRowId: user => user.id,
+    meta: {onEdit}
   });
 
   return <Table isBusy={isBusy} table={table} />;

@@ -23,10 +23,22 @@ const input = style({
   font: "inherit",
   padding: space.sm,
   selectors: {
+    "&[data-disabled]": {
+      color: colors.mutedForeground,
+      cursor: "not-allowed"
+    },
     "&[data-invalid]": {
       borderColor: colors.danger
     }
   }
+});
+
+const description = style({
+  color: colors.mutedForeground,
+  fontSize: fontSizes.xs,
+  margin: 0,
+  // Half the field's gap: it belongs to the control above it
+  marginTop: "calc(" + space.sm + " / -2)"
 });
 
 const error = style({
@@ -34,4 +46,4 @@ const error = style({
   fontSize: fontSizes.sm
 });
 
-export {error, input, label, root};
+export {description, error, input, label, root};

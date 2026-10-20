@@ -13,10 +13,17 @@ const fieldset = style({
   padding: 0
 });
 
+// Sets the submit button apart from the last field
+const actions = style({
+  display: "flex",
+  flexDirection: "column",
+  paddingTop: space.sm
+});
+
 const error = style({
   color: colors.danger,
   fontSize: fontSizes.sm,
   margin: 0
 });
 
-export {error, fieldset};
+export {actions, error, fieldset};

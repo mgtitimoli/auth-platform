@@ -1,5 +1,5 @@
 import {Toast} from "@base-ui/react/toast";
-import type {NewUserInput} from "@mgtitimoli/auth-domain/domain-schema";
+import type {NewUserInput, User} from "@mgtitimoli/auth-domain/domain-schema";
 import {keepPreviousData, useQueryClient} from "@tanstack/react-query";
 import {useState} from "react";
 
@@ -15,6 +15,8 @@ const useUsersScreen = () => {
   const [page, setPage] = useState(1);
 
   const [isCreateUserDialogOpen, setIsCreateUserDialogOpen] = useState(false);
+
+  const [editedUser, setEditedUser] = useState<User>();
 
   const {data: usersResponse, isPlaceholderData} = authApi.useQuery(
     "get",
@@ -36,12 +38,34 @@ const useUsersScreen = () => {
     await queryClient.invalidateQueries({queryKey: ["get", "/users"]});
   };
 
+  const handleEdit = async ({firstName, lastName}: User) => {
+    setEditedUser(undefined);
+
+    toastManager.add({title: firstName + " " + lastName + " was updated"});
+
+    // The account menu shows the signed-in user, who may be the edited one
+    await Promise.all([
+      queryClient.invalidateQueries({queryKey: ["get", "/users"]}),
+      queryClient.invalidateQueries({queryKey: ["get", "/users/me"]})
+    ]);
+  };
+
+  const handleEditUserDialogOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setEditedUser(undefined);
+    }
+  };
+
   return {
+    editedUser,
     handleCreate,
+    handleEdit,
+    handleEditUserDialogOpenChange,
     isCreateUserDialogOpen,
     isPlaceholderData,
     page,
     pageCount,
+    setEditedUser,
     setIsCreateUserDialogOpen,
     setPage,
     users: usersResponse?.data

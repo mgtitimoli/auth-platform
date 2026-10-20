@@ -10,6 +10,8 @@ type Props = {
   children: ReactNode;
   error?: string;
   isDisabled?: boolean;
+  // Only the submit button, e.g. until there's something to save
+  isSubmitDisabled?: boolean;
   onSubmit: (event: FormEvent<HTMLFormElement>) => unknown;
   submitLabel: string;
 };
@@ -18,6 +20,7 @@ const Form = ({
   children,
   error,
   isDisabled = false,
+  isSubmitDisabled = false,
   onSubmit,
   submitLabel
 }: Props) => (
@@ -29,7 +32,11 @@ const Form = ({
           {error}
         </p>
       )}
-      <Button type="submit">{submitLabel}</Button>
+      <div className={styles.actions}>
+        <Button disabled={isSubmitDisabled} type="submit">
+          {submitLabel}
+        </Button>
+      </div>
     </fieldset>
   </form>
 );

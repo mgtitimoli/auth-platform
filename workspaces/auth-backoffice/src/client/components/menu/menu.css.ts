@@ -19,7 +19,7 @@ const popup = style({
   borderRadius: radii.md,
   boxShadow: "0 4px 16px rgb(0 0 0 / 0.12)",
   color: colors.foreground,
-  minWidth: "14rem",
+  minWidth: "6rem",
   padding: space.sm
 });
 

@@ -57,7 +57,10 @@ No Server Components or Server Actions: screens and components start with
 - Tables are [TanStack Table](https://tanstack.com/table) instances (headless)
   rendered by the shared `Table` component: a screen registers the features it
   needs, declares its columns with a column helper at module scope, and passes
-  `useTable`'s result to `Table`. `Table` renders any table, so it uses a
+  `useTable`'s result to `Table`. Cells reach the screen's handlers through the
+  table's `meta` (`useTable({meta})`, typed with
+  `tableFeatures({tableMeta: metaHelper<…>()})`), so the columns stay static.
+  `Table` renders any table, so it uses a
   feature's APIs only after checking the table registers it (the predicates in
   `@mgtitimoli/utils/tanstack-table`).
 - Dialogs are controlled by their screen (`isOpen` and `onOpenChange`): the
@@ -84,8 +87,14 @@ No Server Components or Server Actions: screens and components start with
   `NewUserForm`) can't own one: each flow wraps it in its own form
   (`SignUpForm`), which owns the request and passes it as the shared form's
   `onSubmit`; the shared form awaits it and maps a rejection the same way.
-- Field components take the error as a string, so they don't depend on
-  `react-hook-form`.
+- Field components take the error (and an optional description) as strings, so
+  they don't depend on `react-hook-form`; a `SelectField` is driven through
+  `Controller`.
+- Forms for partial updates send only what changed (react-hook-form's
+  `dirtyFields`) and keep their submit disabled until something does, so a
+  save never overwrites another admin's change to other fields.
+- Fields the API would reject are disabled with a description saying why,
+  rather than left to fail on submit.
 - A form is disabled while its request is pending or while its container says
   so (an `isDisabled` prop): `router.push` returns nothing to await, so a
   screen that navigates after success wraps it in `useTransition`.

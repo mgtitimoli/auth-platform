@@ -18,7 +18,7 @@ const header = style({
 });
 
 const title = style({
-  fontSize: fontSizes.xl,
+  fontSize: fontSizes.lg,
   margin: 0
 });
 
