@@ -3,6 +3,19 @@
 REST API for users and sessions, built with [Hono](https://hono.dev) and
 [Kysely](https://kysely.dev) on PostgreSQL.
 
+## Contents
+
+- [Requirements](#requirements)
+- [Running](#running)
+- [Database](#database)
+  - [Design](#design)
+  - [Seeds](#seeds)
+  - [Migrations](#migrations)
+- [Testing](#testing)
+- [Environment variables](#environment-variables)
+- [Docker](#docker)
+- [Scripts](#scripts)
+
 ## Requirements
 
 - [Docker](https://www.docker.com) with Compose, for the local and test databases
@@ -86,6 +99,11 @@ yarn auth-api:run env run --environment test yarn database:cli -c "select count(
 
 ### Design
 
+- **Onion architecture:** the domain (auth-domain's types, schemas and errors)
+  is the core, and each layer depends only on the ones inside it: repositories
+  turn database rows into domain types, services implement the use cases on
+  top of them, and routers expose those over HTTP. The database module
+  (schema, migrations, seeds) knows nothing about the layers above it.
 - Passwords live in their own table (`user_credentials`): no query on `users`
   can return a password hash, and only the user-credential repository reads it.
   Hashes use scrypt with a random salt.
@@ -103,8 +121,9 @@ yarn auth-api:run env run --environment test yarn database:cli -c "select count(
 ### Seeds
 
 Seeds live in [src/database/seeds](./src/database/seeds) and are run by name
-(`database:seed <seed>`). `00001-seed-admin-users` creates the
-admins listed above, skipping the ones that already exist. Their passwords are
+(`database:seed <seed>`). Seeds are idempotent: running one again skips what
+it already created, so it's safe to rerun. `00001-seed-admin-users` creates the
+admins listed above, skipping the emails that already exist. Their passwords are
 public, so never run it against a shared environment.
 
 ### Migrations

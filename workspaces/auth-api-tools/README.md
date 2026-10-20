@@ -4,6 +4,16 @@ Typed client for [auth-api](../auth-api): its OpenAPI types, a fetch client
 ([openapi-fetch](https://openapi-ts.dev/openapi-fetch/)) and React Query hooks
 ([openapi-react-query](https://openapi-ts.dev/openapi-react-query/)).
 
+## Contents
+
+- [Installation](#installation)
+- [Integration](#integration)
+- [Errors](#errors)
+- [Session cookie](#session-cookie)
+- [Updating the types](#updating-the-types)
+- [Modules](#modules)
+- [Scripts](#scripts)
+
 ## Installation
 
 The React hooks need these peer dependencies (the plain client doesn't):

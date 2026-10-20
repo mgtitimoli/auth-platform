@@ -59,7 +59,7 @@ export type {Status};
 7. Do not use non-null assertions (`!`), use proper narrowing instead
 8. Use `unknown` instead of `void` for callback return types when the return value is irrelevant
 9. Use `?:` for object properties and trailing parameters that may be absent, instead of `| undefined` (which stays for non-trailing parameters, return types and type utilities)
-9. Prefix generic type parameters with `T` followed by a descriptive PascalCase name (e.g., `TItem`, `TObject`, `TKey`)
+10. Prefix generic type parameters with `T` followed by a descriptive PascalCase name (e.g., `TItem`, `TObject`, `TKey`)
 
 ## Functional Programming
 

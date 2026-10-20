@@ -3,6 +3,17 @@
 Back office to sign up, sign in and manage users, built with
 [Next.js](https://nextjs.org) (App Router).
 
+## Contents
+
+- [Running](#running)
+- [Pages](#pages)
+- [Layout](#layout)
+- [Environment variables](#environment-variables)
+- [Theme](#theme)
+- [Testing](#testing)
+- [Docker](#docker)
+- [Scripts](#scripts)
+
 ## Running
 
 ```sh
@@ -33,6 +44,14 @@ in and Log out.
 it, private pages go to `/sign-in`; with it, the sign-in and sign-up pages go to
 `/users`. When the API rejects the session (it ended), the user is taken to
 `/sign-in`.
+
+## Layout
+
+`src/app` only holds Next's routing: each page re-exports a screen. `src/client`
+holds everything that runs in the browser: screens, components and utilities
+(every component is a client component). Server logic, such as route handlers
+under `app/api`, would go in a sibling `src/server`, re-exported from `app` the
+same way pages re-export screens.
 
 ## Environment variables
 

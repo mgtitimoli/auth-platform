@@ -3,6 +3,12 @@
 ESLint (flat config) and Prettier configuration shared by the workspaces of this
 repository.
 
+## Contents
+
+- [Configs](#configs)
+- [Usage](#usage)
+- [Scripts](#scripts)
+
 ## Configs
 
 - [`base.js`](./base.js): general rules plus the

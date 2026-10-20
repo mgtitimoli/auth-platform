@@ -4,6 +4,12 @@ Domain schemas ([zod](https://zod.dev)), types, utilities and errors shared by
 [auth-api](../auth-api) and the backoffice. It runs both in Node.js and in the
 browser.
 
+## Contents
+
+- [Usage](#usage)
+- [Modules](#modules)
+- [Scripts](#scripts)
+
 ## Usage
 
 Import each module through its subpath:

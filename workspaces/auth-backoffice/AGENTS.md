@@ -24,6 +24,8 @@ src/
   `(public)` and `(private)` route groups, which don't appear in the URL; each
   group's `layout.tsx` re-exports its layout component (`public-layout`, …), so
   what its pages share lives in one place.
+- Server logic (route handlers under `app/api`) goes in a sibling `src/server`,
+  re-exported from `app` the same way pages re-export screens.
 - `src/client/components/application/` is the app shell:
   `application-layout.tsx` is the root layout (a server component: `metadata`,
   `<html>`, `<body>`) and `application.tsx` is its client part (providers).

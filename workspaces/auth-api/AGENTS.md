@@ -13,7 +13,8 @@ REST API for users and sessions.
 
 ## Architecture
 
-Layered architecture: Routers → Services → Repositories → Database
+Onion architecture with the domain (auth-domain) at its core, each layer
+depending only on the inner ones: Routers → Services → Repositories → Database
 
 - Repository and service functions take a single params object that includes
   `database`.

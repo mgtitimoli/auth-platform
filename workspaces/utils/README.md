@@ -3,6 +3,12 @@
 Generic utilities shared by the workspaces of this repository. Each folder is
 self-contained, so it can later be published as a standalone package.
 
+## Contents
+
+- [Utilities](#utilities)
+- [Usage](#usage)
+- [Scripts](#scripts)
+
 ## Utilities
 
 - [error](./src/error)
